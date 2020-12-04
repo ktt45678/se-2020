@@ -1,3 +1,3 @@
-module.exports = (req, res, next) => {
+module.exports = (req, res) => {
   res.status(200).send({ message: 'Index' });
 };
