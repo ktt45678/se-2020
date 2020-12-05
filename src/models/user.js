@@ -12,10 +12,8 @@ const userSchema = new Schema({
   displayName: {
     type: String,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true
+  dateOfBirth: {
+    type: Date
   },
   password: {
     type: String,
@@ -26,13 +24,18 @@ const userSchema = new Schema({
     required: true,
     default: 'user'
   },
+  locked: {
+    type: Boolean,
+    require: true,
+    default: false
+  },
   dateAdded: {
     type: Date,
     default: Date.now
   }
 });
 
-userSchema.plugin(autoIncrement, { inc_field: 'id' });
+userSchema.plugin(autoIncrement, { inc_field: 'userId' });
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
