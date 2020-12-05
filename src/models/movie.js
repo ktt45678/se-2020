@@ -25,10 +25,10 @@ const movieSchema = new Schema({
         type: Number //minutes
     },
     poster: {
-        type: Buffer
+        type: String
     },
     rating: {
-        type: mongoose.Types.Decimal128,
+        type: Number
     },
     releaseDate: {
         type: Date

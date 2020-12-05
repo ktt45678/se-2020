@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 const tvShowSchema = new Schema({
     title: {
         type: String,
-        required: true
+        required: true,
+        unique: false
     },
     originalTitle: {
         type: String
@@ -24,10 +25,10 @@ const tvShowSchema = new Schema({
         type: Number
     },
     poster: {
-        type: Buffer
+        type: String
     },
     rating: {
-        type: mongoose.Types.Decimal128,
+        type: Number
     },
     releaseDate: {
         type: Date
@@ -50,7 +51,7 @@ const tvShowSchema = new Schema({
     }
 });
 
-tvShowSchema.plugin(autoIncrement, { inc_field: 'tvShowId' });
+tvShowSchema.plugin(autoIncrement, { inc_field: 'tvId' });
 const tvShow = mongoose.model('tvShow', tvShowSchema);
 
 module.exports = tvShow;
