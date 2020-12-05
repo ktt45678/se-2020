@@ -4,9 +4,6 @@ const routes = require('./routes');
 const cors = require('cors');
 const db = require('./src/services/db');
 
-const temp = require('./src/models/tvShow')
-const temp2 = require('./src/models/movie')
-
 const app = express();
 const port = process.env.PORT || 3000;
 
