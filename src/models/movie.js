@@ -4,7 +4,8 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const movieSchema = new Schema({
-    imbd_id: {
+    _id: Number,
+    imbdId: {
         type: Number,
         unique: true
     },
@@ -48,10 +49,66 @@ const movieSchema = new Schema({
         type: Boolean,
         required: true,
         default: true
-    }
-});
+    },
 
-movieSchema.plugin(autoIncrement, { inc_field: 'movieId' });
+    //table movieVideo
+    video: [{
+        title: {
+            type: String,
+        },
+        site: {
+            type: String,
+            required: true
+        },
+        key: {
+            type: String,
+            required: true
+        },
+        type: {  //trailer, teaser
+            type: String
+        }
+    }],
+
+    //table movieImage
+    image: [{
+        width: {
+            type: Number,
+        },
+        height: {
+            type: Number
+        },
+        filePath: {
+            type: String,
+            required: true
+        }
+    }],
+
+    //table movieStorage
+    storage: [{
+        storage: {
+            type: String,
+            require: true
+        },
+        blobName: {
+            type: String,
+            require: true
+        },
+        blobSize: {
+            type: Number,
+            require: true
+        },
+        quality: {
+            type: String,
+            require: true
+        },
+        mimeType: {
+            type: String,
+            require: true
+        }
+    }]
+}, { _id: false });
+
+movieSchema.plugin(autoIncrement);
 const movie = mongoose.model('movie', movieSchema);
 
 module.exports = movie;

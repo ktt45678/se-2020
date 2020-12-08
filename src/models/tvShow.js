@@ -4,6 +4,7 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const tvShowSchema = new Schema({
+    _id: Number,
     title: {
         type: String,
         required: true,
@@ -21,9 +22,9 @@ const tvShowSchema = new Schema({
     episodeCount: {
         type: Number
     },
-    episodeRuntime: {
-        type: Number
-    },
+    // episodeRuntime: {
+    //     type: Number
+    // },
     poster: {
         type: String
     },
@@ -49,9 +50,9 @@ const tvShowSchema = new Schema({
         required: true,
         default: true
     }
-});
+}, { _id: false });
 
-tvShowSchema.plugin(autoIncrement, { inc_field: 'tvId' });
+tvShowSchema.plugin(autoIncrement);
 const tvShow = mongoose.model('tvShow', tvShowSchema);
 
 module.exports = tvShow;

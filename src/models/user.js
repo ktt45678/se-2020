@@ -4,7 +4,13 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+  _id: Number,
   username: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  email: {
     type: String,
     required: true,
     unique: true
@@ -29,13 +35,17 @@ const userSchema = new Schema({
     require: true,
     default: false
   },
+  activationCode: {
+    type: String,
+    require: true,
+  },
   dateAdded: {
     type: Date,
     default: Date.now
   }
-});
+}, { _id: false });
 
-userSchema.plugin(autoIncrement, { inc_field: 'userId' });
-const User = mongoose.model('User', userSchema);
+userSchema.plugin(autoIncrement);
+const user = mongoose.model('user', userSchema);
 
-module.exports = User;
+module.exports = user;
