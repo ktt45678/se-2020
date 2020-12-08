@@ -53,6 +53,9 @@ const movieSchema = new Schema({
 
     //table movieVideo
     video: [{
+        videoId: {
+            type: Number
+        },
         title: {
             type: String,
         },
@@ -71,6 +74,9 @@ const movieSchema = new Schema({
 
     //table movieImage
     image: [{
+        imageId: {
+            type: Number
+        },
         width: {
             type: Number,
         },
@@ -85,6 +91,9 @@ const movieSchema = new Schema({
 
     //table movieStorage
     storage: [{
+        blobId: {
+            type: Number
+        },
         storage: {
             type: String,
             require: true
