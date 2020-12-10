@@ -4,30 +4,66 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const tvEpisodeSchema = new Schema({
-    _id: Number,
-    tvId: {
-        type: Number,
-        require: true
+  _id: Number,
+  tvId: {
+    type: Number,
+    required: true
+  },
+  season: {
+    type: Number,
+    required: true
+  },
+  episodeNumber: {
+    type: Number,
+    required: true
+  },
+  runtime: {
+    type: Date,
+    required: true
+  },
+  overview: {
+    type: String,
+    required: true
+  },
+  airDate: {
+    type: Date,
+    required: true
+  },
+  images: [{
+    imageId: Number,
+    width: Number,
+    height: Number,
+    filePath: {
+      type: String,
+      required: true
+    }
+  }],
+  storages: [{
+    blobId: Number,
+    storage: {
+      type: String,
+      required: true
     },
-    season: {
-        type: Number
+    blobName: {
+      type: String,
+      required: true
     },
-    episodeNumber: {
-        type: Number
+    blobSize: {
+      type: Number,
+      required: true
     },
-    runtime: {
-        type: Date
+    quality: {
+      type: String,
+      required: true
     },
-    overview: {
-        type: String
-    },
-    airDate: {
-        type: Date,
-        default: Date.now
-    },      
+    mimeType: {
+      type: String,
+      required: true
+    }
+  }]
 }, { _id: false });
 
 tvEpisodeSchema.plugin(autoIncrement);
-const tvEpisode = mongoose.model('tvEpisode', tvEpisodeSchema);
+const tvEpisode = mongoose.model('tv_episode', tvEpisodeSchema);
 
 module.exports = tvEpisode;

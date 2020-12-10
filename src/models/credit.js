@@ -4,46 +4,46 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const creditSchema = new Schema({
-    _id: Number,
-    creditId: {
-        type: Number,
-        ref: ['tvCredit', 'movieCredit']
-    },
-    name: {
-        type: String,
-        required: true,
-        unique: false
-    },
-    originalName: {
-        type: String
-    },
-    avatar: {
-        type: String
-    },
-    department: {
-        type: String,
-        required: true
-    },
-    job: {
-        type: String,
-    },
+  _id: Number,
+  creditId: {
+    type: Number
+  },
+  name: {
+    type: String,
+    required: true,
+    unique: false
+  },
+  originalName: {
+    type: String
+  },
+  avatar: {
+    type: String
+  },
+  department: {
+    type: String,
+    required: true
+  },
+  job: {
+    type: String,
+  },
 
-    //table creditCrew
-    crew: [{
-        crewId: {
-            type: Number
-        }
-    }],
+  // Table creditCrew
+  crew: [{
+    crewId: {
+      type: Number
+    }
+  }],
 
-    //table creditCast
-    cast: [{
-        castId: {
-            type: Number
-        },
-        character: {
-            type: String
-        }
-    }]
+  // Table creditCast
+  cast: [{
+    castId: {
+      type: Number
+    },
+    character: {
+      type: String,
+      required: true
+    }
+  }]
 }, { _id: false });
 
 creditSchema.plugin(autoIncrement);

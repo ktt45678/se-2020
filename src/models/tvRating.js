@@ -4,23 +4,24 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const tvRatingSchema = new Schema({
-    _id: Number,
-    userId: {
-        type: Number,
-        ref: 'user',
-        require: true
-    },
-    tvId: {
-        type: Number,
-        ref: 'tvShow',
-        require: true
-    },
-    score: {
-        type: Number
-    },  
+  _id: Number,
+  userId: {
+    type: Number,
+    ref: 'user',
+    require: true
+  },
+  tvId: {
+    type: Number,
+    ref: 'tv_show',
+    require: true
+  },
+  score: {
+    type: Number,
+    required: true
+  },
 }, { _id: false });
 
 tvRatingSchema.plugin(autoIncrement);
-const tvRating = mongoose.model('tvRating', tvRatingSchema);
+const tvRating = mongoose.model('tv_rating', tvRatingSchema);
 
 module.exports = tvRating;

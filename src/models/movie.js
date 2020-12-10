@@ -4,117 +4,138 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const movieSchema = new Schema({
-    _id: Number,
-    imbdId: {
-        type: Number,
-        unique: true
-    },
-    tagline: {
-        type: String
+  _id: Number,
+  imbdId: {
+    type: Number,
+    unique: true
+  },
+  tagline: {
+    type: String
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  originalTitle: {
+    type: String
+  },
+  overview: {
+    type: String,
+    required: true
+  },
+  runtime: {
+    type: Number, // Minutes
+    required: true
+  },
+  poster: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  releaseDate: {
+    type: Date,
+    required: true
+  },
+  productionCompanies: {
+    type: Array,
+    required: true,
+    default: []
+  },
+  genres: {
+    type: Array,
+    required: true,
+    default: []
+  },
+  popularity: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  adult: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+
+  // Table movieVideo
+  videos: [{
+    videoId: {
+      type: Number
     },
     title: {
-        type: String,
-        required: true
+      type: String
     },
-    originalTitle: {
-        type: String
+    site: {
+      type: String,
+      required: true
     },
-    overview: {
-        type: String
+    key: {
+      type: String,
+      required: true
     },
-    runtime: {
-        type: Number //minutes
-    },
-    poster: {
-        type: String
-    },
-    rating: {
-        type: Number
-    },
-    releaseDate: {
-        type: Date
-    },
-    productionCompanies: {
-        type: String,
-        default: "Updating"
-    },
-    genres: {
-        type: String,
-        default: "common"
-    },
-    popularity: {
-        type: Number
-    },
-    adult: {
-        type: Boolean,
-        required: true,
-        default: true
-    },
+    type: {
+      // Trailer, teaser...
+      type: String,
+      required: true
+    }
+  }],
 
-    //table movieVideo
-    video: [{
-        videoId: {
-            type: Number
-        },
-        title: {
-            type: String,
-        },
-        site: {
-            type: String,
-            required: true
-        },
-        key: {
-            type: String,
-            required: true
-        },
-        type: {  //trailer, teaser
-            type: String
-        }
-    }],
+  // Table movieImage
+  images: [{
+    imageId: {
+      type: Number
+    },
+    width: {
+      type: Number
+    },
+    height: {
+      type: Number
+    },
+    type: {
+      type: String,
+      required: true
+    },
+    filePath: {
+      type: String,
+      required: true
+    }
+  }],
 
-    //table movieImage
-    image: [{
-        imageId: {
-            type: Number
-        },
-        width: {
-            type: Number,
-        },
-        height: {
-            type: Number
-        },
-        filePath: {
-            type: String,
-            required: true
-        }
-    }],
-
-    //table movieStorage
-    storage: [{
-        blobId: {
-            type: Number
-        },
-        storage: {
-            type: String,
-            require: true
-        },
-        blobName: {
-            type: String,
-            require: true
-        },
-        blobSize: {
-            type: Number,
-            require: true
-        },
-        quality: {
-            type: String,
-            require: true
-        },
-        mimeType: {
-            type: String,
-            require: true
-        }
-    }]
+  // Table movieStorage
+  storages: [{
+    blobId: {
+      type: Number
+    },
+    storage: {
+      type: String,
+      required: true
+    },
+    blobName: {
+      type: String,
+      required: true
+    },
+    blobSize: {
+      type: Number,
+      required: true
+    },
+    quality: {
+      type: String,
+      required: true
+    },
+    mimeType: {
+      type: String,
+      required: true
+    }
+  }],
+  dateAdded: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
 }, { _id: false });
 
 movieSchema.plugin(autoIncrement);

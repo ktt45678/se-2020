@@ -4,25 +4,30 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const tvCommentSchema = new Schema({
-    _id: Number,
-    userId: {
-        type: Number,
-        ref: 'user',
-        require: true,
-        unique: false
-    },
-    tvId: {
-        type: Number,
-        ref: 'tvShow',
-        require: true
-    },
-    content: {
-        type: String,
-        require: true
-    }
+  _id: Number,
+  userId: {
+    type: Number,
+    ref: 'user',
+    required: true,
+    unique: false
+  },
+  tvId: {
+    type: Number,
+    ref: 'tv_show',
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  },
+  dateAdded: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
 }, { _id: false });
 
 tvCommentSchema.plugin(autoIncrement);
-const tvComment = mongoose.model('tvComment', tvCommentSchema);
+const tvComment = mongoose.model('tv_comment', tvCommentSchema);
 
 module.exports = tvComment;

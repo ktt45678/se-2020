@@ -28,19 +28,15 @@ const userSchema = new Schema({
   role: {
     type: String,
     required: true,
-    default: 'user'
-  },
-  locked: {
-    type: Boolean,
-    require: true,
-    default: false
+    default: 'new'
   },
   activationCode: {
     type: String,
-    require: true,
+    required: true,
   },
   dateAdded: {
     type: Date,
+    required: true,
     default: Date.now
   }
 }, { _id: false });
