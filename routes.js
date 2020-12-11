@@ -1,12 +1,8 @@
 const router = require('express').Router();
-const exampleMiddleware = require('./src/middlewares/example');
 const errors = require('./src/modules/errors');
 const index = require('./src/routes/index/router');
 const login = require('./src/routes/login/router');
 const register = require('./src/routes/register/router');
-
-// Wire up middleware
-router.use(exampleMiddleware);
 
 // Wire up routers
 router.use('/', index);

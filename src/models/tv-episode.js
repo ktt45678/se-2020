@@ -21,9 +21,11 @@ const tvEpisodeSchema = new Schema({
     type: Date,
     required: true
   },
+  name: {
+    type: String
+  },
   overview: {
-    type: String,
-    required: true
+    type: String
   },
   airDate: {
     type: Date,

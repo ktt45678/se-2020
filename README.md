@@ -1,8 +1,15 @@
-# Popcord API
+# WhiteFooFlix
+A Node.js REST API for Movie & TV Show streaming application
 
-## Development server
-Open command prompt, type `npm i`, it will install packages that needed.
+## Instructions
+Available at [wiki](https://github.com/ktt45678/se-2020/wiki) page
 
-Make sure you make a .env file from .env.example.
+## Usage
+```
+npm install
+npm start
+```
 
-Run `npm start` to start the server once. Navigate to `http://localhost:3000/`.
+## Requirements
+1. [Node.js](https://nodejs.org/en/download) (v14.15.1)
+2. [MongoDB](https://docs.mongodb.com/manual/installation) (v4.2 or later)
