@@ -17,9 +17,14 @@
   },
   "homepage": "https://github.com/ktt45678/se-2020#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongoose": "^5.11.2",
-    "mongoose-sequence": "^5.3.0"
+    "express-validator": "^6.8.0",
+    "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
+    "mongoose": "^5.11.7",
+    "mongoose-sequence": "^5.3.0",
+    "nanoid": "^3.1.20"
   }
 }

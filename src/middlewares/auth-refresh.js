@@ -6,12 +6,12 @@ module.exports = async (req, res, next) => {
   if (!authorization) {
     return res.status(401).send({ error: 'No authorization' });
   }
-  const accessToken = authorization.split(" ")[1];
-  if (!accessToken) {
-    return res.status(401).send({ error: 'Access token is empty' });
+  const refreshToken = authorization.split(" ")[1];
+  if (!refreshToken) {
+    return res.status(401).send({ error: 'Refresh token is empty' });
   }
   try {
-    const decoded = await authService.verifyAccessToken(accessToken);
+    const decoded = await authService.verifyRefreshToken(refreshToken);
     const user = await userService.findUserById(decoded._id);
     if (!user) {
       return res.status(404).send({ error: 'User not found' });

@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-sequence')(mongoose);
 
@@ -16,10 +17,10 @@ const userSchema = new Schema({
     unique: true
   },
   displayName: {
-    type: String,
+    type: String
   },
   dateOfBirth: {
-    type: Date
+    type: String
   },
   password: {
     type: String,
@@ -31,8 +32,10 @@ const userSchema = new Schema({
     default: 'new'
   },
   activationCode: {
-    type: String,
-    required: true,
+    type: String
+  },
+  recoveryCode: {
+    type: String
   },
   dateAdded: {
     type: Date,
@@ -40,6 +43,39 @@ const userSchema = new Schema({
     default: Date.now
   }
 }, { _id: false });
+
+userSchema.statics = {
+  findByUsername: async function (username) {
+    return this.findOne({ username });
+  },
+  findByEmail: async function (email) {
+    return this.findOne({ email });
+  },
+  findByUsernameOrEmail: async function (username) {
+    return this.findOne({ $or: [{ email: username }, { username: username }] });
+  },
+  confirmEmail: async function (activationCode) {
+    return this.findOneAndUpdate({ activationCode }, {
+      activationCode: null,
+      role: 'user'
+    });
+  },
+  findByRecoveryCode: async function (recoveryCode) {
+    return this.findOne({ recoveryCode });
+  },
+  resetPassword: async function (recoveryCode, password) {
+    return this.findOneAndUpdate({ recoveryCode }, {
+      recoveryCode: null,
+      password: password
+    });
+  },
+  hashPassword: function (password) {
+    return bcrypt.hashSync(password, 10);
+  },
+  comparePassword: function (password, hash) {
+    return bcrypt.compareSync(password, hash);
+  }
+}
 
 userSchema.plugin(autoIncrement);
 const user = mongoose.model('user', userSchema);

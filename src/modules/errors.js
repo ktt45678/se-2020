@@ -4,13 +4,14 @@ exports.errorHandler = (err, req, res, next) => {
     res.status(err.status).send({ 'message': err.message });
   }
   else {
-    res.status(500).send({ message: 'internal server error' });
+    console.error(err.message);
+    res.status(500).send({ message: 'Internal server error' });
   }
 };
 
 // Handle case where user requests nonexistent endpoint
 exports.nullRoute = (req, res, next) => {
-  res.status(404).send({ message: 'not found' });
+  res.status(404).send({ message: 'Not found' });
 };
 
 // Create an error for the api error handler

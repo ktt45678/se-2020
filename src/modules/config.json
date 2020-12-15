@@ -1,0 +1,8 @@
+{
+  "port": 3000,
+  "database_url": "mongodb://admin:123@localhost:27017/whitefooflix?authSource=admin",
+  "access_token_secret": "example_access_token_secret",
+  "refresh_token_secret": "example_refresh_token_secret",
+  "access_token_life": 900,
+  "refresh_token_life": 86400
+}
