@@ -19,8 +19,7 @@ exports.login = async (req, res) => {
     const refreshToken = authService.signRefreshToken(user);
     res.status(200).send({ accessToken, refreshToken });
   } catch (e) {
-    console.error(e);
-    res.status(401).send({ errors: e });
+    res.status(400).send({ error: e });
   }
 }
 
