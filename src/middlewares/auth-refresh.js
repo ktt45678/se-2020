@@ -12,14 +12,9 @@ module.exports = async (req, res, next) => {
   }
   try {
     const decoded = await authService.verifyRefreshToken(refreshToken);
-    const user = await userService.findUserById(decoded._id);
-    if (!user) {
-      return res.status(404).send({ error: 'User not found' });
-    }
-    req.currentUser = user;
+    req.currentUser = decoded;
     next()
   } catch (e) {
-    console.error(e);
     return res.status(401).send({ error: 'Unauthorized access' });
   }
 };

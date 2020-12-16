@@ -54,10 +54,9 @@ exports.register = async (req, res) => {
 }
 
 exports.sendConfirmEmail = async (req, res) => {
-  // Find user by id
-  const user = await userService.findUserById(req.currentUser._id);
-  if (!user) {
-    return res.status(404).send({ error: 'User not found' });
+  const user = req.currentUser;
+  if (user.role != "new") {
+    return res.status(400).send({ error: 'User already activated' });
   }
   // Update user's activation code
   user.activationCode = authService.createNanoId();
@@ -143,10 +142,8 @@ exports.resetPassword = async (req, res) => {
 }
 
 exports.refreshToken = async (req, res) => {
-  const user = await userService.findUserById(req.currentUser._id);
-  if (!user) {
-    return res.status(404).send({ error: 'User not found' });
-  }
+  // This user object only contain _id
+  const user = req.currentUser;
   const accessToken = authService.signAccessToken(user);
   const refreshToken = authService.signRefreshToken(user);
   res.status(200).send({ accessToken, refreshToken });
