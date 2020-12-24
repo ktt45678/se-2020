@@ -19,6 +19,6 @@ module.exports = async (req, res, next) => {
     req.currentUser = user;
     next()
   } catch (e) {
-    return res.status(401).send({ error: 'Unauthorized access' });
+    res.status(401).send({ error: 'Unauthorized access' });
   }
 };

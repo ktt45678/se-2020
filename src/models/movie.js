@@ -5,20 +5,14 @@ const Schema = mongoose.Schema;
 
 const movieSchema = new Schema({
   _id: Number,
-  imbdId: {
-    type: Number,
-    unique: true
-  },
-  tagline: {
-    type: String
-  },
+  imdbId: String,
+  tmdbId: Number,
+  tagline: String,
   title: {
     type: String,
     required: true
   },
-  originalTitle: {
-    type: String
-  },
+  originalTitle: String,
   overview: {
     type: String,
     required: true
@@ -63,12 +57,8 @@ const movieSchema = new Schema({
 
   // Table movieVideo
   videos: [{
-    videoId: {
-      type: Number
-    },
-    title: {
-      type: String
-    },
+    videoId: Number,
+    title: String,
     site: {
       type: String,
       required: true
@@ -86,15 +76,9 @@ const movieSchema = new Schema({
 
   // Table movieImage
   images: [{
-    imageId: {
-      type: Number
-    },
-    width: {
-      type: Number
-    },
-    height: {
-      type: Number
-    },
+    imageId: Number,
+    width: Number,
+    height: Number,
     type: {
       type: String,
       required: true
@@ -107,9 +91,7 @@ const movieSchema = new Schema({
 
   // Table movieStorage
   storages: [{
-    blobId: {
-      type: Number
-    },
+    blobId: Number,
     storage: {
       type: String,
       required: true

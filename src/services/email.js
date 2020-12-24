@@ -15,3 +15,11 @@ exports.sendRecoveryEmail = (user) => {
   }
   emailModule.sendEmail(user.email, "Reset your password", "password_recovery", options)
 }
+
+exports.sendUpdateEmail = (user) => {
+  const options = {
+    recipient_name: user.displayName || user.username,
+    button_url: `${process.env.WEBSITE_URL}/activate/${user.activationCode}`
+  }
+  emailModule.sendEmail(user.email, "Update your email", "update_email", options)
+}

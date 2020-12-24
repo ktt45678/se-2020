@@ -5,17 +5,15 @@ const Schema = mongoose.Schema;
 
 const tvShowSchema = new Schema({
   _id: Number,
+  imdbId: String,
+  tmdbId: Number,
   title: {
     type: String,
     required: true,
     unique: false
   },
-  originalTitle: {
-    type: String
-  },
-  tagline: {
-    type: String
-  },
+  originalTitle: String,
+  tagline: String,
   overview: {
     type: String,
     required: true

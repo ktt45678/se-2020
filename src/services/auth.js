@@ -12,17 +12,23 @@ exports.authenticate = async (username, password) => {
 }
 
 exports.createUser = (username, displayName, dateOfBirth, email, password) => {
+  const role = email === process.env.OWNER_EMAIL ? 'new admin' : 'new member';
   const hashedPassword = userModel.hashPassword(password);
   const activationCode = nanoid();
   const user = new userModel({
     username,
     displayName,
-    dateOfBirth,
     email,
     password: hashedPassword,
+    dateOfBirth,
+    role,
     activationCode
   });
   return user;
+}
+
+exports.hashPassword = (password) => {
+  return userModel.hashPassword(password);
 }
 
 exports.signAccessToken = (user) => {
@@ -53,8 +59,8 @@ exports.verifyRefreshToken = async (refreshToken) => {
   return await authModule.verifyToken(refreshToken, secret);
 }
 
-exports.confirmEmail = async (activationCode) => {
-  const user = await userModel.confirmEmail(activationCode);
+exports.findByActivationCode = async (activationCode) => {
+  const user = await userModel.findByActivationCode(activationCode);
   return user;
 }
 

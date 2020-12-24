@@ -1,5 +1,4 @@
 const authService = require('../services/auth');
-const userService = require('../services/user');
 
 module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
@@ -15,6 +14,6 @@ module.exports = async (req, res, next) => {
     req.currentUser = decoded;
     next()
   } catch (e) {
-    return res.status(401).send({ error: 'Unauthorized access' });
+    res.status(401).send({ error: 'Unauthorized access' });
   }
 };

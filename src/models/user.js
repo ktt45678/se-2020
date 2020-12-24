@@ -20,7 +20,8 @@ const userSchema = new Schema({
     type: String
   },
   dateOfBirth: {
-    type: String
+    type: String,
+    required: true
   },
   password: {
     type: String,
@@ -30,6 +31,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
     default: 'new'
+  },
+  locked: {
+    type: Boolean,
+    required: true,
+    default: false
   },
   activationCode: {
     type: String
@@ -54,11 +60,8 @@ userSchema.statics = {
   findByUsernameOrEmail: async function (username) {
     return this.findOne({ $or: [{ email: username }, { username: username }] });
   },
-  confirmEmail: async function (activationCode) {
-    return this.findOneAndUpdate({ activationCode }, {
-      activationCode: null,
-      role: 'user'
-    });
+  findByActivationCode: async function (activationCode) {
+    return this.findOne({ activationCode });
   },
   findByRecoveryCode: async function (recoveryCode) {
     return this.findOne({ recoveryCode });

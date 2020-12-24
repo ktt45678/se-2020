@@ -55,7 +55,7 @@ exports.register = async (req, res) => {
 
 exports.sendConfirmEmail = async (req, res) => {
   const user = req.currentUser;
-  if (user.role != "new") {
+  if (!user.role.startsWith('new')) {
     return res.status(400).send({ error: 'User already activated' });
   }
   // Update user's activation code
@@ -109,9 +109,17 @@ exports.confirmEmail = async (req, res) => {
   if (!activationCode) {
     return res.status(422).send({ error: 'Activation code must not be empty' });
   }
-  const user = await authService.confirmEmail(activationCode);
+  const user = await authService.findByActivationCode(activationCode);
   if (!user) {
     return res.status(404).send({ error: 'Invalid or expired link' });
+  }
+  user.role = user.role.split(' ')[1];
+  user.activationCode = null;
+  try {
+    await user.save();
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
   }
   res.status(200).send({ message: 'Email has been successfully confirmed' })
 }
@@ -142,7 +150,7 @@ exports.resetPassword = async (req, res) => {
 }
 
 exports.refreshToken = async (req, res) => {
-  // This user object only contain _id
+  // This user object contains only _id
   const user = req.currentUser;
   const accessToken = authService.signAccessToken(user);
   const refreshToken = authService.signRefreshToken(user);
