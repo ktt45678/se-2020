@@ -1,4 +1,4 @@
-const config = require('../modules/config.json');
+const config = require('../../config.json').database;
 const mongoose = require('mongoose');
 
 mongoose.set('useNewUrlParser', true);

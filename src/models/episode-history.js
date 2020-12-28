@@ -27,7 +27,7 @@ const episodeHistorySchema = new Schema({
   },
 }, { _id: false });
 
-episodeHistorySchema.plugin(autoIncrement);
+episodeHistorySchema.plugin(autoIncrement, { id: 'episode_history_id', inc_field: '_id' });
 const episodeHistory = mongoose.model('episode_history', episodeHistorySchema);
 
 module.exports = episodeHistory;

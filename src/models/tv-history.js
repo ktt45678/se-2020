@@ -27,7 +27,7 @@ const tvHistorySchema = new Schema({
   },
 }, { _id: false });
 
-tvHistorySchema.plugin(autoIncrement);
+tvHistorySchema.plugin(autoIncrement, { id: 'tv_history_id', inc_field: '_id' });
 const tvHistory = mongoose.model('tv_history', tvHistorySchema);
 
 module.exports = tvHistory;

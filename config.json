@@ -1,0 +1,22 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "database": {
+    "database_url": "mongodb://admin:123@localhost:27017/whitefooflix?authSource=admin"
+  },
+  "auth": {
+    "access_token_secret": "example_access_token_secret",
+    "refresh_token_secret": "example_refresh_token_secret",
+    "access_token_life": 300,
+    "refresh_token_life": 86400
+  },
+  "user": {
+    "avatar_container": "avatar",
+    "avatar_expiry": 3600,
+    "music_container": "music",
+    "music_expiry": 3600,
+    "background_container": "background",
+    "background_expiry": 3600
+  }
+}

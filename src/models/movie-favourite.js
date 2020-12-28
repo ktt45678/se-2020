@@ -8,8 +8,7 @@ const movieFavouriteSchema = new Schema({
   userId: {
     type: Number,
     ref: 'user',
-    required: true,
-    unique: false
+    required: true
   },
   movieId: {
     type: Number,
@@ -18,7 +17,7 @@ const movieFavouriteSchema = new Schema({
   }
 }, { _id: false });
 
-movieFavouriteSchema.plugin(autoIncrement);
+movieFavouriteSchema.plugin(autoIncrement, { id: 'movie_favourite_id', inc_field: '_id' });
 const movieFavourite = mongoose.model('movie_favourite', movieFavouriteSchema);
 
 module.exports = movieFavourite;

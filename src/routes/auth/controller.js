@@ -31,26 +31,26 @@ exports.register = async (req, res) => {
   const { username, displayName, dateOfBirth, email, password } = req.body;
   // Create user
   const user = authService.createUser(username, displayName, dateOfBirth, email, password);
-  // Error handler
+  // Send confirmation email and response user info
+  try {
+    user.activationCode = emailService.sendConfirmEmail(user);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
+  // Save user
   try {
     await user.save();
   } catch (e) {
     console.error(e);
     return res.status(500).send({ error: 'Internal server error' });
   }
-  // Send confirmation email and response user info
-  try {
-    emailService.sendConfirmEmail(user);
-    res.status(200).send({
-      username: user.username,
-      email: user.email,
-      displayName: user.displayName,
-      message: 'A confirmation email is being sent'
-    });
-  } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal server error' });
-  }
+  res.status(200).send({
+    username: user.username,
+    email: user.email,
+    displayName: user.displayName,
+    message: 'A confirmation email is being sent'
+  });
 }
 
 exports.sendConfirmEmail = async (req, res) => {
@@ -58,21 +58,24 @@ exports.sendConfirmEmail = async (req, res) => {
   if (!user.role.startsWith('new')) {
     return res.status(400).send({ error: 'User already activated' });
   }
-  // Update user's activation code
-  user.activationCode = authService.createNanoId();
+  const { type } = req.body;
+  try {
+    if (type && type === 'update') {
+      user.activationCode = emailService.sendUpdateEmail(user);
+    } else {
+      user.activationCode = emailService.sendConfirmEmail(user);
+    }
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
   try {
     await user.save();
   } catch (e) {
     console.error(e);
     return res.status(500).send({ error: 'Internal server error' });
   }
-  try {
-    emailService.sendConfirmEmail(user);
-    res.status(200).send({ message: 'A confirmation email is being sent' });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
-  }
+  res.status(200).send({ message: 'A confirmation email is being sent' });
 }
 
 exports.sendRecoveryEmail = async (req, res) => {
@@ -86,22 +89,20 @@ exports.sendRecoveryEmail = async (req, res) => {
   if (!user) {
     return res.status(404).send({ error: 'User not found' });
   }
-  // Update user's recovery code
-  user.recoveryCode = authService.createNanoId();
+  // Send recovery email
+  try {
+    user.recoveryCode = emailService.sendRecoveryEmail(user);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
   try {
     await user.save();
   } catch (e) {
     console.error(e);
     return res.status(500).send({ error: 'Internal server error' });
   }
-  // Send recovery email
-  try {
-    emailService.sendRecoveryEmail(user);
-    res.status(200).send({ message: 'A recovery email is being sent' });
-  } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal server error' });
-  }
+  res.status(200).send({ message: 'A recovery email is being sent' });
 }
 
 exports.confirmEmail = async (req, res) => {

@@ -18,7 +18,7 @@ const tvFavouriteSchema = new Schema({
   }
 }, { _id: false });
 
-tvFavouriteSchema.plugin(autoIncrement);
+tvFavouriteSchema.plugin(autoIncrement, { id: 'tv_favourite_id', inc_field: '_id' });
 const tvFavourite = mongoose.model('tv_favourite', tvFavouriteSchema);
 
 module.exports = tvFavourite;

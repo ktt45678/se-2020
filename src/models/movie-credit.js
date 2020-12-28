@@ -17,7 +17,7 @@ const movieCreditSchema = new Schema({
   }
 }, { _id: false });
 
-movieCreditSchema.plugin(autoIncrement);
+movieCreditSchema.plugin(autoIncrement, { id: 'movie_credit_id', inc_field: '_id' });
 const movieCredit = mongoose.model('movie_credit', movieCreditSchema);
 
 module.exports = movieCredit;

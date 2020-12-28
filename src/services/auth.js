@@ -1,7 +1,6 @@
-const config = require('../modules/config.json');
+const config = require('../../config.json').auth;
 const userModel = require('../models/user');
 const authModule = require('../modules/auth');
-const { nanoid } = require('nanoid');
 
 exports.authenticate = async (username, password) => {
   const user = await userModel.findByUsernameOrEmail(username);
@@ -14,15 +13,13 @@ exports.authenticate = async (username, password) => {
 exports.createUser = (username, displayName, dateOfBirth, email, password) => {
   const role = email === process.env.OWNER_EMAIL ? 'new admin' : 'new member';
   const hashedPassword = userModel.hashPassword(password);
-  const activationCode = nanoid();
   const user = new userModel({
     username,
     displayName,
     email,
     password: hashedPassword,
     dateOfBirth,
-    role,
-    activationCode
+    role
   });
   return user;
 }
@@ -73,8 +70,4 @@ exports.resetPassword = async (recoveryCode, password) => {
   hashedPassword = userModel.hashPassword(password);
   const user = await userModel.resetPassword(recoveryCode, hashedPassword);
   return user;
-}
-
-exports.createNanoId = () => {
-  return nanoid();
 }

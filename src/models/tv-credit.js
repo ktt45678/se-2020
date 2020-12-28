@@ -17,7 +17,7 @@ const tvCreditSchema = new Schema({
   }
 }, { _id: false });
 
-tvCreditSchema.plugin(autoIncrement);
+tvCreditSchema.plugin(autoIncrement, { id: 'tv_credit_id', inc_field: '_id' });
 const tvCredit = mongoose.model('tv_credit', tvCreditSchema);
 
 module.exports = tvCredit;

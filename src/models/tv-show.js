@@ -3,6 +3,37 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
+const tvShowVideoSchema = new Schema({
+  _id: Number,
+  title: String,
+  site: {
+    type: String,
+    required: true
+  },
+  key: {
+    type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    required: true
+  }
+}, { _id: false });
+
+const tvShowImageSchema = new Schema({
+  _id: Number,
+  width: Number,
+  height: Number,
+  type: {
+    type: String,
+    required: true
+  },
+  filePath: {
+    type: String,
+    required: true
+  }
+}, { _id: false });
+
 const tvShowSchema = new Schema({
   _id: Number,
   imdbId: String,
@@ -37,13 +68,11 @@ const tvShowSchema = new Schema({
   },
   productionCompanies: {
     type: Array,
-    required: true,
-    default: []
+    required: true
   },
   genres: {
     type: Array,
-    required: true,
-    default: []
+    required: true
   },
   popularity: {
     type: Number,
@@ -55,35 +84,8 @@ const tvShowSchema = new Schema({
     required: true,
     default: false
   },
-  videos: [{
-    videoId: Number,
-    title: String,
-    site: {
-      type: String,
-      required: true
-    },
-    key: {
-      type: String,
-      required: true
-    },
-    type: {
-      type: String,
-      required: true
-    }
-  }],
-  images: [{
-    imageId: Number,
-    width: Number,
-    height: Number,
-    type: {
-      type: String,
-      required: true
-    },
-    filePath: {
-      type: String,
-      required: true
-    }
-  }],
+  videos: [tvShowVideoSchema],
+  images: [tvShowImageSchema],
   dateAdded: {
     type: Date,
     required: true,
@@ -91,7 +93,9 @@ const tvShowSchema = new Schema({
   }
 }, { _id: false });
 
-tvShowSchema.plugin(autoIncrement);
+tvShowVideoSchema.plugin(autoIncrement, { id: 'tv_video_id', inc_field: '_id' });
+tvShowImageSchema.plugin(autoIncrement, { id: 'tv_image_id', inc_field: '_id' });
+tvShowSchema.plugin(autoIncrement, { id: 'tv_id', inc_field: '_id' });
 const tvShow = mongoose.model('tv_show', tvShowSchema);
 
 module.exports = tvShow;

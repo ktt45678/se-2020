@@ -5,8 +5,8 @@ const { validationResult } = require('express-validator');
 
 exports.view = async (req, res) => {
   const user = req.currentUser;
-  const { id } = req.query;
-  if (!id) {
+  const { id } = req.params;
+  if (!id || Number(id) === user._id) {
     return res.status(200).send({
       username: user.username,
       displayName: user.displayName,
@@ -18,12 +18,11 @@ exports.view = async (req, res) => {
   }
   const search = await userService.findUserById(id);
   if (!search) {
-    return res.status(400).send({ error: 'User not found' });
+    return res.status(404).send({ error: 'User not found' });
   }
   res.status(200).send({
     username: search.username,
     displayName: search.displayName,
-    dateOfBirth: search.dateOfBirth,
     role: search.role,
     dateAdded: search.dateAdded
   });
@@ -50,10 +49,9 @@ exports.update = async (req, res) => {
   user.dateOfBirth = dateOfBirth;
   // Users will have to confirm their new email
   if (user.email !== email) {
-    user.activationCode = authService.createNanoId();
     user.email = email;
     user.role = 'new ' + user.role;
-    emailService.sendUpdateEmail(user);
+    user.activationCode = emailService.sendUpdateEmail(user);
   }
   if (newPassword) {
     user.password = authService.hashPassword(newPassword);
@@ -64,5 +62,7 @@ exports.update = async (req, res) => {
     console.error(e);
     return res.status(500).send({ error: 'Internal server error' });
   }
-  res.status(200).send({ message: 'Successfully updated' });
+  const accessToken = authService.signAccessToken(user);
+  const refreshToken = authService.signRefreshToken(user);
+  res.status(200).send({ accessToken, refreshToken, message: 'Successfully updated' });
 }

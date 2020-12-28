@@ -3,7 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const routes = require('./routes');
 const cors = require('./src/middlewares/cors');
-const config = require('./src/modules/config.json');
+const config = require('./config.json').server;
 const db = require('./src/services/db');
 
 const app = express();

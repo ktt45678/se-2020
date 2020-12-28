@@ -2,7 +2,7 @@ const { DateTime } = require('luxon');
 const { body } = require('express-validator');
 const userService = require('../services/user');
 
-const registrationRules = () => {
+exports.registrationRules = () => {
   return [
     // Username
     body('username')
@@ -52,7 +52,7 @@ const registrationRules = () => {
   ]
 }
 
-const loginRules = () => {
+exports.loginRules = () => {
   return [
     body('username')
       .trim()
@@ -62,14 +62,14 @@ const loginRules = () => {
   ]
 }
 
-const recoveryRules = () => {
+exports.recoveryRules = () => {
   return [
     body('email')
       .isEmail().withMessage('Email must be valid'),
   ]
 }
 
-const resetPasswordRules = () => {
+exports.resetPasswordRules = () => {
   return [
     body('recoveryCode')
       .notEmpty().withMessage('Recovery code must not be empty'),
@@ -84,7 +84,7 @@ const resetPasswordRules = () => {
   ]
 }
 
-const userUpdateRules = () => {
+exports.userUpdateRules = () => {
   return [
     body('username')
       .trim()
@@ -126,7 +126,7 @@ const userUpdateRules = () => {
       }),
     body('displayName')
       .trim()
-      .isLength({ max: 50 }).withMessage('Display name must be less than 50 characters long'),
+      .isLength({ max: 32 }).withMessage('Display name must be less than 32 characters long'),
     body('dateOfBirth')
       .isDate('DD-MM-YYYY').withMessage('Date of birth must be a valid date in DD-MM-YYYY format')
       .custom((dateOfBirth) => {
@@ -138,5 +138,3 @@ const userUpdateRules = () => {
       })
   ]
 }
-
-module.exports = { registrationRules, loginRules, recoveryRules, resetPasswordRules, userUpdateRules }

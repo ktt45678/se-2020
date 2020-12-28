@@ -8,8 +8,7 @@ const movieCommentSchema = new Schema({
   userId: {
     type: Number,
     ref: 'user',
-    required: true,
-    unique: false
+    required: true
   },
   movieId: {
     type: Number,
@@ -27,7 +26,7 @@ const movieCommentSchema = new Schema({
   }
 }, { _id: false });
 
-movieCommentSchema.plugin(autoIncrement);
+movieCommentSchema.plugin(autoIncrement, { id: 'movie_comment_id', inc_field: '_id' });
 const movieComment = mongoose.model('movie_comment', movieCommentSchema);
 
 module.exports = movieComment;

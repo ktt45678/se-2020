@@ -4,6 +4,30 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
+const userStorageSchema = new Schema({
+  _id: Number,
+  container: {
+    type: String,
+    required: true
+  },
+  nanoId: {
+    type: String,
+    required: true
+  },
+  blobName: {
+    type: String,
+    required: true
+  },
+  blobSize: {
+    type: Number,
+    required: true
+  },
+  mimeType: {
+    type: String,
+    required: true
+  }
+}, { _id: false });
+
 const userSchema = new Schema({
   _id: Number,
   username: {
@@ -47,30 +71,31 @@ const userSchema = new Schema({
     type: Date,
     required: true,
     default: Date.now
-  }
+  },
+  storage: [userStorageSchema]
 }, { _id: false });
 
 userSchema.statics = {
   findByUsername: async function (username) {
-    return this.findOne({ username });
+    return await this.findOne({ username }).exec();
   },
   findByEmail: async function (email) {
-    return this.findOne({ email });
+    return await this.findOne({ email }).exec();
   },
   findByUsernameOrEmail: async function (username) {
-    return this.findOne({ $or: [{ email: username }, { username: username }] });
+    return await this.findOne({ $or: [{ email: username }, { username: username }] }).exec();
   },
   findByActivationCode: async function (activationCode) {
-    return this.findOne({ activationCode });
+    return await this.findOne({ activationCode }).exec();
   },
   findByRecoveryCode: async function (recoveryCode) {
-    return this.findOne({ recoveryCode });
+    return await this.findOne({ recoveryCode }).exec();
   },
   resetPassword: async function (recoveryCode, password) {
-    return this.findOneAndUpdate({ recoveryCode }, {
+    return await this.findOneAndUpdate({ recoveryCode }, {
       recoveryCode: null,
       password: password
-    });
+    }).exec();
   },
   hashPassword: function (password) {
     return bcrypt.hashSync(password, 10);
@@ -80,7 +105,8 @@ userSchema.statics = {
   }
 }
 
-userSchema.plugin(autoIncrement);
+userStorageSchema.plugin(autoIncrement, { id: 'user_storage_id', inc_field: '_id' });
+userSchema.plugin(autoIncrement, { id: 'user_id', inc_field: '_id' });
 const user = mongoose.model('user', userSchema);
 
 module.exports = user;

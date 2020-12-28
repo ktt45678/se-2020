@@ -8,8 +8,7 @@ const tvCommentSchema = new Schema({
   userId: {
     type: Number,
     ref: 'user',
-    required: true,
-    unique: false
+    required: true
   },
   tvId: {
     type: Number,
@@ -27,7 +26,7 @@ const tvCommentSchema = new Schema({
   }
 }, { _id: false });
 
-tvCommentSchema.plugin(autoIncrement);
+tvCommentSchema.plugin(autoIncrement, { id: 'tv_comment_id', inc_field: '_id' });
 const tvComment = mongoose.model('tv_comment', tvCommentSchema);
 
 module.exports = tvComment;

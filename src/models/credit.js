@@ -3,6 +3,24 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
+const creditCrewSchema = new Schema({
+  _id: Number,
+  crewId: {
+    type: Number
+  }
+}, { _id: false });
+
+const creditCastSchema = new Schema({
+  _id: Number,
+  castId: {
+    type: Number
+  },
+  character: {
+    type: String,
+    required: true
+  }
+}, { _id: false });
+
 const creditSchema = new Schema({
   _id: Number,
   creditId: {
@@ -26,27 +44,13 @@ const creditSchema = new Schema({
   job: {
     type: String,
   },
-
-  // Table creditCrew
-  crew: [{
-    crewId: {
-      type: Number
-    }
-  }],
-
-  // Table creditCast
-  cast: [{
-    castId: {
-      type: Number
-    },
-    character: {
-      type: String,
-      required: true
-    }
-  }]
+  crew: [creditCrewSchema],
+  cast: [creditCastSchema]
 }, { _id: false });
 
-creditSchema.plugin(autoIncrement);
+creditCrewSchema.plugin(autoIncrement, { id: 'credit_crew_id', inc_field: '_id' });
+creditCastSchema.plugin(autoIncrement, { id: 'credit_cast_id', inc_field: '_id' });
+creditSchema.plugin(autoIncrement, { id: 'credit_id', inc_field: '_id' });
 const credit = mongoose.model('credit', creditSchema);
 
 module.exports = credit;

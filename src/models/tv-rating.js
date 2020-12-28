@@ -21,7 +21,7 @@ const tvRatingSchema = new Schema({
   },
 }, { _id: false });
 
-tvRatingSchema.plugin(autoIncrement);
+tvRatingSchema.plugin(autoIncrement, { id: 'tv_rating_id', inc_field: '_id' });
 const tvRating = mongoose.model('tv_rating', tvRatingSchema);
 
 module.exports = tvRating;

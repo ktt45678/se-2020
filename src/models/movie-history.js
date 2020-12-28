@@ -8,8 +8,7 @@ const movieHistorySchema = new Schema({
   userId: {
     type: Number,
     ref: 'user',
-    required: true,
-    unique: false
+    required: true
   },
   movieId: {
     type: Number,
@@ -28,7 +27,7 @@ const movieHistorySchema = new Schema({
   }
 }, { _id: false });
 
-movieHistorySchema.plugin(autoIncrement);
+movieHistorySchema.plugin(autoIncrement, { id: 'movie_history_id', inc_field: '_id' });
 const movieHistory = mongoose.model('movie_history', movieHistorySchema);
 
 module.exports = movieHistory;

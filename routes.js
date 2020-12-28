@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const errors = require('./src/modules/errors');
+const errors = require('./src/middlewares/errors');
 const index = require('./src/routes/index/router');
 const auth = require('./src/routes/auth/router');
 const user = require('./src/routes/user/router');
