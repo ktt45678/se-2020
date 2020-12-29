@@ -15,3 +15,4 @@ npm start
 2. [MongoDB](https://docs.mongodb.com/manual/installation) (v4.2 or later)
 3. [Mailgun](https://www.mailgun.com/email-api)
 4. [Azure Blob](https://azure.microsoft.com/en-us/services/storage/blobs)
+5. [TMDb API](https://developers.themoviedb.org/3/getting-started/introduction)

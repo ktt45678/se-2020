@@ -1,5 +1,5 @@
 const { DateTime } = require('luxon');
-const { body } = require('express-validator');
+const { body, query, param } = require('express-validator');
 const userService = require('../services/user');
 
 exports.registrationRules = () => {
@@ -47,7 +47,7 @@ exports.registrationRules = () => {
         if (date > DateTime.local()) {
           throw Error('Date of birth must not be after the current date');
         }
-        return true
+        return true;
       })
   ]
 }
@@ -134,7 +134,31 @@ exports.userUpdateRules = () => {
         if (date > DateTime.local()) {
           throw Error('Date of birth must not be after the current date');
         }
-        return true
+        return true;
+      })
+  ]
+}
+
+exports.tmdbSearchRules = () => {
+  return [
+    query('query')
+      .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
+    query('page')
+      .custom((page) => {
+        if (!page) {
+          return true;
+        }
+        if (page < 1 || page > 1000) {
+          throw Error('Page must be between 1 and 1000');
+        }
+        return true;
+      }),
+    param('type')
+      .custom((type) => {
+        if (type !== 'movie' && type !== 'tv') {
+          throw Error('Type must be movie or tv');
+        }
+        return true;
       })
   ]
 }

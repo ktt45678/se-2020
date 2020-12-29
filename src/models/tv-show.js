@@ -36,12 +36,10 @@ const tvShowImageSchema = new Schema({
 
 const tvShowSchema = new Schema({
   _id: Number,
-  imdbId: String,
   tmdbId: Number,
   title: {
     type: String,
-    required: true,
-    unique: false
+    required: true
   },
   originalTitle: String,
   tagline: String,
@@ -49,7 +47,7 @@ const tvShowSchema = new Schema({
     type: String,
     required: true
   },
-  episodeCount: {
+  episodeRunTime: {
     type: Number,
     required: true
   },
@@ -57,12 +55,7 @@ const tvShowSchema = new Schema({
     type: String,
     required: true
   },
-  rating: {
-    type: Number,
-    required: true,
-    default: 0
-  },
-  releaseDate: {
+  firstAirDate: {
     type: Date,
     required: true
   },
@@ -78,11 +71,6 @@ const tvShowSchema = new Schema({
     type: Number,
     required: true,
     default: 0
-  },
-  adult: {
-    type: Boolean,
-    required: true,
-    default: false
   },
   videos: [tvShowVideoSchema],
   images: [tvShowImageSchema],

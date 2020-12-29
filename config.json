@@ -18,5 +18,9 @@
     "music_expiry": 3600,
     "background_container": "background",
     "background_expiry": 3600
+  },
+  "tmdb": {
+    "poster_url": "https://image.tmdb.org/t/p/w600_and_h900_bestv2",
+    "backdrop_url": "https://image.tmdb.org/t/p/original"
   }
 }
