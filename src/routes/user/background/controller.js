@@ -22,7 +22,7 @@ exports.view = async (req, res) => {
   }
   const backgroundUri = userService.getBackground(background);
   res.status(200).send({ uri: backgroundUri });
-};
+}
 
 exports.upload = (req, res) => {
   backgroundUpload(req, res, async (err) => {

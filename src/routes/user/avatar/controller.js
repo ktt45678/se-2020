@@ -22,7 +22,7 @@ exports.view = async (req, res) => {
   }
   const avatarUri = userService.getAvatar(avatar);
   res.status(200).send({ uri: avatarUri });
-};
+}
 
 exports.upload = (req, res) => {
   avatarUpload(req, res, async (err) => {

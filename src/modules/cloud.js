@@ -28,7 +28,7 @@ exports.upload = async (data, container, nanoId, fileName, size, mimeType) => {
     await containerClient.create();
   }
   const blockBlobClient = containerClient.getBlockBlobClient(fullName);
-  const options = { blobHTTPHeaders: { blobContentType: mimeType } };
+  const options = { blobHTTPHeaders: { blobContentType: mimeType } }
   await blockBlobClient.uploadStream(stream, size, 5, options);
   const upload = {
     container: container,
@@ -36,7 +36,7 @@ exports.upload = async (data, container, nanoId, fileName, size, mimeType) => {
     blobName: fileName,
     blobSize: size,
     mimeType: mimeType
-  };
+  }
   return upload;
 }
 

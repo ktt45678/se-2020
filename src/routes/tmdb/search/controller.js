@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 
 exports.index = (req, res) => {
   res.status(200).send({ message: 'Search' });
-};
+}
 
 exports.search = async (req, res) => {
   const errors = validationResult(req);
@@ -20,4 +20,4 @@ exports.search = async (req, res) => {
     console.error(err);
     res.status(500).send({ error: 'Internal server error' });
   }
-};
+}

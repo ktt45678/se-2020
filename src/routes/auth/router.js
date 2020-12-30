@@ -13,5 +13,6 @@ router.post('/confirmemail', controller.confirmEmail);
 router.post('/passwordrecovery', controller.passwordRecovery);
 router.post('/resetpassword', validator.resetPasswordRules(), controller.resetPassword);
 router.post('/refreshtoken', authRefresh, controller.refreshToken);
+router.post('/revoketoken', authRefresh, controller.revokeToken);
 
 module.exports = router;

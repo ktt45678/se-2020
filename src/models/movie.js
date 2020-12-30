@@ -86,18 +86,15 @@ const movieSchema = new Schema({
   },
   productionCompanies: {
     type: Array,
-    required: true,
-    default: []
+    required: true
   },
   genres: {
     type: Array,
-    required: true,
-    default: []
+    required: true
   },
   popularity: {
     type: Number,
-    required: true,
-    default: 0
+    required: true
   },
   adult: {
     type: Boolean,

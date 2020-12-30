@@ -1,6 +1,7 @@
 const authService = require('../../services/auth');
 const emailService = require('../../services/email');
 const userService = require('../../services/user');
+const redisService = require('../../services/redis');
 const { validationResult } = require('express-validator');
 
 exports.index = (req, res) => {
@@ -14,13 +15,20 @@ exports.login = async (req, res) => {
   }
   const { username, password } = req.body;
   try {
-    const user = await authService.authenticate(username, password);
-    const accessToken = authService.signAccessToken(user);
-    const refreshToken = authService.signRefreshToken(user);
-    res.status(200).send({ accessToken, refreshToken });
+    var user = await authService.authenticate(username, password);
   } catch (e) {
+    console.error(e);
     res.status(400).send({ error: e });
   }
+  const accessToken = authService.signAccessToken(user);
+  const refreshToken = authService.signRefreshToken(user);
+  try {
+    await redisService.setRefreshToken(refreshToken, user);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
+  res.status(200).send({ accessToken, refreshToken });
 }
 
 exports.register = async (req, res) => {
@@ -151,9 +159,34 @@ exports.resetPassword = async (req, res) => {
 }
 
 exports.refreshToken = async (req, res) => {
-  // This user object contains only _id
   const user = req.currentUser;
+  try {
+    const check = await redisService.get(req.refreshToken);
+    var data = check ? JSON.parse(check) : check;
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
+  if (!data) {
+    return res.status(401).send({ error: 'Account credentials were lost' });
+  }
+  if (data.username !== user.username || data.password !== user.password) {
+    return res.status(401).send({ error: 'Account credentials were changed' });
+  }
   const accessToken = authService.signAccessToken(user);
   const refreshToken = authService.signRefreshToken(user);
   res.status(200).send({ accessToken, refreshToken });
+}
+
+exports.revokeToken = async (req, res) => {
+  try {
+    var check = await redisService.del(req.refreshToken);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
+  if (!check) {
+    return res.status(200).send({ message: 'Token is no longer valid' });
+  }
+  res.status(200).send({ message: 'Token has been revoked' });
 }

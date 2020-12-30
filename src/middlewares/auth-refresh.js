@@ -1,4 +1,5 @@
 const authService = require('../services/auth');
+const userService = require('../services/user');
 
 module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
@@ -11,9 +12,14 @@ module.exports = async (req, res, next) => {
   }
   try {
     const decoded = await authService.verifyRefreshToken(refreshToken);
-    req.currentUser = decoded;
+    const user = await userService.findUserById(decoded._id);
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+    req.currentUser = user;
+    req.refreshToken = refreshToken;
     next()
   } catch (e) {
     res.status(401).send({ error: 'Unauthorized access' });
   }
-};
+}

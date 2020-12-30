@@ -69,8 +69,7 @@ const tvShowSchema = new Schema({
   },
   popularity: {
     type: Number,
-    required: true,
-    default: 0
+    required: true
   },
   videos: [tvShowVideoSchema],
   images: [tvShowImageSchema],

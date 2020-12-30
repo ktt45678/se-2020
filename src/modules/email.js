@@ -12,7 +12,7 @@ exports.sendEmail = (email, subject, template, options) => {
     template: template,
     'v:recipient_name': options.recipient_name,
     'v:button_url': options.button_url
-  };
+  }
   mg.messages().send(data, function (error) {
     if (error) {
       console.log(error);

@@ -22,7 +22,7 @@ exports.view = async (req, res) => {
   }
   const musicUri = userService.getMusic(music);
   res.status(200).send({ uri: musicUri });
-};
+}
 
 exports.upload = (req, res) => {
   musicUpload(req, res, async (err) => {

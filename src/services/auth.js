@@ -29,21 +29,17 @@ exports.hashPassword = (password) => {
 }
 
 exports.signAccessToken = (user) => {
+  const { _id } = user;
   const secret = process.env.ACCESS_TOKEN_SECRET || config.access_token_secret;
   const expiry = config.access_token_life;
-  const data = {
-    _id: user._id
-  }
-  return authModule.signToken(data, secret, expiry);
+  return authModule.signToken({ _id }, secret, expiry);
 }
 
 exports.signRefreshToken = (user) => {
+  const { _id } = user;
   const secret = process.env.REFRESH_TOKEN_SECRET || config.refresh_token_secret;
   const expiry = config.refresh_token_life;
-  const data = {
-    _id: user._id
-  }
-  return authModule.signToken(data, secret, expiry);
+  return authModule.signToken({ _id }, secret, expiry);
 }
 
 exports.verifyAccessToken = async (accessToken) => {

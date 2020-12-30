@@ -5,6 +5,7 @@ const routes = require('./routes');
 const cors = require('./src/middlewares/cors');
 const config = require('./config.json').server;
 const db = require('./src/services/db');
+const redis = require('./src/services/redis');
 
 const app = express();
 const port = process.env.PORT || config.port;

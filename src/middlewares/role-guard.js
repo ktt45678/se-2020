@@ -8,7 +8,7 @@ exports.regular = (req, res, next) => {
     return res.status(403).send({ error: 'Forbidden' });
   }
   next();
-};
+}
 
 exports.admin = (req, res, next) => {
   if (!req.currentUser) {
@@ -18,4 +18,4 @@ exports.admin = (req, res, next) => {
     return res.status(403).send({ error: 'Forbidden' });
   }
   next();
-};
+}

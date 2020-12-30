@@ -16,3 +16,4 @@ npm start
 3. [Mailgun](https://www.mailgun.com/email-api)
 4. [Azure Blob](https://azure.microsoft.com/en-us/services/storage/blobs)
 5. [TMDb API](https://developers.themoviedb.org/3/getting-started/introduction)
+6. [Redis](https://redis.io)

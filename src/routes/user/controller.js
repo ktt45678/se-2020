@@ -1,31 +1,22 @@
 const authService = require('../../services/auth');
 const emailService = require('../../services/email');
 const userService = require('../../services/user');
+const redisService = require('../../services/redis');
 const { validationResult } = require('express-validator');
 
 exports.view = async (req, res) => {
   const user = req.currentUser;
   const { id } = req.params;
   if (!id || Number(id) === user._id) {
-    return res.status(200).send({
-      username: user.username,
-      displayName: user.displayName,
-      email: user.email,
-      dateOfBirth: user.dateOfBirth,
-      role: user.role,
-      dateAdded: user.dateAdded
-    });
+    const { username, displayName, email, dateOfBirth, role, dateAdded } = user;
+    return res.status(200).send({ username, displayName, email, dateOfBirth, role, dateAdded });
   }
   const search = await userService.findUserById(id);
   if (!search) {
     return res.status(404).send({ error: 'User not found' });
   }
-  res.status(200).send({
-    username: search.username,
-    displayName: search.displayName,
-    role: search.role,
-    dateAdded: search.dateAdded
-  });
+  const { username, displayName, role, dateAdded } = search;
+  res.status(200).send({ username, displayName, role, dateAdded });
 }
 
 exports.update = async (req, res) => {
@@ -64,5 +55,11 @@ exports.update = async (req, res) => {
   }
   const accessToken = authService.signAccessToken(user);
   const refreshToken = authService.signRefreshToken(user);
+  try {
+    await redisService.setRefreshToken(refreshToken, user);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
   res.status(200).send({ accessToken, refreshToken, message: 'Successfully updated' });
 }
