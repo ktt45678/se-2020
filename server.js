@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const helmet = require('helmet');
 const routes = require('./routes');
-const cors = require('./src/middlewares/cors');
+const cors = require('cors');
 const config = require('./config.json').server;
 const db = require('./src/services/db');
 const redis = require('./src/services/redis');
@@ -12,7 +12,7 @@ const port = process.env.PORT || config.port;
 
 // Set up middleware for enabling cors and helmet
 app.use(helmet());
-app.use(cors);
+app.use(cors());
 
 // Set up middleware for request parsing
 app.use(express.json());
