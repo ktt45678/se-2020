@@ -11,8 +11,8 @@ exports.details = async (req, res) => {
     const data = tmdbService.parseMovieData(response.data);
     res.status(200).send(data);
   } catch (err) {
-    if (err.response && err.response.status === 404) {
-      return res.status(404).send({ error: 'Movie not found' });
+    if (err.response?.status && err.response?.statusText) {
+      return res.status(err.response.status).send({ error: err.response.statusText });
     }
     console.error(err);
     res.status(500).send({ error: 'Internal server error' });

@@ -9,6 +9,9 @@ exports.index = (req, res) => {
 }
 
 exports.login = async (req, res) => {
+  if (req.headers.authorization) {
+    return res.status(403).send({ error: 'Remove your Authorization header before logging in' });
+  }
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
