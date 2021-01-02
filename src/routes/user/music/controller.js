@@ -35,11 +35,11 @@ exports.upload = (req, res) => {
     const user = req.currentUser;
     const music = userService.findMusic(user);
     if (music) {
-      user.storage.pull(music);
+      user.storages.pull(music);
       userService.deleteMusic(music);
     }
     const upload = await userService.uploadMusic(req.file);
-    user.storage.push(upload);
+    user.storages.push(upload);
     try {
       await user.save();
     } catch (e) {
@@ -56,7 +56,7 @@ exports.delete = async (req, res) => {
   if (!music) {
     return res.status(404).send({ error: 'Music not found' });
   }
-  user.storage.pull(music);
+  user.storages.pull(music);
   const deleteResult = await userService.deleteMusic(music);
   try {
     await user.save();

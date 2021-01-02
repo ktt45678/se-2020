@@ -4,7 +4,7 @@ exports.regular = (req, res, next) => {
     return res.status(401).send({ error: 'Unauthorized user' });
   }
   // New users can not access
-  if (req.currentUser.role.startsWith('new')) {
+  if (req.currentUser.new) {
     return res.status(403).send({ error: 'Forbidden' });
   }
   next();

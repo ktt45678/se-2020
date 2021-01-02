@@ -3,21 +3,21 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
-const movieFavouriteSchema = new Schema({
+const userWatchlistSchema = new Schema({
   _id: Number,
   userId: {
     type: Number,
     ref: 'user',
     required: true
   },
-  movieId: {
+  mediaId: {
     type: Number,
-    ref: 'movie',
+    ref: 'media',
     required: true
   }
 }, { _id: false });
 
-movieFavouriteSchema.plugin(autoIncrement, { id: 'movie_favourite_id', inc_field: '_id' });
-const movieFavourite = mongoose.model('movie_favourite', movieFavouriteSchema);
+userWatchlistSchema.plugin(autoIncrement, { id: 'user_watchlist_id', inc_field: '_id' });
+const userWatchlist = mongoose.model('user_watchlist', userWatchlistSchema);
 
-module.exports = movieFavourite;
+module.exports = userWatchlist;

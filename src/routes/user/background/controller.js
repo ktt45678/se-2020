@@ -35,11 +35,11 @@ exports.upload = (req, res) => {
     const user = req.currentUser;
     const background = userService.findBackground(user);
     if (background) {
-      user.storage.pull(background);
+      user.storages.pull(background);
       userService.deleteBackground(background);
     }
     const upload = await userService.uploadBackground(req.file);
-    user.storage.push(upload);
+    user.storages.push(upload);
     try {
       await user.save();
     } catch (e) {
@@ -56,7 +56,7 @@ exports.delete = async (req, res) => {
   if (!background) {
     return res.status(404).send({ error: 'Background not found' });
   }
-  user.storage.pull(background);
+  user.storages.pull(background);
   const deleteResult = await userService.deleteBackground(background);
   try {
     await user.save();

@@ -36,11 +36,11 @@ exports.upload = (req, res) => {
     const avatar = userService.findAvatar(user);
     // Remove previously uploaded avatar if it exists
     if (avatar) {
-      user.storage.pull(avatar);
+      user.storages.pull(avatar);
       userService.deleteAvatar(avatar);
     }
     const upload = await userService.uploadAvatar(req.file);
-    user.storage.push(upload);
+    user.storages.push(upload);
     try {
       await user.save();
     } catch (e) {
@@ -57,7 +57,7 @@ exports.delete = async (req, res) => {
   if (!avatar) {
     return res.status(404).send({ error: 'Avatar not found' });
   }
-  user.storage.pull(avatar);
+  user.storages.pull(avatar);
   const deleteResult = await userService.deleteAvatar(avatar);
   try {
     await user.save();

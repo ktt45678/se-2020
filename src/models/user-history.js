@@ -5,14 +5,32 @@ const Schema = mongoose.Schema;
 
 const episodeHistorySchema = new Schema({
   _id: Number,
+  episodeNumber: {
+    type: Number,
+    required: true
+  },
+  watchCount: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  lastWatchedDate: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
+}, { _id: false });
+
+const userHistorySchema = new Schema({
+  _id: Number,
   userId: {
     type: Number,
     ref: 'user',
     required: true
   },
-  episodeId: {
+  mediaId: {
     type: Number,
-    ref: 'tv_episode',
+    ref: 'media',
     required: true
   },
   watchCount: {
@@ -25,9 +43,11 @@ const episodeHistorySchema = new Schema({
     required: true,
     default: Date.now
   },
+  episodes: [episodeHistorySchema]
 }, { _id: false });
 
 episodeHistorySchema.plugin(autoIncrement, { id: 'episode_history_id', inc_field: '_id' });
-const episodeHistory = mongoose.model('episode_history', episodeHistorySchema);
+userHistorySchema.plugin(autoIncrement, { id: 'user_history_id', inc_field: '_id' });
+const userHistory = mongoose.model('user_history', userHistorySchema);
 
-module.exports = episodeHistory;
+module.exports = userHistory;

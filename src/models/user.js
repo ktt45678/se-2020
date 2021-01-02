@@ -53,13 +53,12 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    required: true,
-    default: 'new'
+    required: true
   },
-  locked: {
+  new: {
     type: Boolean,
     required: true,
-    default: false
+    default: true
   },
   activationCode: {
     type: String
@@ -72,7 +71,7 @@ const userSchema = new Schema({
     required: true,
     default: Date.now
   },
-  storage: [userStorageSchema]
+  storages: [userStorageSchema]
 }, { _id: false });
 
 userSchema.statics = {

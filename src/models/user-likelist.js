@@ -3,25 +3,25 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
-const tvRatingSchema = new Schema({
+const userLikelistSchema = new Schema({
   _id: Number,
   userId: {
     type: Number,
     ref: 'user',
     require: true
   },
-  tvId: {
+  mediaId: {
     type: Number,
-    ref: 'tv_show',
+    ref: 'media',
     require: true
   },
-  score: {
-    type: Number,
+  liked: {
+    type: Boolean,
     required: true
   },
 }, { _id: false });
 
-tvRatingSchema.plugin(autoIncrement, { id: 'tv_rating_id', inc_field: '_id' });
-const tvRating = mongoose.model('tv_rating', tvRatingSchema);
+userLikelistSchema.plugin(autoIncrement, { id: 'user_likelist_id', inc_field: '_id' });
+const userLikelist = mongoose.model('user_likelist_rating', userLikelistSchema);
 
-module.exports = tvRating;
+module.exports = userLikelist;

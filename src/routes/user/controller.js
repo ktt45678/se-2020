@@ -41,7 +41,7 @@ exports.update = async (req, res) => {
   // Users will have to confirm their new email
   if (user.email !== email) {
     user.email = email;
-    user.role = 'new ' + user.role;
+    user.new = true;
     user.activationCode = emailService.sendUpdateEmail(user);
   }
   if (newPassword) {

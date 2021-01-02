@@ -11,7 +11,7 @@ exports.authenticate = async (username, password) => {
 }
 
 exports.createUser = (username, displayName, dateOfBirth, email, password) => {
-  const role = email === process.env.OWNER_EMAIL ? 'new admin' : 'new member';
+  const role = email === process.env.OWNER_EMAIL ? 'admin' : 'member';
   const hashedPassword = userModel.hashPassword(password);
   const user = new userModel({
     username,

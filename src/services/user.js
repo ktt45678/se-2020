@@ -36,7 +36,7 @@ exports.uploadAvatar = async (file) => {
 }
 
 exports.findAvatar = (user) => {
-  const avatar = user.storage.find(s => s.container === config.avatar_container);
+  const avatar = user.storages.find(s => s.container === config.avatar_container);
   return avatar;
 }
 
@@ -57,7 +57,7 @@ exports.uploadMusic = async (file) => {
 }
 
 exports.findMusic = (user) => {
-  const music = user.storage.find(s => s.container === config.music_container);
+  const music = user.storages.find(s => s.container === config.music_container);
   return music;
 }
 
@@ -78,7 +78,7 @@ exports.uploadBackground = async (file) => {
 }
 
 exports.findBackground = (user) => {
-  const background = user.storage.find(s => s.container === config.background_container);
+  const background = user.storages.find(s => s.container === config.background_container);
   return background;
 }
 

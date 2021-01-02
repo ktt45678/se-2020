@@ -3,21 +3,21 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
-const tvCreditSchema = new Schema({
+const mediaCreditSchema = new Schema({
   _id: Number,
   creditId: {
     type: Number,
     ref: 'credit',
     required: true
   },
-  tvId: {
+  mediaId: {
     type: Number,
-    ref: 'tv_show',
+    ref: 'media',
     required: true
   }
 }, { _id: false });
 
-tvCreditSchema.plugin(autoIncrement, { id: 'tv_credit_id', inc_field: '_id' });
-const tvCredit = mongoose.model('tv_credit', tvCreditSchema);
+mediaCreditSchema.plugin(autoIncrement, { id: 'media_credit_id', inc_field: '_id' });
+const mediaCredit = mongoose.model('media_credit', mediaCreditSchema);
 
-module.exports = tvCredit;
+module.exports = mediaCredit;

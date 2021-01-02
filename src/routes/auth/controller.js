@@ -66,7 +66,7 @@ exports.register = async (req, res) => {
 
 exports.sendConfirmEmail = async (req, res) => {
   const user = req.currentUser;
-  if (!user.role.startsWith('new')) {
+  if (!user.new) {
     return res.status(400).send({ error: 'User already activated' });
   }
   const { type } = req.body;
@@ -125,7 +125,7 @@ exports.confirmEmail = async (req, res) => {
   if (!user) {
     return res.status(404).send({ error: 'Invalid or expired link' });
   }
-  user.role = user.role.split(' ')[1];
+  user.new = false;
   user.activationCode = null;
   try {
     await user.save();
