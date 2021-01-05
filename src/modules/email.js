@@ -15,7 +15,7 @@ exports.sendEmail = (email, subject, template, options) => {
   }
   mg.messages().send(data, function (error) {
     if (error) {
-      console.log(error);
+      console.error(error);
     }
   });
 }

@@ -40,7 +40,7 @@ const mediaStorageSchema = new Schema({
 
 const tvEpisodeSchema = new Schema({
   _id: Number,
-  season: Number,
+  seasonNumber: Number,
   episodeNumber: Number,
   runtime: Number,
   name: String,
@@ -49,19 +49,32 @@ const tvEpisodeSchema = new Schema({
   stillPath: String
 }, { _id: false });
 
+const tvSeasonSchema = new Schema({
+  _id: Number,
+  airDate: String,
+  seasonNumber: Number,
+  episodeCount: Number,
+  name: String,
+  overview: String,
+  psoterPath: String,
+  episodes: [tvEpisodeSchema]
+}, { _id: false });
+
 const tvShowSchema = new Schema({
   _id: Number,
   episodeRuntime: Number,
   firstAirDate: String,
   lastAirDate: String,
   status: String,
-  episodes: tvEpisodeSchema
+  seasonCount: Number,
+  seasons: [tvSeasonSchema]
 }, { _id: false });
 
 const movieSchema = new Schema({
   _id: Number,
   runtime: Number,
   releaseDate: String,
+  status: String,
   adult: Boolean
 }, { _id: false });
 
@@ -91,6 +104,7 @@ const mediaSchema = new Schema({
 mediaVideoSchema.plugin(autoIncrement, { id: 'media_video_id', inc_field: '_id' });
 mediaStorageSchema.plugin(autoIncrement, { id: 'media_storage_id', inc_field: '_id' });
 tvEpisodeSchema.plugin(autoIncrement, { id: 'tv_episode_id', inc_field: '_id' });
+tvSeasonSchema.plugin(autoIncrement, { id: 'tv_season_id', inc_field: '_id' });
 tvShowSchema.plugin(autoIncrement, { id: 'tv_id', inc_field: '_id' });
 movieSchema.plugin(autoIncrement, { id: 'movie_id', inc_field: '_id' });
 mediaSchema.plugin(autoIncrement, { id: 'media_id', inc_field: '_id' });
