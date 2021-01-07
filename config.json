@@ -13,11 +13,11 @@
   },
   "user": {
     "avatar_container": "avatar",
-    "avatar_expiry": 3600,
+    "avatar_expiry": 21600,
     "music_container": "music",
-    "music_expiry": 3600,
+    "music_expiry": 21600,
     "background_container": "background",
-    "background_expiry": 3600,
+    "background_expiry": 21600,
     "avatar_sizes": [480, 256, 128],
     "background_sizes": [1920, 1280]
   },
@@ -25,6 +25,6 @@
     "poster_url": "https://image.tmdb.org/t/p/w342",
     "backdrop_url": "https://image.tmdb.org/t/p/original",
     "still_url": "https://image.tmdb.org/t/p/w300",
-    "avatar_url": "https://image.tmdb.org/t/p/w185"
+    "profile_url": "https://image.tmdb.org/t/p/w185"
   }
 }

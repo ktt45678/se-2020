@@ -17,7 +17,7 @@ const creditSchema = new Schema({
   _id: Number,
   name: String,
   originalName: String,
-  avatar: String,
+  profilePath: String,
   department: String,
   crew: creditCrewSchema,
   cast: creditCastSchema

@@ -92,5 +92,6 @@ exports.parseVideoData = (data) => {
 }
 
 exports.parseCreditData = (data) => {
-  return tmdbModule.parseCreditData(data);
+  const { profile_url } = config;
+  return tmdbModule.parseCreditData(data, profile_url);
 }

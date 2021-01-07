@@ -10,7 +10,7 @@ exports.view = async (req, res) => {
   } else if (search) {
     const searchMusic = userService.findMusic(search);
     if (!searchMusic) {
-      return res.status(404).send({ error: 'This user does not like music I guess' });
+      return res.status(404).send({ error: 'This user does not want music' });
     }
     const musicUri = userService.getMusic(searchMusic);
     return res.status(200).send({ uri: musicUri });

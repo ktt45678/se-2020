@@ -14,7 +14,10 @@ exports.parseMovieSearch = (data, poster_url = '') => {
       originalTitle: original_title,
       overview: overview,
       popularity: popularity,
-      posterPath: `${poster_url}${poster_path}`,
+      poster: {
+        path: poster_path,
+        url: poster_path ? poster_url + poster_path : poster_path
+      },
       releaseDate: release_date,
       title: title
     });
@@ -37,7 +40,10 @@ exports.parseTvSearch = (data, poster_url = '') => {
       originalTitle: original_name,
       overview: overview,
       popularity: popularity,
-      posterPath: `${poster_url}${poster_path}`,
+      poster: {
+        path: poster_path,
+        url: poster_path ? poster_url + poster_path : poster_path
+      },
       firstAirDate: first_air_date,
       title: name
     });
@@ -49,14 +55,20 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
   const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, production_companies, release_date, runtime, tagline, title, status } = data;
   const miniData = {
     adult: adult,
-    backdropPath: `${backdrop_url}${backdrop_path}`,
+    backdrop: {
+      path: backdrop_path,
+      url: backdrop_url + backdrop_path
+    },
     genres: [],
     id: id,
     imdbId: imdb_id,
     originalTitle: original_title,
     overview: overview,
     popularity: popularity,
-    posterPath: `${poster_url}${poster_path}`,
+    poster: {
+      path: poster_path,
+      url: poster_path ? poster_url + poster_path : poster_path
+    },
     productionCompanies: [],
     releaseDate: release_date,
     runtime: runtime,
@@ -77,13 +89,19 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
 exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
   const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, production_companies, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name } = data;
   const miniData = {
-    backdropPath: `${backdrop_url}${backdrop_path}`,
+    backdrop: {
+      path: backdrop_path,
+      url: backdrop_path ? backdrop_url + backdrop_path : backdrop_path
+    },
     genres: [],
     id: id,
     originalTitle: original_name,
     overview: overview,
     popularity: popularity,
-    posterPath: `${poster_url}${poster_path}`,
+    poster: {
+      path: poster_path,
+      url: poster_path ? poster_url + poster_path : poster_path
+    },
     productionCompanies: [],
     firstAirDate: first_air_date,
     lastAirDate: last_air_date,
@@ -109,7 +127,10 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
       episodeCount: episode_count,
       name: name,
       overview: overview,
-      posterPath: `${poster_url}${poster_path}`
+      poster: {
+        path: poster_path,
+        url: poster_path ? poster_url + poster_path : poster_path
+      }
     });
   }
   return miniData;
@@ -124,7 +145,10 @@ exports.parseSeasonData = (data, poster_url = '') => {
     episodes: [],
     name: name,
     overview: overview,
-    posterPath: `${poster_url}${poster_path}`
+    poster: {
+      path: poster_path,
+      url: poster_path ? poster_url + poster_path : poster_path
+    }
   }
   for (let i = 0; i < episodes.length; i++) {
     const { air_date, episode_number } = episodes[i];
@@ -142,7 +166,10 @@ exports.parseEpisodeData = (data, still_url = '') => {
     name: name,
     overview: overview,
     airDate: air_date,
-    stillPath: `${still_url}${still_path}`
+    still: {
+      path: still_path,
+      url: still_path ? still_url + still_path : still_path
+    }
   }
   return miniData;
 }
@@ -155,10 +182,18 @@ exports.parseImageData = (data, backdrop_url = '', poster_url = '') => {
     backdrops: []
   }
   for (let i = 0; i < backdrops.length; i++) {
-    miniData.backdrops.push(`${backdrop_url}${backdrops[i].file_path}`);
+    const backdrop_path = backdrops[i].file_path;
+    miniData.backdrops.push({
+      path: backdrop_path,
+      url: backdrop_url + backdrop_path
+    });
   }
   for (let i = 0; i < posters.length; i++) {
-    miniData.posters.push(`${poster_url}${posters[i].file_path}`);
+    const poster_path = posters[i].file_path;
+    miniData.posters.push({
+      path: poster_path,
+      url: poster_url + poster_path
+    });
   }
   return miniData;
 }
@@ -175,28 +210,34 @@ exports.parseVideoData = (data) => {
   return miniData;
 }
 
-exports.parseCreditData = (data) => {
+exports.parseCreditData = (data, profile_url = '') => {
   const miniData = {
     id: data.id,
     cast: [],
     crew: []
   }
   for (let i = 0; i < data.cast.length; i++) {
-    const { name, original_name, avatar, known_for_department, character } = data.cast[i];
+    const { name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.cast.push({
       name: name,
       originalName: original_name,
-      avatar: avatar,
+      profile: {
+        path: profile_path,
+        url: profile_path ? profile_url + profile_path : profile_path
+      },
       department: known_for_department,
       character: character
     });
   }
   for (let i = 0; i < data.crew.length; i++) {
-    const { name, original_name, avatar, department, job } = data.crew[i];
+    const { name, original_name, profile_path, department, job } = data.crew[i];
     miniData.crew.push({
       name: name,
       originalName: original_name,
-      avatar: avatar,
+      profile: {
+        path: profile_path,
+        url: profile_path ? profile_url + profile_path : profile_path
+      },
       department: department,
       job: job
     });
