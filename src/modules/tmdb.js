@@ -46,7 +46,7 @@ exports.parseTvSearch = (data, poster_url = '') => {
 }
 
 exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
-  const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, production_companies, release_date, runtime, tagline, title } = data;
+  const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, production_companies, release_date, runtime, tagline, title, status } = data;
   const miniData = {
     adult: adult,
     backdropPath: `${backdrop_url}${backdrop_path}`,
@@ -61,7 +61,8 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
     releaseDate: release_date,
     runtime: runtime,
     tagline: tagline,
-    title: title
+    title: title,
+    status: status
   }
   for (let i = 0; i < genres.length; i++) {
     miniData.genres.push(genres[i].name);
@@ -115,27 +116,19 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
 }
 
 exports.parseSeasonData = (data, poster_url = '') => {
-  const { air_date, season_number, episode_count, name, overview, poster_path } = data;
+  const { air_date, season_number, episode_count, episodes, name, overview, poster_path } = data;
   const miniData = {
     airDate: air_date,
     seasonNumber: season_number,
     episodeCount: episode_count,
+    episodes: [],
     name: name,
     overview: overview,
     posterPath: `${poster_url}${poster_path}`
   }
-  return miniData;
-}
-
-exports.parseSeasonData = (data, poster_url = '') => {
-  const { air_date, season_number, episode_count, name, overview, poster_path } = data;
-  const miniData = {
-    airDate: air_date,
-    seasonNumber: season_number,
-    episodeCount: episode_count,
-    name: name,
-    overview: overview,
-    posterPath: `${poster_url}${poster_path}`
+  for (let i = 0; i < episodes.length; i++) {
+    const { air_date, episode_number } = episodes[i];
+    miniData.episodes.push({ airDate: air_date, episodeNumber: episode_number });
   }
   return miniData;
 }

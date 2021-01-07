@@ -20,6 +20,7 @@
     "@azure/storage-blob": "^12.3.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
+    "cloudinary": "^1.23.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -33,6 +34,7 @@
     "mongoose-sequence": "^5.3.0",
     "multer": "^1.4.2",
     "nanoid": "^3.1.20",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "sharp": "^0.27.0"
   }
 }

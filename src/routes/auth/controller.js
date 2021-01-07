@@ -20,8 +20,7 @@ exports.login = async (req, res) => {
   try {
     var user = await authService.authenticate(username, password);
   } catch (e) {
-    console.error(e);
-    res.status(400).send({ error: e });
+    return res.status(400).send({ error: e });
   }
   const accessToken = authService.signAccessToken(user);
   const refreshToken = authService.signRefreshToken(user);

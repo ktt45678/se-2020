@@ -5,8 +5,10 @@ const tmdbModule = require('../modules/tmdb');
 const headers = { Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}` }
 const url = process.env.TMDB_API_URL;
 
-exports.search = async (type, query, page, include_adult) => {
+exports.search = async (type, query, page, include_adult, primary_release_year, first_air_date_year) => {
   const params = { query, page, include_adult }
+  if (type == 'movie' && primary_release_year) { params.primary_release_year = primary_release_year; }
+  if (type == 'tv' && first_air_date_year) { params.first_air_date_year = first_air_date_year; }
   return await request.get(`${url}/search/${type}`, { headers, params });
 }
 

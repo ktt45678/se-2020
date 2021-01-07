@@ -4,6 +4,7 @@ const avatarUpload = multer.image.single('image');
 
 exports.view = async (req, res) => {
   const { id } = req.params;
+  const { size } = req.query;
   const search = id ? await userService.findUserById(id) : id;
   if (!search && id) {
     return res.status(404).send({ error: 'User not found' });
@@ -12,7 +13,7 @@ exports.view = async (req, res) => {
     if (!searchAvatar) {
       return res.status(404).send({ error: 'This user does not have an avatar' });
     }
-    const avatarUri = userService.getAvatar(searchAvatar);
+    const avatarUri = userService.getAvatar(searchAvatar, size);
     return res.status(200).send({ uri: avatarUri });
   }
   const user = req.currentUser;
@@ -20,7 +21,7 @@ exports.view = async (req, res) => {
   if (!avatar) {
     return res.status(404).send({ error: 'Avatar not found' });
   }
-  const avatarUri = userService.getAvatar(avatar);
+  const avatarUri = userService.getAvatar(avatar, size);
   res.status(200).send({ uri: avatarUri });
 }
 
@@ -37,11 +38,11 @@ exports.upload = (req, res) => {
     // Remove previously uploaded avatar if it exists
     if (avatar) {
       user.storages.pull(avatar);
-      userService.deleteAvatar(avatar);
+      await userService.deleteAvatar(avatar);
     }
-    const upload = await userService.uploadAvatar(req.file);
-    user.storages.push(upload);
     try {
+      const upload = await userService.uploadAvatar(req.file);
+      user.storages.push(upload);
       await user.save();
     } catch (e) {
       console.error(e);

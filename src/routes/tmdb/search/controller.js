@@ -10,10 +10,10 @@ exports.search = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
-  const { query, page, include_adult } = req.query;
+  const { query, page, include_adult, primary_release_year, first_air_date_year } = req.query;
   const { type } = req.params;
   try {
-    const response = await tmdbService.search(type, query, page, include_adult);
+    const response = await tmdbService.search(type, query, page, include_adult, primary_release_year, first_air_date_year);
     const data = type === 'movie' ? tmdbService.parseMovieSearch(response.data) : tmdbService.parseTvSearch(response.data);
     res.status(200).send(data);
   } catch (err) {

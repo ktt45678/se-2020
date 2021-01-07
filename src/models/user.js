@@ -22,6 +22,10 @@ const userStorageSchema = new Schema({
     type: Number,
     required: true
   },
+  quality: {
+    type: Array,
+    required: true
+  },
   mimeType: {
     type: String,
     required: true

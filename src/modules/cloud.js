@@ -1,4 +1,4 @@
-const { BlobServiceClient, ContainerSASPermissions, generateBlobSASQueryParameters, StorageSharedKeyCredential } = require('@azure/storage-blob');
+const { BlobServiceClient, ContainerSASPermissions, generateBlobSASQueryParameters } = require('@azure/storage-blob');
 const intoStream = require('into-stream');
 
 exports.token = (container, nanoId, fileName, expiry) => {
@@ -35,6 +35,7 @@ exports.upload = async (data, container, nanoId, fileName, size, mimeType) => {
     nanoId: nanoId,
     blobName: fileName,
     blobSize: size,
+    quality: [],
     mimeType: mimeType
   }
   return upload;
@@ -47,7 +48,7 @@ exports.delete = async (container, nanoId, fileName) => {
   if (containerClient.exists()) {
     const blockBlobClient = containerClient.getBlockBlobClient(fullName);
     if (blockBlobClient.exists()) {
-      await blockBlobClient.delete();
+      await blockBlobClient.deleteIfExists();
       return true;
     }
   }

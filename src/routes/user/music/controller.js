@@ -36,11 +36,11 @@ exports.upload = (req, res) => {
     const music = userService.findMusic(user);
     if (music) {
       user.storages.pull(music);
-      userService.deleteMusic(music);
+      await userService.deleteMusic(music);
     }
-    const upload = await userService.uploadMusic(req.file);
-    user.storages.push(upload);
     try {
+      const upload = await userService.uploadMusic(req.file);
+      user.storages.push(upload);
       await user.save();
     } catch (e) {
       console.error(e);

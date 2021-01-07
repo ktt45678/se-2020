@@ -1,5 +1,6 @@
 const userModel = require('../models/user');
 const cloudModule = require('../modules/cloud');
+const imageModule = require('../modules/image');
 const config = require('../../config.json').user;
 const { nanoid } = require('nanoid');
 
@@ -32,6 +33,16 @@ exports.uploadAvatar = async (file) => {
   const container = config.avatar_container;
   const nanoId = nanoid();
   const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
+  if (file.mimetype !== 'image/gif') {
+    const sizes = config.avatar_sizes;
+    for (let i = 0; i < sizes.length; i++) {
+      const size = sizes[i];
+      const buffer = await imageModule.resize(file.buffer, size, size);
+      const filename = `${size}/${file.originalname}`;
+      await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
+      upload.quality.push(size);
+    }
+  }
   return upload;
 }
 
@@ -40,13 +51,21 @@ exports.findAvatar = (user) => {
   return avatar;
 }
 
-exports.getAvatar = (avatar) => {
-  const token = cloudModule.token(avatar.container, avatar.nanoId, avatar.blobName, config.avatar_expiry);
-  return `${process.env.AZURE_STORAGE_URL}/${avatar.container}/${avatar.nanoId}/${avatar.blobName}?${token}`;
+exports.getAvatar = (avatar, size) => {
+  const imageSize = size ? avatar.mimeType === 'image/gif' ? 0 : imageModule.findClosestImageSize(size, config.avatar_sizes) : 0;
+  const avatarName = imageSize ? `${imageSize}/${avatar.blobName}` : avatar.blobName;
+  const token = cloudModule.token(avatar.container, avatar.nanoId, avatarName, config.avatar_expiry);
+  return `${process.env.AZURE_STORAGE_URL}/${avatar.container}/${avatar.nanoId}/${avatarName}?${token}`;
 }
 
 exports.deleteAvatar = async (avatar) => {
-  return await cloudModule.delete(config.avatar_container, avatar.nanoId, avatar.blobName);
+  const result = await cloudModule.delete(config.avatar_container, avatar.nanoId, avatar.blobName);
+  for (let i = 0; i < avatar.quality.length; i++) {
+    const size = avatar.quality[i];
+    const filename = `${size}/${avatar.blobName}`;
+    await cloudModule.delete(config.avatar_container, avatar.nanoId, filename);
+  }
+  return result;
 }
 
 exports.uploadMusic = async (file) => {
@@ -74,6 +93,16 @@ exports.uploadBackground = async (file) => {
   const container = config.background_container;
   const nanoId = nanoid();
   const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
+  if (file.mimetype !== 'image/gif') {
+    const sizes = config.background_sizes;
+    for (let i = 0; i < sizes.length; i++) {
+      const size = sizes[i];
+      const buffer = await imageModule.resize(file.buffer, size, size);
+      const filename = `${size}/${file.originalname}`;
+      await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
+      upload.quality.push(size);
+    }
+  }
   return upload;
 }
 
@@ -82,11 +111,19 @@ exports.findBackground = (user) => {
   return background;
 }
 
-exports.getBackground = (background) => {
-  const token = cloudModule.token(background.container, background.nanoId, background.blobName, config.background_expiry);
-  return `${process.env.AZURE_STORAGE_URL}/${background.container}/${background.nanoId}/${background.blobName}?${token}`;
+exports.getBackground = (background, size) => {
+  const imageSize = size ? background.mimeType === 'image/gif' ? 0 : imageModule.findClosestImageSize(size, config.background_sizes) : 0;
+  const backgroundName = imageSize ? `${imageSize}/${background.blobName}` : background.blobName;
+  const token = cloudModule.token(background.container, background.nanoId, backgroundName, config.background_expiry);
+  return `${process.env.AZURE_STORAGE_URL}/${background.container}/${background.nanoId}/${backgroundName}?${token}`;
 }
 
 exports.deleteBackground = async (background) => {
-  return await cloudModule.delete(config.background_container, background.nanoId, background.blobName);
+  const result = await cloudModule.delete(config.background_container, background.nanoId, background.blobName);
+  for (let i = 0; i < background.quality.length; i++) {
+    const size = background.quality[i];
+    const filename = `${size}/${background.blobName}`;
+    await cloudModule.delete(config.avatar_container, background.nanoId, filename);
+  }
+  return result;
 }

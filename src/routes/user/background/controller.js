@@ -4,6 +4,7 @@ const backgroundUpload = multer.image.single('image');
 
 exports.view = async (req, res) => {
   const { id } = req.params;
+  const { size } = req.query;
   const search = id ? await userService.findUserById(id) : id;
   if (!search && id) {
     return res.status(404).send({ error: 'User not found' });
@@ -12,7 +13,7 @@ exports.view = async (req, res) => {
     if (!searchBackground) {
       return res.status(404).send({ error: 'This user does not have a background' });
     }
-    const backgroundUri = userService.getBackground(searchBackground);
+    const backgroundUri = userService.getBackground(searchBackground, size);
     return res.status(200).send({ uri: backgroundUri });
   }
   const user = req.currentUser;
@@ -20,7 +21,7 @@ exports.view = async (req, res) => {
   if (!background) {
     return res.status(404).send({ error: 'Background not found' });
   }
-  const backgroundUri = userService.getBackground(background);
+  const backgroundUri = userService.getBackground(background, size);
   res.status(200).send({ uri: backgroundUri });
 }
 
@@ -36,11 +37,11 @@ exports.upload = (req, res) => {
     const background = userService.findBackground(user);
     if (background) {
       user.storages.pull(background);
-      userService.deleteBackground(background);
+      await userService.deleteBackground(background);
     }
-    const upload = await userService.uploadBackground(req.file);
-    user.storages.push(upload);
     try {
+      const upload = await userService.uploadBackground(req.file);
+      user.storages.push(upload);
       await user.save();
     } catch (e) {
       console.error(e);
