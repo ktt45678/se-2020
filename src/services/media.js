@@ -1,0 +1,1 @@
+const mediaModule = require('../modules/media');

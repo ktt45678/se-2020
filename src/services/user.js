@@ -33,15 +33,18 @@ exports.uploadAvatar = async (file) => {
   const container = config.avatar_container;
   const nanoId = nanoid();
   const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
-  if (file.mimetype !== 'image/gif') {
-    const sizes = config.avatar_sizes;
-    for (let i = 0; i < sizes.length; i++) {
-      const size = sizes[i];
-      const buffer = await imageModule.resize(file.buffer, size, size);
-      const filename = `${size}/${file.originalname}`;
-      await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
-      upload.quality.push(size);
+  const sizes = config.avatar_sizes;
+  for (let i = 0; i < sizes.length; i++) {
+    const size = sizes[i];
+    let buffer
+    if (file.mimetype === 'image/gif') {
+      buffer = await imageModule.resizeGif(file.buffer, size, size);
+    } else {
+      buffer = await imageModule.resize(file.buffer, size, size);
     }
+    const filename = `${size}/${file.originalname}`;
+    await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
+    upload.quality.push(size);
   }
   return upload;
 }
@@ -52,7 +55,7 @@ exports.findAvatar = (user) => {
 }
 
 exports.getAvatar = (avatar, size) => {
-  const imageSize = size ? avatar.mimeType === 'image/gif' ? 0 : imageModule.findClosestImageSize(size, config.avatar_sizes) : 0;
+  const imageSize = size ? imageModule.findClosestImageSize(size, config.avatar_sizes) : 0;
   const avatarName = imageSize ? `${imageSize}/${avatar.blobName}` : avatar.blobName;
   const token = cloudModule.token(avatar.container, avatar.nanoId, avatarName, config.avatar_expiry);
   return `${process.env.AZURE_STORAGE_URL}/${avatar.container}/${avatar.nanoId}/${avatarName}?${token}`;
@@ -93,15 +96,13 @@ exports.uploadBackground = async (file) => {
   const container = config.background_container;
   const nanoId = nanoid();
   const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
-  if (file.mimetype !== 'image/gif') {
-    const sizes = config.background_sizes;
-    for (let i = 0; i < sizes.length; i++) {
-      const size = sizes[i];
-      const buffer = await imageModule.resize(file.buffer, size, size);
-      const filename = `${size}/${file.originalname}`;
-      await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
-      upload.quality.push(size);
-    }
+  const sizes = config.background_sizes;
+  for (let i = 0; i < sizes.length; i++) {
+    const size = sizes[i];
+    const buffer = await imageModule.resize(file.buffer, size, size);
+    const filename = `${size}/${file.originalname}`;
+    await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
+    upload.quality.push(size);
   }
   return upload;
 }
@@ -112,7 +113,7 @@ exports.findBackground = (user) => {
 }
 
 exports.getBackground = (background, size) => {
-  const imageSize = size ? background.mimeType === 'image/gif' ? 0 : imageModule.findClosestImageSize(size, config.background_sizes) : 0;
+  const imageSize = size ? imageModule.findClosestImageSize(size, config.background_sizes) : 0;
   const backgroundName = imageSize ? `${imageSize}/${background.blobName}` : background.blobName;
   const token = cloudModule.token(background.container, background.nanoId, backgroundName, config.background_expiry);
   return `${process.env.AZURE_STORAGE_URL}/${background.container}/${background.nanoId}/${backgroundName}?${token}`;

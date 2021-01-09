@@ -38,6 +38,7 @@ exports.update = async (req, res) => {
   user.username = username;
   user.displayName = displayName;
   user.dateOfBirth = dateOfBirth;
+  user.dateUpdated = Date.now;
   // Users will have to confirm their new email
   if (user.email !== email) {
     user.email = email;

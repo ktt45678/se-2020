@@ -94,7 +94,16 @@ const mediaSchema = new Schema({
   storage: [mediaStorageSchema],
   genres: Array,
   popularity: Number,
+  draft: {
+    type: Boolean,
+    required: true
+  },
   dateAdded: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  dateUpdated: {
     type: Date,
     required: true,
     default: Date.now

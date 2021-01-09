@@ -1,6 +1,6 @@
 const userService = require('../../../services/user');
 const multer = require('../../../middlewares/multer');
-const backgroundUpload = multer.image.single('image');
+const backgroundUpload = multer.background.single('image');
 
 exports.view = async (req, res) => {
   const { id } = req.params;

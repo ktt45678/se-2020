@@ -1,3 +1,4 @@
+const gifResize = require('@gumlet/gif-resize');
 const sharp = require('sharp');
 
 exports.findClosestImageSize = (size, sizes) => {
@@ -12,5 +13,10 @@ exports.resize = async (fileBuffer, width, height) => {
   const transformer = await sharp(fileBuffer)
     .resize(width, height, { fit: 'inside', withoutEnlargement: true })
     .toBuffer();
+  return transformer;
+}
+
+exports.resizeGif = async (fileBuffer, width, height) => {
+  const transformer = await gifResize({ width, height })(fileBuffer);
   return transformer;
 }

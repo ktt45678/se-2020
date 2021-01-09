@@ -1,6 +1,6 @@
 const userService = require('../../../services/user');
 const multer = require('../../../middlewares/multer');
-const avatarUpload = multer.image.single('image');
+const avatarUpload = multer.avatar.single('image');
 
 exports.view = async (req, res) => {
   const { id } = req.params;

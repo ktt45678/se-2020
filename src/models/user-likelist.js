@@ -19,6 +19,11 @@ const userLikelistSchema = new Schema({
     type: Boolean,
     required: true
   },
+  dateAdded: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
 }, { _id: false });
 
 userLikelistSchema.plugin(autoIncrement, { id: 'user_likelist_id', inc_field: '_id' });

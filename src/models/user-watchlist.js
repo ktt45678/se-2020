@@ -14,6 +14,11 @@ const userWatchlistSchema = new Schema({
     type: Number,
     ref: 'media',
     required: true
+  },
+  dateAdded: {
+    type: Date,
+    required: true,
+    default: Date.now
   }
 }, { _id: false });
 
