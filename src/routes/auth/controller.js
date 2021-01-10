@@ -177,6 +177,12 @@ exports.refreshToken = async (req, res) => {
   }
   const accessToken = authService.signAccessToken(user);
   const refreshToken = authService.signRefreshToken(user);
+  try {
+    await redisService.setRefreshToken(refreshToken, user);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ error: 'Internal server error' });
+  }
   res.status(200).send({ accessToken, refreshToken });
 }
 
