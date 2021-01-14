@@ -1,3 +1,5 @@
+const config = require('../../config.json').tmdb;
+
 exports.parseMovieSearch = (data, poster_url = '') => {
   const { page, total_pages, total_results, results } = data;
   const miniData = {
@@ -10,7 +12,7 @@ exports.parseMovieSearch = (data, poster_url = '') => {
     const { adult, id, original_title, overview, popularity, poster_path, release_date, title } = results[i];
     miniData.results.push({
       adult: adult,
-      id: id,
+      tmdbId: id,
       originalTitle: original_title,
       overview: overview,
       popularity: popularity,
@@ -36,7 +38,7 @@ exports.parseTvSearch = (data, poster_url = '') => {
   for (let i = 0; i < results.length; i++) {
     const { id, original_name, overview, popularity, poster_path, first_air_date, name } = results[i];
     miniData.results.push({
-      id: id,
+      tmdbId: id,
       originalTitle: original_name,
       overview: overview,
       popularity: popularity,
@@ -52,7 +54,7 @@ exports.parseTvSearch = (data, poster_url = '') => {
 }
 
 exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
-  const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, production_companies, release_date, runtime, tagline, title, status } = data;
+  const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, release_date, runtime, tagline, title, status } = data;
   const miniData = {
     adult: adult,
     backdrop: {
@@ -60,7 +62,7 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
       url: backdrop_url + backdrop_path
     },
     genres: [],
-    id: id,
+    tmdbId: id,
     imdbId: imdb_id,
     originalTitle: original_title,
     overview: overview,
@@ -69,7 +71,6 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
       path: poster_path,
       url: poster_path ? poster_url + poster_path : poster_path
     },
-    productionCompanies: [],
     releaseDate: release_date,
     runtime: runtime,
     tagline: tagline,
@@ -79,22 +80,18 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
   for (let i = 0; i < genres.length; i++) {
     miniData.genres.push(genres[i].name);
   }
-  for (let i = 0; i < production_companies.length; i++) {
-    const { name, origin_country } = production_companies[i];
-    miniData.productionCompanies.push({ name, country: origin_country });
-  }
   return miniData;
 }
 
 exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
-  const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, production_companies, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name } = data;
+  const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name } = data;
   const miniData = {
     backdrop: {
       path: backdrop_path,
       url: backdrop_path ? backdrop_url + backdrop_path : backdrop_path
     },
     genres: [],
-    id: id,
+    tmdbId: id,
     originalTitle: original_name,
     overview: overview,
     popularity: popularity,
@@ -102,7 +99,6 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
       path: poster_path,
       url: poster_path ? poster_url + poster_path : poster_path
     },
-    productionCompanies: [],
     firstAirDate: first_air_date,
     lastAirDate: last_air_date,
     episodeRunTime: episode_run_time,
@@ -114,10 +110,6 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
   }
   for (let i = 0; i < genres.length; i++) {
     miniData.genres.push(genres[i].name);
-  }
-  for (let i = 0; i < production_companies.length; i++) {
-    const { name, origin_country } = production_companies[i];
-    miniData.productionCompanies.push({ name, country: origin_country });
   }
   for (let i = 0; i < seasons.length; i++) {
     const { air_date, season_number, episode_count, name, overview, poster_path } = seasons[i];
@@ -200,7 +192,7 @@ exports.parseImageData = (data, backdrop_url = '', poster_url = '') => {
 
 exports.parseVideoData = (data) => {
   const miniData = {
-    id: data.id,
+    tmdbId: data.id,
     results: []
   }
   for (let i = 0; i < data.results.length; i++) {
@@ -211,12 +203,15 @@ exports.parseVideoData = (data) => {
 }
 
 exports.parseCreditData = (data, profile_url = '') => {
+  const { credit_limit } = config;
+  const castLimit = data.cast.length > credit_limit ? credit_limit : data.cast.length;
+  const crewLimit = data.crew.length > credit_limit ? credit_limit : data.crew.length;
   const miniData = {
-    id: data.id,
+    tmdbId: data.id,
     cast: [],
     crew: []
   }
-  for (let i = 0; i < data.cast.length; i++) {
+  for (let i = 0; i < castLimit; i++) {
     const { name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.cast.push({
       name: name,
@@ -229,7 +224,7 @@ exports.parseCreditData = (data, profile_url = '') => {
       character: character
     });
   }
-  for (let i = 0; i < data.crew.length; i++) {
+  for (let i = 0; i < crewLimit; i++) {
     const { name, original_name, profile_path, department, job } = data.crew[i];
     miniData.crew.push({
       name: name,

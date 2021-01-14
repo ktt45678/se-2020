@@ -5,12 +5,12 @@ const Schema = mongoose.Schema;
 
 const userLikelistSchema = new Schema({
   _id: Number,
-  userId: {
+  user: {
     type: Number,
     ref: 'user',
     require: true
   },
-  mediaId: {
+  media: {
     type: Number,
     ref: 'media',
     require: true
@@ -18,13 +18,8 @@ const userLikelistSchema = new Schema({
   liked: {
     type: Boolean,
     required: true
-  },
-  dateAdded: {
-    type: Date,
-    required: true,
-    default: Date.now
   }
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 userLikelistSchema.plugin(autoIncrement, { id: 'user_likelist_id', inc_field: '_id' });
 const userLikelist = mongoose.model('user_likelist_rating', userLikelistSchema);

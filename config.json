@@ -25,6 +25,7 @@
     "poster_url": "https://image.tmdb.org/t/p/w342",
     "backdrop_url": "https://image.tmdb.org/t/p/original",
     "still_url": "https://image.tmdb.org/t/p/w300",
-    "profile_url": "https://image.tmdb.org/t/p/w185"
+    "profile_url": "https://image.tmdb.org/t/p/w185",
+    "credit_limit": 10
   }
 }

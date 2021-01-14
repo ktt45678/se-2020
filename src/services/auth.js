@@ -4,10 +4,10 @@ const authModule = require('../modules/auth');
 
 exports.authenticate = async (username, password) => {
   const user = await userModel.findByUsernameOrEmail(username);
-  if (!user || !userModel.comparePassword(password, user.password)) {
-    throw 'Username or password is incorrect';
+  if (user && userModel.comparePassword(password, user.password)) {
+    return user;
   }
-  return user;
+  throw { status: 400, message: 'Authentication failed' };
 }
 
 exports.createUser = (username, displayName, dateOfBirth, email, password) => {

@@ -12,7 +12,7 @@ exports.registrationRules = () => {
       .custom(async (username) => {
         const user = await userService.findUserByUsername(username);
         if (user) {
-          throw Error('Username already exists');
+          throw Error('This username is already being used');
         }
         return true;
       }),
@@ -22,7 +22,7 @@ exports.registrationRules = () => {
       .custom(async (email) => {
         const user = await userService.findUserByEmail(email);
         if (user) {
-          throw Error('Email already exists');
+          throw Error('This email address is already being used');
         }
         return true;
       }),
@@ -96,7 +96,7 @@ exports.userUpdateRules = () => {
         }
         const user = await userService.findUserByUsername(username);
         if (user) {
-          throw Error('Username already exists');
+          throw Error('This username is already being used');
         }
         return true;
       }),
@@ -108,7 +108,7 @@ exports.userUpdateRules = () => {
         }
         const user = await userService.findUserByEmail(email);
         if (user) {
-          throw Error('Email already exists');
+          throw Error('This email address is already being used');
         }
         return true;
       }),

@@ -5,22 +5,17 @@ const Schema = mongoose.Schema;
 
 const userWatchlistSchema = new Schema({
   _id: Number,
-  userId: {
+  user: {
     type: Number,
     ref: 'user',
     required: true
   },
-  mediaId: {
+  media: {
     type: Number,
     ref: 'media',
     required: true
-  },
-  dateAdded: {
-    type: Date,
-    required: true,
-    default: Date.now
   }
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 userWatchlistSchema.plugin(autoIncrement, { id: 'user_watchlist_id', inc_field: '_id' });
 const userWatchlist = mongoose.model('user_watchlist', userWatchlistSchema);

@@ -5,12 +5,12 @@ const redisService = require('../../services/redis');
 const { validationResult } = require('express-validator');
 
 exports.index = (req, res) => {
-  res.status(200).send({ message: 'Authenticate' });
+  res.status(200).send({ message: 'Authentication' });
 }
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   if (req.headers.authorization) {
-    return res.status(403).send({ error: 'Remove your Authorization header before logging in' });
+    return res.status(403).send({ error: 'Remove your authorization header before logging in' });
   }
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -18,22 +18,17 @@ exports.login = async (req, res) => {
   }
   const { username, password } = req.body;
   try {
-    var user = await authService.authenticate(username, password);
-  } catch (e) {
-    return res.status(400).send({ error: e });
-  }
-  const accessToken = authService.signAccessToken(user);
-  const refreshToken = authService.signRefreshToken(user);
-  try {
+    const user = await authService.authenticate(username, password);
+    const accessToken = authService.signAccessToken(user);
+    const refreshToken = authService.signRefreshToken(user);
     await redisService.setRefreshToken(refreshToken, user);
+    res.status(200).send({ accessToken, refreshToken });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  res.status(200).send({ accessToken, refreshToken });
 }
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
@@ -41,160 +36,138 @@ exports.register = async (req, res) => {
   const { username, displayName, dateOfBirth, email, password } = req.body;
   // Create user
   const user = authService.createUser(username, displayName, dateOfBirth, email, password);
-  // Send confirmation email and response user info
   try {
-    user.activationCode = emailService.sendConfirmEmail(user);
-  } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
-  }
-  // Save user
-  try {
+    // Send confirmation email and response user info
+    user.activationCode = await emailService.sendConfirmEmail(user);
+    // Save user in database
     await user.save();
+    res.status(200).send({
+      username: user.username,
+      email: user.email,
+      displayName: user.displayName,
+      message: 'A confirmation email is being sent'
+    });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  res.status(200).send({
-    username: user.username,
-    email: user.email,
-    displayName: user.displayName,
-    message: 'A confirmation email is being sent'
-  });
 }
 
-exports.sendConfirmEmail = async (req, res) => {
+exports.sendConfirmEmail = async (req, res, next) => {
   const user = req.currentUser;
   if (!user.new) {
-    return res.status(400).send({ error: 'User already activated' });
+    return res.status(400).send({ error: 'User has already been activated' });
   }
   const { type } = req.body;
   try {
-    if (type && type === 'update') {
-      user.activationCode = emailService.sendUpdateEmail(user);
-    } else {
-      user.activationCode = emailService.sendConfirmEmail(user);
-    }
-  } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
-  }
-  try {
+    user.activationCode = type === 'update' ? await emailService.sendUpdateEmail(user) : await emailService.sendConfirmEmail(user);
     await user.save();
+    res.status(200).send({ message: 'A confirmation email is being sent' });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  res.status(200).send({ message: 'A confirmation email is being sent' });
 }
 
-exports.sendRecoveryEmail = async (req, res) => {
+exports.sendRecoveryEmail = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
   // Find user by email address
   const { email } = req.body;
-  const user = await userService.findUserByEmail(email);
-  if (!user) {
-    return res.status(404).send({ error: 'User not found' });
-  }
-  // Send recovery email
   try {
-    user.recoveryCode = emailService.sendRecoveryEmail(user);
-  } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
-  }
-  try {
+    const user = await userService.findUserByEmail(email);
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+    // Send recovery email
+    user.recoveryCode = await emailService.sendRecoveryEmail(user);
     await user.save();
+    res.status(200).send({ message: 'A recovery email is being sent' });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  res.status(200).send({ message: 'A recovery email is being sent' });
 }
 
-exports.confirmEmail = async (req, res) => {
+exports.confirmEmail = async (req, res, next) => {
   const { activationCode } = req.body;
   if (!activationCode) {
     return res.status(422).send({ error: 'Activation code must not be empty' });
   }
-  const user = await authService.findByActivationCode(activationCode);
-  if (!user) {
-    return res.status(404).send({ error: 'Invalid or expired link' });
-  }
-  user.new = false;
-  user.activationCode = null;
   try {
+    const user = await authService.findByActivationCode(activationCode);
+    if (!user) {
+      return res.status(404).send({ error: 'Invalid or expired link' });
+    }
+    user.new = false;
+    user.activationCode = null;
     await user.save();
+    res.status(200).send({ message: 'Email has been successfully confirmed' });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  res.status(200).send({ message: 'Email has been successfully confirmed' })
 }
 
-exports.passwordRecovery = async (req, res) => {
+exports.passwordRecovery = async (req, res, next) => {
   const { recoveryCode } = req.body;
   if (!recoveryCode) {
     return res.status(422).send({ error: 'Recovery code must not be empty' });
   }
-  const user = await authService.findUserByRecoveryCode(recoveryCode);
-  if (!user) {
-    return res.status(404).send({ error: 'Invalid or expired link' });
+  try {
+    const user = await authService.findUserByRecoveryCode(recoveryCode);
+    if (!user) {
+      return res.status(404).send({ error: 'Invalid or expired link' });
+    }
+    res.status(200).send({ message: 'Password can be reseted' });
+  } catch (e) {
+    next(e);
   }
-  res.status(200).send({ message: 'Password can be reseted' })
 }
 
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
   const { recoveryCode, password } = req.body;
-  const user = await authService.resetPassword(recoveryCode, password);
-  if (!user) {
-    return res.status(404).send({ error: 'Invalid or expired link' });
+  try {
+    const user = await authService.resetPassword(recoveryCode, password);
+    if (!user) {
+      return res.status(404).send({ error: 'Invalid or expired link' });
+    }
+    res.status(200).send({ message: 'Password has been successfully reseted' });
+  } catch (e) {
+    next(e);
   }
-  res.status(200).send({ message: 'Password has been successfully reseted' })
 }
 
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res, next) => {
   const user = req.currentUser;
   try {
     const check = await redisService.get(req.refreshToken);
-    var data = check ? JSON.parse(check) : check;
-  } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
-  }
-  if (!data) {
-    return res.status(401).send({ error: 'Account credentials were lost' });
-  }
-  if (data.username !== user.username || data.password !== user.password) {
-    return res.status(401).send({ error: 'Account credentials were changed' });
-  }
-  const accessToken = authService.signAccessToken(user);
-  const refreshToken = authService.signRefreshToken(user);
-  try {
+    const data = check ? JSON.parse(check) : check;
+    if (!data) {
+      return res.status(401).send({ error: 'Account credentials were lost' });
+    }
+    if (data.username !== user.username || data.password !== user.password) {
+      return res.status(401).send({ error: 'Account credentials were changed' });
+    }
+    const accessToken = authService.signAccessToken(user);
+    const refreshToken = authService.signRefreshToken(user);
     await redisService.setRefreshToken(refreshToken, user);
+    res.status(200).send({ accessToken, refreshToken });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  res.status(200).send({ accessToken, refreshToken });
 }
 
-exports.revokeToken = async (req, res) => {
+exports.revokeToken = async (req, res, next) => {
   try {
-    var check = await redisService.del(req.refreshToken);
+    const check = await redisService.del(req.refreshToken);
+    if (!check) {
+      return res.status(200).send({ message: 'Token is no longer valid' });
+    }
+    res.status(200).send({ message: 'Token has been revoked' });
   } catch (e) {
-    console.error(e);
-    return res.status(500).send({ error: 'Internal server error' });
+    next(e);
   }
-  if (!check) {
-    return res.status(200).send({ message: 'Token is no longer valid' });
-  }
-  res.status(200).send({ message: 'Token has been revoked' });
 }

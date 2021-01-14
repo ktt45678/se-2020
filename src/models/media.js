@@ -18,25 +18,7 @@ const mediaVideoSchema = new Schema({
     type: String,
     required: true
   }
-}, { _id: false });
-
-const mediaStorageSchema = new Schema({
-  _id: Number,
-  storage: {
-    type: String,
-    required: true
-  },
-  path: {
-    type: String,
-    required: true
-  },
-  episode: Number,
-  quality: {
-    type: String,
-    required: true
-  },
-  mimeType: String
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 const tvEpisodeSchema = new Schema({
   _id: Number,
@@ -46,8 +28,17 @@ const tvEpisodeSchema = new Schema({
   name: String,
   overview: String,
   airDate: String,
-  stillPath: String
-}, { _id: false });
+  stillPath: String,
+  stream: {
+    type: Number,
+    ref: 'media_storage'
+  },
+  added: {
+    type: Boolean,
+    required: true,
+    default: false
+  }
+}, { _id: false, timestamps: true });
 
 const tvSeasonSchema = new Schema({
   _id: Number,
@@ -57,12 +48,17 @@ const tvSeasonSchema = new Schema({
   name: String,
   overview: String,
   psoterPath: String,
+  added: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   episodes: [tvEpisodeSchema]
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 const tvShowSchema = new Schema({
   _id: Number,
-  episodeRuntime: Number,
+  episodeRuntime: [Number],
   firstAirDate: String,
   lastAirDate: String,
   status: String,
@@ -75,7 +71,11 @@ const movieSchema = new Schema({
   runtime: Number,
   releaseDate: String,
   status: String,
-  adult: Boolean
+  adult: Boolean,
+  stream: {
+    type: Number,
+    ref: 'media_storage'
+  }
 }, { _id: false });
 
 const mediaSchema = new Schema({
@@ -91,27 +91,25 @@ const mediaSchema = new Schema({
   movie: movieSchema,
   tvShow: tvShowSchema,
   videos: [mediaVideoSchema],
-  storage: [mediaStorageSchema],
-  genres: Array,
+  credits: [{
+    type: Number,
+    ref: 'credits'
+  }],
+  genres: [String],
   popularity: Number,
-  draft: {
+  published: {
     type: Boolean,
-    required: true
-  },
-  dateAdded: {
-    type: Date,
     required: true,
-    default: Date.now
+    default: false
   },
-  dateUpdated: {
-    type: Date,
+  addedBy: {
+    type: Number,
     required: true,
-    default: Date.now
+    ref: 'user'
   }
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 mediaVideoSchema.plugin(autoIncrement, { id: 'media_video_id', inc_field: '_id' });
-mediaStorageSchema.plugin(autoIncrement, { id: 'media_storage_id', inc_field: '_id' });
 tvEpisodeSchema.plugin(autoIncrement, { id: 'tv_episode_id', inc_field: '_id' });
 tvSeasonSchema.plugin(autoIncrement, { id: 'tv_season_id', inc_field: '_id' });
 tvShowSchema.plugin(autoIncrement, { id: 'tv_id', inc_field: '_id' });

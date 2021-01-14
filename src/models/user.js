@@ -22,15 +22,15 @@ const userStorageSchema = new Schema({
     type: Number,
     required: true
   },
-  quality: {
-    type: Array,
+  quality: [{
+    type: Number,
     required: true
-  },
+  }],
   mimeType: {
     type: String,
     required: true
   }
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 const userSchema = new Schema({
   _id: Number,
@@ -70,18 +70,8 @@ const userSchema = new Schema({
   recoveryCode: {
     type: String
   },
-  dateAdded: {
-    type: Date,
-    required: true,
-    default: Date.now
-  },
-  dateUpdated: {
-    type: Date,
-    required: true,
-    default: Date.now
-  },
   storages: [userStorageSchema]
-}, { _id: false });
+}, { _id: false, timestamps: true });
 
 userSchema.statics = {
   findByUsername: async function (username) {

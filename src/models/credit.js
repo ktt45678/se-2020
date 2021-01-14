@@ -21,7 +21,14 @@ const creditSchema = new Schema({
   department: String,
   crew: creditCrewSchema,
   cast: creditCastSchema
-}, { _id: false });
+}, { _id: false, timestamps: true });
+
+creditSchema.statics = {
+  findByCredit: async function (credit) {
+    const { name, originalName, profilePath, department, cast, crew } = credit;
+    return await this.findOne({ name, originalName, profilePath, department, 'cast.character': cast?.character, 'crew.job': crew?.job }).exec();
+  }
+}
 
 creditCrewSchema.plugin(autoIncrement, { id: 'credit_crew_id', inc_field: '_id' });
 creditCastSchema.plugin(autoIncrement, { id: 'credit_cast_id', inc_field: '_id' });
