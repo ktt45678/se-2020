@@ -84,7 +84,7 @@ exports.resetPasswordRules = () => {
   ]
 }
 
-exports.userUpdateRules = () => {
+exports.updateUserRules = () => {
   return [
     body('username')
       .trim()
@@ -144,6 +144,7 @@ exports.tmdbSearchRules = () => {
     query('query')
       .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
     query('page')
+      .isNumeric({ no_symbols: true }).withMessage('Page number must be numeric')
       .custom((page) => {
         if (!page) {
           return true;
@@ -157,6 +158,60 @@ exports.tmdbSearchRules = () => {
       .custom((type) => {
         if (type !== 'movie' && type !== 'tv') {
           throw Error('Type must be movie or tv');
+        }
+        return true;
+      })
+  ]
+}
+
+exports.addMediaRules = () => {
+  return [
+    body('tmdbId')
+      .isNumeric({ no_symbols: true }).withMessage('TMDb id must be numeric'),
+    body('streamPath')
+      .notEmpty().withMessage('Stream path must not be empty')
+  ]
+}
+
+exports.addTvSeasonRules = () => {
+  return [
+    body('mediaId')
+      .isNumeric({ no_symbols: true }).withMessage('Media id must be numeric'),
+    body('season')
+      .isNumeric({ no_symbols: true }).withMessage('Season number must be numeric')
+  ]
+}
+
+exports.addTvEpisodeRules = () => {
+  return [
+    body('mediaId')
+      .isNumeric({ no_symbols: true }).withMessage('Media id must be numeric'),
+    body('season')
+      .isNumeric({ no_symbols: true }).withMessage('Season number must be numeric'),
+    body('episode')
+      .isNumeric({ no_symbols: true }).withMessage('Episode number must be numeric'),
+    body('streamPath')
+      .notEmpty().withMessage('Stream path must not be empty')
+  ]
+}
+
+exports.viewMediaRules = () => {
+  return [
+    query('exclude')
+      .matches(/^$|^[0-9a-zA-Z]+(?:,[0-9a-zA-Z]+)*$/).withMessage('Exclusion must be valid')
+  ]
+}
+
+exports.searchMediaRules = () => {
+  return [
+    query('page')
+      .isNumeric({ no_symbols: true }).withMessage('Page must be numeric')
+      .custom((page) => {
+        if (!page) {
+          return true;
+        }
+        if (page < 1 || page > 1000) {
+          throw Error('Page must be between 1 and 1000');
         }
         return true;
       })

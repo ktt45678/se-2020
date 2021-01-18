@@ -1,5 +1,3 @@
-const config = require('../../config.json').tmdb;
-
 exports.parseMovieSearch = (data, poster_url = '') => {
   const { page, total_pages, total_results, results } = data;
   const miniData = {
@@ -203,15 +201,12 @@ exports.parseVideoData = (data) => {
 }
 
 exports.parseCreditData = (data, profile_url = '') => {
-  const { credit_limit } = config;
-  const castLimit = data.cast.length > credit_limit ? credit_limit : data.cast.length;
-  const crewLimit = data.crew.length > credit_limit ? credit_limit : data.crew.length;
   const miniData = {
     tmdbId: data.id,
     cast: [],
     crew: []
   }
-  for (let i = 0; i < castLimit; i++) {
+  for (let i = 0; i < data.cast.length; i++) {
     const { name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.cast.push({
       name: name,
@@ -224,7 +219,7 @@ exports.parseCreditData = (data, profile_url = '') => {
       character: character
     });
   }
-  for (let i = 0; i < crewLimit; i++) {
+  for (let i = 0; i < data.crew.length; i++) {
     const { name, original_name, profile_path, department, job } = data.crew[i];
     miniData.crew.push({
       name: name,

@@ -1,4 +1,3 @@
-const url = require('url')
 const path = require('path');
 
 exports.parseDirectories = (data) => {
@@ -9,7 +8,7 @@ exports.parseDirectories = (data) => {
   let fileCount = 0;
   for (let i = 0; i < data.files.length; i++) {
     const { name, mimeType } = data.files[i];
-    if (!mimeType.endsWith('folder')) {
+    if (!mimeType?.endsWith('folder')) {
       fileCount++;
       continue;
     }
@@ -21,11 +20,29 @@ exports.parseDirectories = (data) => {
   return miniData;
 }
 
-exports.isValidPath = (path_) => {
-  const parsed = url.parse(path_);
-  const basename = path.basename(parsed.pathname);
-  if (basename.match(/[^\\]*\.(\w+)$/g)) {
-    return false;
+exports.parseFiles = (path_, data) => {
+  const folder = path.basename(path_.split('?').shift());
+  const miniData = {
+    path: path_,
+    file: folder,
+    quality: [],
+    mimeType: null
   }
-  return true;
+  for (let i = 0; i < data.files.length; i++) {
+    const { name, mimeType } = data.files[i];
+    if (!mimeType.startsWith('video') || !name.startsWith(folder)) {
+      continue;
+    }
+    if (miniData.mimeType) {
+      if (mimeType !== miniData.mimeType) {
+        continue;
+      }
+    }
+    const quality = Number(name?.substring(0, name?.indexOf('.')).replace(folder, '')?.replace('_', '')?.replace('p', ''));
+    if (quality) {
+      miniData.quality.push(quality);
+      miniData.mimeType = mimeType;
+    }
+  }
+  return miniData;
 }

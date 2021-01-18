@@ -1,31 +1,62 @@
 const mediaService = require('../../services/media');
+const { validationResult } = require('express-validator');
 
 exports.index = (req, res) => {
   res.status(200).send({ message: 'Index' });
 }
 
-exports.view = (req, res) => {
-  res.status(200).send({ message: 'View' });
+exports.details = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { id } = req.params;
+  const { exclude } = req.query;
+  try {
+    const media = await mediaService.findMediaById(id, exclude);
+    res.status(200).send(media);
+  } catch (e) {
+    next(e);
+  }
 }
 
-exports.list = (req, res) => {
-  res.status(200).send({ message: 'List' });
+exports.fetch = async (req, res, next) => {
+  const { sort, page, limit } = req.query;
+  const isPublic = true;
+  try {
+    const results = await mediaService.fetchMedia(sort, isPublic, page, limit);
+    res.status(200).send(results);
+  } catch (e) {
+    next(e);
+  }
 }
 
-exports.search = (req, res) => {
-  res.status(200).send({ message: 'Search' });
+exports.search = async (req, res, next) => {
+  const { query, sort, page, limit } = req.query;
+  const isPublic = true;
+  try {
+    const results = await mediaService.searchMedia(query, sort, isPublic, page, limit);
+    res.status(200).send(results);
+  } catch (e) {
+    next(e);
+  }
 }
 
-exports.stream = (req, res) => {
+exports.stream = async (req, res) => {
   res.status(200).send({ message: 'Stream' });
 }
 
 exports.addMovie = async (req, res, next) => {
-  const { tmdbId, published } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { tmdbId, streamPath, isPublic } = req.body;
   try {
     const movieDocument = await mediaService.createMovieDocument(tmdbId);
-    movieDocument.credits = await mediaService.importMovieCredits(tmdbId)
-    movieDocument.published = published === 'true';
+    movieDocument.credits = await mediaService.importMovieCredits(tmdbId);
+    movieDocument.movie.stream = await mediaService.importStream(streamPath);
+    movieDocument.isPublic = isPublic === 'true';
     movieDocument.addedBy = req.currentUser._id;
     const result = await movieDocument.save();
     res.status(200).send({ id: result._id, message: 'Movie has been added successfully' });
@@ -35,11 +66,15 @@ exports.addMovie = async (req, res, next) => {
 }
 
 exports.addTv = async (req, res, next) => {
-  const { tmdbId, published } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { tmdbId, isPublic } = req.body;
   try {
     const tvDocument = await mediaService.createTvDocument(tmdbId);
     tvDocument.credits = await mediaService.importTvCredits(tmdbId);
-    tvDocument.published = published === 'true';
+    tvDocument.isPublic = isPublic === 'true';
     tvDocument.addedBy = req.currentUser._id;
     const result = await tvDocument.save();
     res.status(200).send({ id: result._id, message: 'TV Show has been added successfully' });
@@ -49,7 +84,11 @@ exports.addTv = async (req, res, next) => {
 }
 
 exports.addTvSeason = async (req, res, next) => {
-  const { mediaId, season } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { mediaId, season, isPublic } = req.body;
   try {
     const media = await mediaService.findMediaById(mediaId);
     if (!media?.tvShow) {
@@ -59,11 +98,12 @@ exports.addTvSeason = async (req, res, next) => {
     if (!miniSeason) {
       return res.status(404).send({ error: 'Season not found' });
     }
-    if (miniSeason.added) {
-      return res.status(400).send({ error: 'This season has already been added' });
+    if (miniSeason.isAdded) {
+      return res.status(422).send({ error: 'This season has already been added' });
     }
     const seasonObject = await mediaService.createSeasonObject(media.tmdbId, season);
-    seasonObject.added = true;
+    seasonObject.isPublic = isPublic === 'true';
+    seasonObject.isAdded = true;
     miniSeason.set(seasonObject);
     await media.save();
     res.status(200).send({ message: 'Season has been added successfully' });
@@ -73,7 +113,11 @@ exports.addTvSeason = async (req, res, next) => {
 }
 
 exports.addTvEpisode = async (req, res, next) => {
-  const { mediaId, season, episode } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { mediaId, season, episode, streamPath, isPublic } = req.body;
   try {
     const media = await mediaService.findMediaById(mediaId);
     if (!media?.tvShow) {
@@ -87,11 +131,13 @@ exports.addTvEpisode = async (req, res, next) => {
     if (!miniEpisode) {
       return res.status(404).send({ error: 'Episode not found' });
     }
-    if (miniEpisode.added) {
-      return res.status(400).send({ error: 'This episode has already been added' });
+    if (miniEpisode.isAdded) {
+      return res.status(422).send({ error: 'This episode has already been added' });
     }
-    const episodeObject = await mediaService.createEpisodeObject(mediaId, season, episode);
-    episodeObject.added = true;
+    const episodeObject = await mediaService.createEpisodeObject(media.tmdbId, season, episode);
+    episodeObject.stream = await mediaService.importStream(streamPath);
+    episodeObject.isPublic = isPublic === 'true';
+    episodeObject.isAdded = true;
     miniEpisode.set(episodeObject);
     await media.save();
     res.status(200).send({ message: 'Episode has been added successfully' });

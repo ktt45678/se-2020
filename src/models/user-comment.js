@@ -26,6 +26,7 @@ const userCommentSchema = new Schema({
   }
 }, { _id: false, timestamps: true });
 
+userCommentSchema.index({ content: 'text' }, { default_language: 'none' });
 userCommentSchema.plugin(autoIncrement, { id: 'user_comment_id', inc_field: '_id' });
 const userComment = mongoose.model('user_comment', userCommentSchema);
 

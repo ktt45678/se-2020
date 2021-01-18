@@ -94,8 +94,9 @@ exports.parseCreditData = (data) => {
   const crewLimit = data.crew.length > credit_limit ? credit_limit : data.crew.length;
   const miniData = [];
   for (let i = 0; i < castLimit; i++) {
-    const { name, original_name, profile_path, known_for_department, character } = data.cast[i];
+    const { credit_id, name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.push({
+      tmdbId: credit_id,
       name: name,
       originalName: original_name,
       profilePath: profile_path,
@@ -104,8 +105,9 @@ exports.parseCreditData = (data) => {
     });
   }
   for (let i = 0; i < crewLimit; i++) {
-    const { name, original_name, profile_path, department, job } = data.crew[i];
+    const { credit_id, name, original_name, profile_path, department, job } = data.crew[i];
     miniData.push({
+      tmdbId: credit_id,
       name: name,
       originalName: original_name,
       profilePath: profile_path,
@@ -123,4 +125,33 @@ exports.parseVideoData = (data) => {
     miniData.push({ name, site, key, type });
   }
   return miniData;
+}
+
+exports.parseMediaResult = (result) => {
+  result.posterPath = result.posterPath ? `${process.env.IMAGECDN_URL}${config.poster_url}${result.posterPath}` : null;
+  result.backdropPath = result.backdropPath ? `${process.env.IMAGECDN_URL}${config.backdrop_url}${result.backdropPath}` : null;
+  return result;
+}
+
+exports.parseTvSeasonResult = (seasons) => {
+  for (let i = 0; i < seasons.length; i++) {
+    if (!seasons[i].isAdded) {
+      continue;
+    }
+    seasons[i].posterPath = seasons[i].posterPath ? `${process.env.IMAGECDN_URL}${config.poster_url}${seasons[i].posterPath}` : null;
+    for (let j = 0; j < seasons[i].episodes.length; j++) {
+      if (!seasons[i].episodes[j].isAdded) {
+        continue;
+      }
+      seasons[i].episodes[j].stillPath = seasons[i].episodes[j].stillPath ? `${process.env.IMAGECDN_URL}${config.still_url}${seasons[i].episodes[j].stillPath}` : null;
+    }
+  }
+  return seasons;
+}
+
+exports.parseCreditResult = (credits) => {
+  for (let i = 0; i < credits.length; i++) {
+    credits[i].profilePath = credits[i].profilePath ? `${process.env.IMAGECDN_URL}${config.profile_url}${credits[i].profilePath}` : null;
+  }
+  return credits;
 }

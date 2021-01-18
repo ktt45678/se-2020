@@ -33,7 +33,12 @@ const tvEpisodeSchema = new Schema({
     type: Number,
     ref: 'media_storage'
   },
-  added: {
+  isPublic: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isAdded: {
     type: Boolean,
     required: true,
     default: false
@@ -48,7 +53,12 @@ const tvSeasonSchema = new Schema({
   name: String,
   overview: String,
   psoterPath: String,
-  added: {
+  isPublic: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isAdded: {
     type: Boolean,
     required: true,
     default: false
@@ -86,18 +96,18 @@ const mediaSchema = new Schema({
   title: String,
   originalTitle: String,
   overview: String,
-  poster_path: String,
-  backdrop_path: String,
+  posterPath: String,
+  backdropPath: String,
   movie: movieSchema,
   tvShow: tvShowSchema,
   videos: [mediaVideoSchema],
   credits: [{
     type: Number,
-    ref: 'credits'
+    ref: 'credit'
   }],
   genres: [String],
   popularity: Number,
-  published: {
+  isPublic: {
     type: Boolean,
     required: true,
     default: false
@@ -109,6 +119,30 @@ const mediaSchema = new Schema({
   }
 }, { _id: false, timestamps: true });
 
+mediaSchema.statics = {
+  findMediaDetailsById: async function (id, exclude) {
+    const fields = { password: false, email: false, dateOfBirth: false, activationCode: false, recoveryCode: false }
+    return await this.findOne({ _id: id }, exclude).populate('credits').populate('addedBy', fields).exec();
+  },
+  searchMedia: async function (query, sort, isPublic, skip = 0, limit = 30) {
+    const filters = { $text: { $search: query } }
+    if (typeof isPublic === 'boolean') {
+      filters.isPublic = isPublic;
+    }
+    const fields = { credits: false, addedBy: false, isPublic: false, videos: false, 'tvShow.seasons': false }
+    return await this.find(filters, fields, { sort, skip, limit }).exec();
+  },
+  fetchMedia: async function (sort, isPublic, skip = 0, limit = 30) {
+    const filters = {}
+    if (typeof isPublic === 'boolean') {
+      filters.isPublic = isPublic;
+    }
+    const fields = { credits: false, addedBy: false, isPublic: false, videos: false, 'tvShow.seasons': false }
+    return await this.find(filters, fields, { sort, skip, limit }).exec();
+  }
+}
+
+mediaSchema.index({ title: 'text', originalTitle: 'text', genres: 'text' }, { default_language: 'none' });
 mediaVideoSchema.plugin(autoIncrement, { id: 'media_video_id', inc_field: '_id' });
 tvEpisodeSchema.plugin(autoIncrement, { id: 'tv_episode_id', inc_field: '_id' });
 tvSeasonSchema.plugin(autoIncrement, { id: 'tv_season_id', inc_field: '_id' });

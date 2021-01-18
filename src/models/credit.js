@@ -15,6 +15,7 @@ const creditCastSchema = new Schema({
 
 const creditSchema = new Schema({
   _id: Number,
+  tmdbId: String,
   name: String,
   originalName: String,
   profilePath: String,
@@ -24,12 +25,12 @@ const creditSchema = new Schema({
 }, { _id: false, timestamps: true });
 
 creditSchema.statics = {
-  findByCredit: async function (credit) {
-    const { name, originalName, profilePath, department, cast, crew } = credit;
-    return await this.findOne({ name, originalName, profilePath, department, 'cast.character': cast?.character, 'crew.job': crew?.job }).exec();
+  findByTmdbId: async function (tmdbId) {
+    return await this.findOne({ tmdbId }).exec();
   }
 }
 
+creditSchema.index({ name: 'text', originalName: 'text', department: 'text', 'cast.character': 'text', 'crew.job': 'text' }, { default_language: 'none' });
 creditCrewSchema.plugin(autoIncrement, { id: 'credit_crew_id', inc_field: '_id' });
 creditCastSchema.plugin(autoIncrement, { id: 'credit_cast_id', inc_field: '_id' });
 creditSchema.plugin(autoIncrement, { id: 'credit_id', inc_field: '_id' });

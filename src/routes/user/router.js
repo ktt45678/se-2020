@@ -12,6 +12,6 @@ router.use('/:id?/avatar', avatarRouter);
 router.use('/:id?/background', backgroundRouter);
 router.use('/:id?/music', musicRouter);
 router.get('/:id?', controller.view);
-router.put('/', rateLimiter(120), validator.userUpdateRules(), controller.update);
+router.put('/', rateLimiter(120), validator.updateUserRules(), controller.update);
 
 module.exports = router;

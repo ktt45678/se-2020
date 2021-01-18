@@ -5,11 +5,11 @@ const Schema = mongoose.Schema;
 
 const mediaStorageSchema = new Schema({
   _id: Number,
-  storage: {
+  path: {
     type: String,
     required: true
   },
-  path: {
+  file: {
     type: String,
     required: true
   },
@@ -17,8 +17,17 @@ const mediaStorageSchema = new Schema({
     type: Number,
     required: true
   }],
-  mimeType: String
+  mimeType: {
+    type: String,
+    required: true
+  }
 }, { _id: false, timestamps: true });
+
+mediaStorageSchema.statics = {
+  findByPath: async function (path) {
+    return await this.findOne({ path }).exec();
+  }
+}
 
 mediaStorageSchema.plugin(autoIncrement, { id: 'media_storage_id', inc_field: '_id' });
 const mediaStorage = mongoose.model('media_storage', mediaStorageSchema);

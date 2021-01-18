@@ -37,12 +37,14 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    sparse: true
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    sparse: true
   },
   displayName: {
     type: String
@@ -103,6 +105,7 @@ userSchema.statics = {
   }
 }
 
+userSchema.index({ username: 'text', email: 'text', displayName: 'text' }, { default_language: 'none' });
 userStorageSchema.plugin(autoIncrement, { id: 'user_storage_id', inc_field: '_id' });
 userSchema.plugin(autoIncrement, { id: 'user_id', inc_field: '_id' });
 const user = mongoose.model('user', userSchema);

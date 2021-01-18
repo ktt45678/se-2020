@@ -1,7 +1,10 @@
 const mediaModule = require('../modules/media');
+const miscModule = require('../modules/misc');
 const mediaModel = require('../models/media');
 const creditModel = require('../models/credit');
-const tmdbService = require('../services/tmdb');
+const mediaStorageModel = require('../models/media-storage');
+const tmdbService = require('./tmdb');
+const driveService = require('./drive');
 
 exports.createMovieDocument = async (id) => {
   const movieResponse = await tmdbService.movie(id);
@@ -28,7 +31,7 @@ exports.importMovieCredits = async (id) => {
   const movieCreditResponse = await tmdbService.movieCredits(id);
   const creditData = mediaModule.parseCreditData(movieCreditResponse.data);
   for (let i = 0; i < creditData.length; i++) {
-    const credit = await creditModel.findByCredit(creditData[i]);
+    const credit = await creditModel.findByTmdbId(creditData[i].tmdbId);
     if (credit) {
       credits.push(credit._id);
     } else {
@@ -45,7 +48,7 @@ exports.importTvCredits = async (id) => {
   const tvCreditResponse = await tmdbService.tvCredits(id);
   const creditData = mediaModule.parseCreditData(tvCreditResponse.data);
   for (let i = 0; i < creditData.length; i++) {
-    const credit = await creditModel.findByCredit(creditData[i]);
+    const credit = await creditModel.findByTmdbId(creditData[i].tmdbId);
     if (credit) {
       credits.push(credit._id);
     } else {
@@ -55,6 +58,22 @@ exports.importTvCredits = async (id) => {
     }
   }
   return credits;
+}
+
+exports.importStream = async (path_) => {
+  const path = path_.endsWith('/') ? path_ : `${path_}/`;
+  const streamResponse = await driveService.getDirectories(path);
+  const streamData = driveService.parseFiles(path, streamResponse.data);
+  if (!streamData.mimeType) {
+    throw { status: 404, message: 'Could not find any video stream on this path' }
+  }
+  const stream = await mediaStorageModel.findByPath(path);
+  if (stream) {
+    return stream._id;
+  }
+  const streamDocument = new mediaStorageModel(streamData);
+  const newStream = await streamDocument.save();
+  return newStream._id;
 }
 
 exports.createSeasonObject = async (id, season) => {
@@ -69,8 +88,41 @@ exports.createEpisodeObject = async (id, season, episode) => {
   return tvEpisodeData;
 }
 
-exports.findMediaById = async (id) => {
-  return await mediaModel.findById(id);
+exports.findMediaById = async (id, exclude_) => {
+  exclude = exclude_ ? miscModule.toExclusionString(exclude_) : '';
+  const result_ = await mediaModel.findMediaDetailsById(id, exclude);
+  const result = mediaModule.parseMediaResult(result_);
+  if (result.credits) {
+    result.credits = mediaModule.parseCreditResult(result.credits);
+  }
+  if (result.tvShow) {
+    result.tvShow.seasons = mediaModule.parseTvSeasonResult(result.tvShow.seasons);
+  }
+  return result;
+}
+
+exports.searchMedia = async (query, sortString, isPublic, page_, limit_) => {
+  const page = page_ ? Number(page_) : 1;
+  const limit = limit_ ? Number(limit_) : 30;
+  const sort = sortString ? miscModule.toSortQuery(sortString) : null;
+  const skip = miscModule.calculatePageSkip(page, limit);
+  const results = await mediaModel.searchMedia(query, sort, isPublic, skip, limit);
+  for (let i = 0; i < results.length; i++) {
+    results[i] = mediaModule.parseMediaResult(results[i]);
+  }
+  return results;
+}
+
+exports.fetchMedia = async (sortString, isPublic, page_, limit_) => {
+  const page = page_ ? Number(page_) : 1;
+  const limit = limit_ ? Number(limit_) : 30;
+  const sort = sortString ? miscModule.toSortQuery(sortString) : null;
+  const skip = miscModule.calculatePageSkip(page, limit);
+  const results = await mediaModel.fetchMedia(sort, isPublic, skip, limit);
+  for (let i = 0; i < results.length; i++) {
+    results[i] = mediaModule.parseMediaResult(results[i]);
+  }
+  return results;
 }
 
 exports.updateTvSeason = (tvDocument, seasonObject) => {

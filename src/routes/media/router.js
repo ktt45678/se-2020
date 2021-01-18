@@ -2,18 +2,19 @@ const router = require('express').Router();
 const controller = require('./controller');
 const authGuard = require('../../middlewares/auth-guard');
 const roleGuard = require('../../middlewares/role-guard');
+const validator = require('../../middlewares/validator');
 
-router.get('/view/:id', controller.view);
-router.get('/list', controller.list);
+router.get('/details/:id', validator.viewMediaRules(), controller.details);
+router.get('/fetch', controller.fetch);
 router.get('/search', controller.search);
-router.get('/stream', controller.search);
+router.get('/stream', controller.index);
 
 router.use(authGuard);
 router.use(roleGuard.admin);
-router.post('/movie', controller.addMovie);
-router.post('/tv', controller.addTv);
-router.post('/tv/season', controller.addTvSeason);
-router.post('/tv/episode', controller.addTvEpisode);
+router.post('/movie', validator.addMediaRules(), controller.addMovie);
+router.post('/tv', validator.addMediaRules(), controller.addTv);
+router.post('/tv/season', validator.addTvSeasonRules(), controller.addTvSeason);
+router.post('/tv/episode', validator.addTvEpisodeRules(), controller.addTvEpisode);
 router.post('/video', controller.index);
 router.post('/credit', controller.index);
 router.post('/stream', controller.index);

@@ -1,15 +1,25 @@
 const driveModule = require('../modules/drive');
 const request = require('../modules/request');
 
-exports.getDirectories = async (path) => {
+exports.getDirectories = async (path_) => {
+  const path = path_ ? path_.endsWith('/') ? path_ : `${path_}/` : '';
   const url = `${process.env.GDRIVE_URL}/${path}`;
   return await request.post(url);
 }
 
 exports.parseDirectories = (data) => {
+  if (!data || !data.files?.length) {
+    throw { status: 404, message: 'Not found' }
+  }
+  if (data.isFile) {
+    return res.status(403).send({ error: 'File is not supported' });
+  }
   return driveModule.parseDirectories(data);
 }
 
-exports.isValidPath = (path) => {
-  return driveModule.isValidPath(path);
+exports.parseFiles = (path, data) => {
+  if (!data || !data.files?.length) {
+    throw { status: 404, message: 'Not found' }
+  }
+  return driveModule.parseFiles(path, data);
 }
