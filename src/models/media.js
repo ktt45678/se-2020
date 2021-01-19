@@ -121,23 +121,40 @@ const mediaSchema = new Schema({
 
 mediaSchema.statics = {
   findMediaDetailsById: async function (id, exclude) {
-    const fields = { password: false, email: false, dateOfBirth: false, activationCode: false, recoveryCode: false }
-    return await this.findOne({ _id: id }, exclude).populate('credits').populate('addedBy', fields).exec();
+    return await this.findOne({ _id: id }, exclude).populate('credits').exec();
   },
-  searchMedia: async function (query, sort, isPublic, skip = 0, limit = 30) {
+  searchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
     const filters = { $text: { $search: query } }
+    if (type === 'movie') {
+      filters.movie = { $ne: null }
+    } else if (type === 'tv') {
+      filters.tvShow = { $ne: null }
+    }
+    if (genre) {
+      filters.genres = genre;
+    }
     if (typeof isPublic === 'boolean') {
       filters.isPublic = isPublic;
     }
-    const fields = { credits: false, addedBy: false, isPublic: false, videos: false, 'tvShow.seasons': false }
+    //filters.$project = { initalReleaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } }
+    const fields = { credits: false, addedBy: false, videos: false, 'tvShow.seasons': false }
     return await this.find(filters, fields, { sort, skip, limit }).exec();
   },
-  fetchMedia: async function (sort, isPublic, skip = 0, limit = 30) {
+  fetchMedia: async function (type, genre, sort, isPublic, skip = 0, limit = 30) {
     const filters = {}
+    if (type === 'movie') {
+      filters.movie = { $ne: null }
+    } else if (type === 'tv') {
+      filters.tvShow = { $ne: null }
+    }
+    if (genre) {
+      filters.genres = genre;
+    }
     if (typeof isPublic === 'boolean') {
       filters.isPublic = isPublic;
     }
-    const fields = { credits: false, addedBy: false, isPublic: false, videos: false, 'tvShow.seasons': false }
+    //filters.$project = { initalReleaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } }
+    const fields = { credits: false, addedBy: false, videos: false, 'tvShow.seasons': false }
     return await this.find(filters, fields, { sort, skip, limit }).exec();
   }
 }

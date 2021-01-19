@@ -101,28 +101,30 @@ exports.findMediaById = async (id, exclude_) => {
   return result;
 }
 
-exports.searchMedia = async (query, sortString, isPublic, page_, limit_) => {
+exports.searchMedia = async (query, type, genre, sortString, isPublic, page_, limit_) => {
   const page = page_ ? Number(page_) : 1;
   const limit = limit_ ? Number(limit_) : 30;
   const sort = sortString ? miscModule.toSortQuery(sortString) : null;
   const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await mediaModel.searchMedia(query, sort, isPublic, skip, limit);
+  const results = await mediaModel.searchMedia(query, type, genre, sort, isPublic, skip, limit);
   for (let i = 0; i < results.length; i++) {
     results[i] = mediaModule.parseMediaResult(results[i]);
   }
-  return results;
+  const media = { page, results }
+  return media;
 }
 
-exports.fetchMedia = async (sortString, isPublic, page_, limit_) => {
+exports.fetchMedia = async (type, genre, sortString, isPublic, page_, limit_) => {
   const page = page_ ? Number(page_) : 1;
   const limit = limit_ ? Number(limit_) : 30;
   const sort = sortString ? miscModule.toSortQuery(sortString) : null;
   const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await mediaModel.fetchMedia(sort, isPublic, skip, limit);
+  const results = await mediaModel.fetchMedia(type, genre, sort, isPublic, skip, limit);
   for (let i = 0; i < results.length; i++) {
     results[i] = mediaModule.parseMediaResult(results[i]);
   }
-  return results;
+  const media = { page, results }
+  return media;
 }
 
 exports.updateTvSeason = (tvDocument, seasonObject) => {

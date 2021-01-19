@@ -2,7 +2,7 @@ const mediaService = require('../../services/media');
 const { validationResult } = require('express-validator');
 
 exports.index = (req, res) => {
-  res.status(200).send({ message: 'Index' });
+  res.status(200).send({ message: 'Media' });
 }
 
 exports.details = async (req, res, next) => {
@@ -21,10 +21,14 @@ exports.details = async (req, res, next) => {
 }
 
 exports.fetch = async (req, res, next) => {
-  const { sort, page, limit } = req.query;
-  const isPublic = true;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { type, genre, sort, page, limit } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const results = await mediaService.fetchMedia(sort, isPublic, page, limit);
+    const results = await mediaService.fetchMedia(type, genre, sort, isPublic, page, limit);
     res.status(200).send(results);
   } catch (e) {
     next(e);
@@ -32,10 +36,14 @@ exports.fetch = async (req, res, next) => {
 }
 
 exports.search = async (req, res, next) => {
-  const { query, sort, page, limit } = req.query;
-  const isPublic = true;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { query, type, genre, sort, page, limit } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const results = await mediaService.searchMedia(query, sort, isPublic, page, limit);
+    const results = await mediaService.searchMedia(query, type, genre, sort, isPublic, page, limit);
     res.status(200).send(results);
   } catch (e) {
     next(e);

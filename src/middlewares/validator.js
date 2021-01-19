@@ -144,16 +144,9 @@ exports.tmdbSearchRules = () => {
     query('query')
       .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
     query('page')
-      .isNumeric({ no_symbols: true }).withMessage('Page number must be numeric')
-      .custom((page) => {
-        if (!page) {
-          return true;
-        }
-        if (page < 1 || page > 1000) {
-          throw Error('Page must be between 1 and 1000');
-        }
-        return true;
-      }),
+      .optional({ nullable: true })
+      .isNumeric({ no_symbols: true }).withMessage('Page must be numeric')
+      .isLength({ min: 1, max: 1000 }).withMessage('Page must be between 1 and 1000'),
     param('type')
       .custom((type) => {
         if (type !== 'movie' && type !== 'tv') {
@@ -164,12 +157,19 @@ exports.tmdbSearchRules = () => {
   ]
 }
 
-exports.addMediaRules = () => {
+exports.addMovieRules = () => {
   return [
     body('tmdbId')
       .isNumeric({ no_symbols: true }).withMessage('TMDb id must be numeric'),
     body('streamPath')
       .notEmpty().withMessage('Stream path must not be empty')
+  ]
+}
+
+exports.addTvRules = () => {
+  return [
+    body('tmdbId')
+      .isNumeric({ no_symbols: true }).withMessage('TMDb id must be numeric')
   ]
 }
 
@@ -198,20 +198,77 @@ exports.addTvEpisodeRules = () => {
 exports.viewMediaRules = () => {
   return [
     query('exclude')
-      .matches(/^$|^[0-9a-zA-Z]+(?:,[0-9a-zA-Z]+)*$/).withMessage('Exclusion must be valid')
+      .optional({ nullable: true })
+      .isLength({ max: 250 }).withMessage('Exclusion string must be less than 250 characters long')
+      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
   ]
 }
 
 exports.searchMediaRules = () => {
   return [
+    query('query')
+      .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
+    query('sort')
+      .optional({ nullable: true })
+      .isLength({ max: 250 }).withMessage('Sort string must be less than 250 characters long')
+      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
     query('page')
+      .optional({ nullable: true })
       .isNumeric({ no_symbols: true }).withMessage('Page must be numeric')
-      .custom((page) => {
-        if (!page) {
-          return true;
+      .isLength({ min: 1, max: 1000 }).withMessage('Page must be between 1 and 1000'),
+    query('limit')
+      .optional({ nullable: true })
+      .isNumeric({ no_symbols: true }).withMessage('Limit must be numeric')
+      .isLength({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50')
+  ]
+}
+
+exports.fetchMediaRules = () => {
+  return [
+    query('sort')
+      .optional({ nullable: true })
+      .isLength({ max: 250 }).withMessage('Sort string must be less than 250 characters long')
+      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+    query('page')
+      .optional({ nullable: true })
+      .isNumeric({ no_symbols: true }).withMessage('Page must be numeric')
+      .isLength({ min: 1, max: 1000 }).withMessage('Page must be between 1 and 1000'),
+    query('limit')
+      .optional({ nullable: true })
+      .isNumeric({ no_symbols: true }).withMessage('Limit must be numeric')
+      .isLength({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50')
+  ]
+}
+
+exports.checkRatingRules = () => {
+  return [
+    param('id')
+      .isNumeric({ no_symbols: true }).withMessage('Media id must be numeric')
+  ]
+}
+
+exports.countRatingRules = () => {
+  return [
+    param('id')
+      .isNumeric({ no_symbols: true }).withMessage('Media id must be numeric'),
+    query('rating')
+      .custom((rating) => {
+        if (rating !== 'like' && rating !== 'dislike') {
+          throw Error('Rating type must be like or dislike');
         }
-        if (page < 1 || page > 1000) {
-          throw Error('Page must be between 1 and 1000');
+        return true;
+      })
+  ]
+}
+
+exports.ratingRules = () => {
+  return [
+    param('id')
+      .isNumeric({ no_symbols: true }).withMessage('Media id must be numeric'),
+    body('rating')
+      .custom((rating) => {
+        if (rating !== 'like' && rating !== 'dislike' && rating !== 'none') {
+          throw Error('Rating type must be like, dislike or none');
         }
         return true;
       })
