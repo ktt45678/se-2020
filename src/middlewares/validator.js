@@ -204,27 +204,11 @@ exports.viewMediaRules = () => {
   ]
 }
 
-exports.searchMediaRules = () => {
-  return [
-    query('query')
-      .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
-    query('sort')
-      .optional({ nullable: true })
-      .isLength({ max: 250 }).withMessage('Sort string must be less than 250 characters long')
-      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
-    query('page')
-      .optional({ nullable: true })
-      .isNumeric({ no_symbols: true }).withMessage('Page must be numeric')
-      .isLength({ min: 1, max: 1000 }).withMessage('Page must be between 1 and 1000'),
-    query('limit')
-      .optional({ nullable: true })
-      .isNumeric({ no_symbols: true }).withMessage('Limit must be numeric')
-      .isLength({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50')
-  ]
-}
-
 exports.fetchMediaRules = () => {
   return [
+    query('query')
+      .optional({ nullable: true })
+      .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
     query('sort')
       .optional({ nullable: true })
       .isLength({ max: 250 }).withMessage('Sort string must be less than 250 characters long')
@@ -272,5 +256,18 @@ exports.ratingRules = () => {
         }
         return true;
       })
+  ]
+}
+
+exports.streamRules = () => {
+  return [
+    param('id')
+      .isNumeric({ no_symbols: true }).withMessage('Stream id must be numeric'),
+    query('season')
+      .optional({ nullable: true })
+      .isNumeric({ no_symbols: true }).withMessage('Season number must be numeric'),
+    query('episode')
+      .optional({ nullable: true })
+      .isNumeric({ no_symbols: true }).withMessage('Episode number must be numeric')
   ]
 }

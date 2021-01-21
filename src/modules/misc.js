@@ -11,7 +11,7 @@ exports.toSortQuery = (sortString) => {
   const sortList = sortString.split(',');
   for (let i = 0; i < sortList.length; i++) {
     const sortItem = sortList[i].split(':');
-    sort[sortItem[0]] = sortItem[1];
+    sort[sortItem[0]] = Number(sortItem[1]);
   }
   return sort;
 }

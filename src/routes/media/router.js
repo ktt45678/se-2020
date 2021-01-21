@@ -5,10 +5,9 @@ const roleGuard = require('../../middlewares/role-guard');
 const validator = require('../../middlewares/validator');
 
 router.get('/', controller.index);
+router.get('/fetch', validator.fetchMediaRules(), controller.fetch);
 router.get('/details/:id', validator.viewMediaRules(), controller.details);
-router.get('/fetch', controller.fetch);
-router.get('/search', controller.search);
-router.get('/stream', controller.index);
+router.get('/stream/:id', validator.streamRules(), controller.stream);
 
 router.use(authGuard);
 router.use(roleGuard.admin);

@@ -1,3 +1,4 @@
+const config = require('../../config.json').tmdb;
 const mediaModule = require('../modules/media');
 const miscModule = require('../modules/misc');
 const mediaModel = require('../models/media');
@@ -88,43 +89,72 @@ exports.createEpisodeObject = async (id, season, episode) => {
   return tvEpisodeData;
 }
 
-exports.findMediaById = async (id, exclude_) => {
+exports.findMediaById = async (id) => {
+  return await mediaModel.findById(id);
+}
+
+exports.findMediaDetailsById = async (id, isPublic, exclude_) => {
   exclude = exclude_ ? miscModule.toExclusionString(exclude_) : '';
-  const result_ = await mediaModel.findMediaDetailsById(id, exclude);
-  const result = mediaModule.parseMediaResult(result_);
+  const result_ = await mediaModel.findMediaDetailsById(id, isPublic, exclude);
+  if (!result_) {
+    throw { status: 404, message: 'The resource could not be found' }
+  }
+  const posterUrl = `${process.env.IMAGECDN_URL}${config.poster_url}`;
+  const backdropUrl = `${process.env.IMAGECDN_URL}${config.backdrop_url}`;
+  const profileUrl = `${process.env.IMAGECDN_URL}${config.profile_url}`;
+  const stillUrl = `${process.env.IMAGECDN_URL}${config.still_url}`;
+  const result = mediaModule.parseMediaResult(posterUrl, backdropUrl, result_);
   if (result.credits) {
-    result.credits = mediaModule.parseCreditResult(result.credits);
+    result.credits = mediaModule.parseCreditResult(profileUrl, result.credits);
   }
   if (result.tvShow) {
-    result.tvShow.seasons = mediaModule.parseTvSeasonResult(result.tvShow.seasons);
+    result.tvShow.seasons = mediaModule.parseTvSeasonResult(posterUrl, stillUrl, result.tvShow.seasons);
   }
   return result;
 }
 
-exports.searchMedia = async (query, type, genre, sortString, isPublic, page_, limit_) => {
+exports.fetchMedia = async (query, type, genre, sortString, isPublic, page_, limit_) => {
   const page = page_ ? Number(page_) : 1;
   const limit = limit_ ? Number(limit_) : 30;
   const sort = sortString ? miscModule.toSortQuery(sortString) : null;
   const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await mediaModel.searchMedia(query, type, genre, sort, isPublic, skip, limit);
-  for (let i = 0; i < results.length; i++) {
-    results[i] = mediaModule.parseMediaResult(results[i]);
+  const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit);
+  if (results[0]) {
+    const posterUrl = `${process.env.IMAGECDN_URL}${config.poster_url}`;
+    const backdropUrl = `${process.env.IMAGECDN_URL}${config.backdrop_url}`;
+    for (let i = 0; i < results[0].results.length; i++) {
+      results[0].results[i] = mediaModule.parseMediaResult(posterUrl, backdropUrl, results[0].results[i]);
+    }
+    results[0].page = page;
+  } else {
+    results.push({ totalResults: 0, results: [], page });
   }
-  const media = { page, results }
-  return media;
+  return results[0];
 }
 
-exports.fetchMedia = async (type, genre, sortString, isPublic, page_, limit_) => {
-  const page = page_ ? Number(page_) : 1;
-  const limit = limit_ ? Number(limit_) : 30;
-  const sort = sortString ? miscModule.toSortQuery(sortString) : null;
-  const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await mediaModel.fetchMedia(type, genre, sort, isPublic, skip, limit);
-  for (let i = 0; i < results.length; i++) {
-    results[i] = mediaModule.parseMediaResult(results[i]);
+exports.findStreamByMedia = async (media, seasonNumber, episodeNumber) => {
+  if (media.movie?.stream) {
+    return media.movie.stream;
+  } else if (media.tvShow?.seasons) {
+    const season = media.tvShow.seasons.find(s => s.seasonNumber === Number(seasonNumber));
+    if (season?.episodes) {
+      const episode = season.episodes.find(e => e.episodeNumber === Number(episodeNumber));
+      if (episode?.stream) {
+        return episode.stream;
+      }
+    }
   }
-  const media = { page, results }
-  return media;
+  throw { status: 404, message: 'The resource could not be found' }
+}
+
+exports.createStreamUrls = async (id) => {
+  const baseUrl = process.env.GDRIVE_URL;
+  const stream = await mediaStorageModel.findById(id);
+  if (!stream) {
+    throw { status: 404, message: 'The resource could not be found' }
+  }
+  const urls = mediaModule.createStreamUrls(baseUrl, stream);
+  return urls;
 }
 
 exports.updateTvSeason = (tvDocument, seasonObject) => {

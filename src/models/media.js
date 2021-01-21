@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-sequence')(mongoose);
+const config = require('../../config.json');
 
 const Schema = mongoose.Schema;
 
@@ -120,28 +121,14 @@ const mediaSchema = new Schema({
 }, { _id: false, timestamps: true });
 
 mediaSchema.statics = {
-  findMediaDetailsById: async function (id, exclude) {
-    return await this.findOne({ _id: id }, exclude).populate('credits').exec();
+  findMediaDetailsById: async function (id, isPublic, fields) {
+    return await this.findOne({ _id: id, isPublic }, fields).populate('credits').exec();
   },
-  searchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
-    const filters = { $text: { $search: query } }
-    if (type === 'movie') {
-      filters.movie = { $ne: null }
-    } else if (type === 'tv') {
-      filters.tvShow = { $ne: null }
-    }
-    if (genre) {
-      filters.genres = genre;
-    }
-    if (typeof isPublic === 'boolean') {
-      filters.isPublic = isPublic;
-    }
-    //filters.$project = { initalReleaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } }
-    const fields = { credits: false, addedBy: false, videos: false, 'tvShow.seasons': false }
-    return await this.find(filters, fields, { sort, skip, limit }).exec();
-  },
-  fetchMedia: async function (type, genre, sort, isPublic, skip = 0, limit = 30) {
+  fetchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
     const filters = {}
+    if (query) {
+      filters.$text = { $search: query }
+    }
     if (type === 'movie') {
       filters.movie = { $ne: null }
     } else if (type === 'tv') {
@@ -153,9 +140,24 @@ mediaSchema.statics = {
     if (typeof isPublic === 'boolean') {
       filters.isPublic = isPublic;
     }
-    //filters.$project = { initalReleaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } }
-    const fields = { credits: false, addedBy: false, videos: false, 'tvShow.seasons': false }
-    return await this.find(filters, fields, { sort, skip, limit }).exec();
+    return await this.aggregate([
+      { $match: filters },
+      {
+        $facet:
+        {
+          'stage1': [{ $group: { _id: null, count: { $sum: 1 } } }],
+          'stage2': [
+            { $skip: skip },
+            { $limit: limit },
+            { $project: { credits: 0, addedBy: 0, videos: 0, 'tvShow.seasons': 0, __v: 0 } },
+            { $addFields: { releaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } } },
+            { $sort: sort }
+          ]
+        }
+      },
+      { $unwind: '$stage1' },
+      { $project: { totalResults: '$stage1.count', results: '$stage2' } }
+    ]);
   }
 }
 

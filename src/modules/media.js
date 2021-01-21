@@ -127,31 +127,42 @@ exports.parseVideoData = (data) => {
   return miniData;
 }
 
-exports.parseMediaResult = (result) => {
-  result.posterPath = result.posterPath ? `${process.env.IMAGECDN_URL}${config.poster_url}${result.posterPath}` : null;
-  result.backdropPath = result.backdropPath ? `${process.env.IMAGECDN_URL}${config.backdrop_url}${result.backdropPath}` : null;
+exports.parseMediaResult = (posterUrl, backdropUrl, result) => {
+  result.posterPath = result.posterPath ? `${posterUrl}${result.posterPath}` : null;
+  result.backdropPath = result.backdropPath ? `${backdropUrl}${result.backdropPath}` : null;
   return result;
 }
 
-exports.parseTvSeasonResult = (seasons) => {
+exports.parseTvSeasonResult = (posterUrl, stillUrl, seasons) => {
   for (let i = 0; i < seasons.length; i++) {
     if (!seasons[i].isAdded) {
       continue;
     }
-    seasons[i].posterPath = seasons[i].posterPath ? `${process.env.IMAGECDN_URL}${config.poster_url}${seasons[i].posterPath}` : null;
+    seasons[i].posterPath = seasons[i].posterPath ? `${posterUrl}${seasons[i].posterPath}` : null;
     for (let j = 0; j < seasons[i].episodes.length; j++) {
       if (!seasons[i].episodes[j].isAdded) {
         continue;
       }
-      seasons[i].episodes[j].stillPath = seasons[i].episodes[j].stillPath ? `${process.env.IMAGECDN_URL}${config.still_url}${seasons[i].episodes[j].stillPath}` : null;
+      seasons[i].episodes[j].stillPath = seasons[i].episodes[j].stillPath ? `${stillUrl}${seasons[i].episodes[j].stillPath}` : null;
     }
   }
   return seasons;
 }
 
-exports.parseCreditResult = (credits) => {
+exports.parseCreditResult = (profileUrl, credits) => {
   for (let i = 0; i < credits.length; i++) {
-    credits[i].profilePath = credits[i].profilePath ? `${process.env.IMAGECDN_URL}${config.profile_url}${credits[i].profilePath}` : null;
+    credits[i].profilePath = credits[i].profilePath ? `${profileUrl}${credits[i].profilePath}` : null;
   }
   return credits;
+}
+
+exports.createStreamUrls = (baseUrl, stream) => {
+  const urls = [];
+  for (let i = 0; i < stream.quality.length; i++) {
+    urls.push({
+      quality: stream.quality[i],
+      url: `${baseUrl}/${stream.path}${stream.file}_${stream.quality[i]}p${stream.ext}`
+    });
+  }
+  return urls;
 }

@@ -25,6 +25,7 @@ exports.parseFiles = (path_, data) => {
   const miniData = {
     path: path_,
     file: folder,
+    ext: null,
     quality: [],
     mimeType: null
   }
@@ -40,6 +41,7 @@ exports.parseFiles = (path_, data) => {
     }
     const quality = Number(name?.substring(0, name?.indexOf('.')).replace(folder, '')?.replace('_', '')?.replace('p', ''));
     if (quality) {
+      miniData.ext = path.extname(name);
       miniData.quality.push(quality);
       miniData.mimeType = mimeType;
     }

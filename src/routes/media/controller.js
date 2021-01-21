@@ -5,37 +5,7 @@ exports.index = (req, res) => {
   res.status(200).send({ message: 'Media' });
 }
 
-exports.details = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({ errors: errors.array() });
-  }
-  const { id } = req.params;
-  const { exclude } = req.query;
-  try {
-    const media = await mediaService.findMediaById(id, exclude);
-    res.status(200).send(media);
-  } catch (e) {
-    next(e);
-  }
-}
-
 exports.fetch = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({ errors: errors.array() });
-  }
-  const { type, genre, sort, page, limit } = req.query;
-  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
-  try {
-    const results = await mediaService.fetchMedia(type, genre, sort, isPublic, page, limit);
-    res.status(200).send(results);
-  } catch (e) {
-    next(e);
-  }
-}
-
-exports.search = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
@@ -43,15 +13,45 @@ exports.search = async (req, res, next) => {
   const { query, type, genre, sort, page, limit } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const results = await mediaService.searchMedia(query, type, genre, sort, isPublic, page, limit);
+    const results = await mediaService.fetchMedia(query, type, genre, sort, isPublic, page, limit);
     res.status(200).send(results);
   } catch (e) {
     next(e);
   }
 }
 
-exports.stream = async (req, res) => {
-  res.status(200).send({ message: 'Stream' });
+exports.details = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { id } = req.params;
+  const { exclude } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
+  try {
+    const media = await mediaService.findMediaDetailsById(id, isPublic, exclude);
+    res.status(200).send(media);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.stream = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { id } = req.params;
+  const { season, episode } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
+  try {
+    const media = await mediaService.findMediaDetailsById(id, isPublic, 'credits');
+    const streamId = await mediaService.findStreamByMedia(media, season, episode);
+    const streamUrls = await mediaService.createStreamUrls(streamId);
+    res.status(200).send(streamUrls);
+  } catch (e) {
+    next(e);
+  }
 }
 
 exports.addMovie = async (req, res, next) => {

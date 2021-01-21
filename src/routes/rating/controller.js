@@ -15,7 +15,7 @@ exports.check = async (req, res, next) => {
   try {
     const ratingRecord = await ratingService.viewRating(user._id, id);
     if (!ratingRecord) {
-      return res.status(404).send({ error: 'Record not found' });
+      return res.status(200).send({ liked: null });
     }
     res.status(200).send({ liked: ratingRecord.liked });
   } catch (e) {

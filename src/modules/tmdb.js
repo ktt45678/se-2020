@@ -14,10 +14,7 @@ exports.parseMovieSearch = (data, poster_url = '') => {
       originalTitle: original_title,
       overview: overview,
       popularity: popularity,
-      poster: {
-        path: poster_path,
-        url: poster_path ? poster_url + poster_path : poster_path
-      },
+      posterPath: poster_path ? poster_url + poster_path : null,
       releaseDate: release_date,
       title: title
     });
@@ -40,10 +37,7 @@ exports.parseTvSearch = (data, poster_url = '') => {
       originalTitle: original_name,
       overview: overview,
       popularity: popularity,
-      poster: {
-        path: poster_path,
-        url: poster_path ? poster_url + poster_path : poster_path
-      },
+      posterPath: poster_path ? poster_url + poster_path : null,
       firstAirDate: first_air_date,
       title: name
     });
@@ -55,20 +49,14 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
   const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, release_date, runtime, tagline, title, status } = data;
   const miniData = {
     adult: adult,
-    backdrop: {
-      path: backdrop_path,
-      url: backdrop_url + backdrop_path
-    },
+    backdropPath: backdrop_path ? backdrop_url + backdrop_path : null,
     genres: [],
     tmdbId: id,
     imdbId: imdb_id,
     originalTitle: original_title,
     overview: overview,
     popularity: popularity,
-    poster: {
-      path: poster_path,
-      url: poster_path ? poster_url + poster_path : poster_path
-    },
+    posterPath: poster_path ? poster_url + poster_path : null,
     releaseDate: release_date,
     runtime: runtime,
     tagline: tagline,
@@ -84,19 +72,13 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
 exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
   const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name } = data;
   const miniData = {
-    backdrop: {
-      path: backdrop_path,
-      url: backdrop_path ? backdrop_url + backdrop_path : backdrop_path
-    },
+    backdropPath: backdrop_path ? backdrop_url + backdrop_path : null,
     genres: [],
     tmdbId: id,
     originalTitle: original_name,
     overview: overview,
     popularity: popularity,
-    poster: {
-      path: poster_path,
-      url: poster_path ? poster_url + poster_path : poster_path
-    },
+    posterPath: poster_path ? poster_url + poster_path : null,
     firstAirDate: first_air_date,
     lastAirDate: last_air_date,
     episodeRunTime: episode_run_time,
@@ -117,10 +99,7 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
       episodeCount: episode_count,
       name: name,
       overview: overview,
-      poster: {
-        path: poster_path,
-        url: poster_path ? poster_url + poster_path : poster_path
-      }
+      posterPath: poster_path ? poster_url + poster_path : null
     });
   }
   return miniData;
@@ -135,10 +114,7 @@ exports.parseSeasonData = (data, poster_url = '') => {
     episodes: [],
     name: name,
     overview: overview,
-    poster: {
-      path: poster_path,
-      url: poster_path ? poster_url + poster_path : poster_path
-    }
+    posterPath: poster_path ? poster_url + poster_path : null
   }
   for (let i = 0; i < episodes.length; i++) {
     const { air_date, episode_number } = episodes[i];
@@ -156,10 +132,7 @@ exports.parseEpisodeData = (data, still_url = '') => {
     name: name,
     overview: overview,
     airDate: air_date,
-    still: {
-      path: still_path,
-      url: still_path ? still_url + still_path : still_path
-    }
+    stillPath: still_path ? still_url + still_path : null
   }
   return miniData;
 }
@@ -173,17 +146,11 @@ exports.parseImageData = (data, backdrop_url = '', poster_url = '') => {
   }
   for (let i = 0; i < backdrops.length; i++) {
     const backdrop_path = backdrops[i].file_path;
-    miniData.backdrops.push({
-      path: backdrop_path,
-      url: backdrop_url + backdrop_path
-    });
+    miniData.backdrops.push(backdrop_url + backdrop_path);
   }
   for (let i = 0; i < posters.length; i++) {
     const poster_path = posters[i].file_path;
-    miniData.posters.push({
-      path: poster_path,
-      url: poster_url + poster_path
-    });
+    miniData.posters.push(poster_url + poster_path);
   }
   return miniData;
 }
@@ -211,10 +178,7 @@ exports.parseCreditData = (data, profile_url = '') => {
     miniData.cast.push({
       name: name,
       originalName: original_name,
-      profile: {
-        path: profile_path,
-        url: profile_path ? profile_url + profile_path : profile_path
-      },
+      profilePath: profile_path ? profile_url + profile_path : null,
       department: known_for_department,
       character: character
     });
@@ -224,10 +188,7 @@ exports.parseCreditData = (data, profile_url = '') => {
     miniData.crew.push({
       name: name,
       originalName: original_name,
-      profile: {
-        path: profile_path,
-        url: profile_path ? profile_url + profile_path : profile_path
-      },
+      profilePath: profile_path ? profile_url + profile_path : null,
       department: department,
       job: job
     });

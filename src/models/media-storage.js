@@ -13,6 +13,10 @@ const mediaStorageSchema = new Schema({
     type: String,
     required: true
   },
+  ext: {
+    type: String,
+    required: true
+  },
   quality: [{
     type: Number,
     required: true
