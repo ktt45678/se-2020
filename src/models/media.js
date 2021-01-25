@@ -23,7 +23,6 @@ const mediaVideoSchema = new Schema({
 
 const tvEpisodeSchema = new Schema({
   _id: Number,
-  seasonNumber: Number,
   episodeNumber: Number,
   runtime: Number,
   name: String,
@@ -43,6 +42,11 @@ const tvEpisodeSchema = new Schema({
     type: Boolean,
     required: true,
     default: false
+  },
+  isManuallyAdded: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 }, { _id: false, timestamps: true });
 
@@ -53,13 +57,18 @@ const tvSeasonSchema = new Schema({
   episodeCount: Number,
   name: String,
   overview: String,
-  psoterPath: String,
+  posterPath: String,
   isPublic: {
     type: Boolean,
     required: true,
     default: false
   },
   isAdded: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isManuallyAdded: {
     type: Boolean,
     required: true,
     default: false
@@ -108,7 +117,17 @@ const mediaSchema = new Schema({
   }],
   genres: [String],
   popularity: Number,
+  isManuallyAdded: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   isPublic: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isDeleted: {
     type: Boolean,
     required: true,
     default: false
@@ -122,10 +141,10 @@ const mediaSchema = new Schema({
 
 mediaSchema.statics = {
   findMediaDetailsById: async function (id, isPublic, fields) {
-    return await this.findOne({ _id: id, isPublic }, fields).populate('credits').exec();
+    return await this.findOne({ _id: id, isPublic, isDeleted: false }, fields).populate('credits').exec();
   },
   fetchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
-    const filters = {}
+    const filters = { isDeleted: false }
     if (query) {
       filters.$text = { $search: query }
     }

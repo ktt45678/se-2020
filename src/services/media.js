@@ -1,4 +1,4 @@
-const config = require('../../config.json').tmdb;
+const config = require('../../config.json').media;
 const mediaModule = require('../modules/media');
 const miscModule = require('../modules/misc');
 const mediaModel = require('../models/media');
@@ -7,7 +7,7 @@ const mediaStorageModel = require('../models/media-storage');
 const tmdbService = require('./tmdb');
 const driveService = require('./drive');
 
-exports.createMovieDocument = async (id) => {
+exports.createMovieDocument = async (id, override) => {
   const movieResponse = await tmdbService.movie(id);
   const movieVideoResponse = await tmdbService.movieVideos(id);
   const movieData = mediaModule.parseMovieData(movieResponse.data);
@@ -17,7 +17,7 @@ exports.createMovieDocument = async (id) => {
   return movie;
 }
 
-exports.createTvDocument = async (id) => {
+exports.createTvDocument = async (id, override) => {
   const tvResponse = await tmdbService.tv(id);
   const tvVideoResponse = await tmdbService.tvVideos(id);
   const tvData = mediaModule.parseTvData(tvResponse.data);
@@ -25,6 +25,52 @@ exports.createTvDocument = async (id) => {
   tvData.videos = videoData;
   const tv = new mediaModel(tvData);
   return tv;
+}
+
+exports.createNewMovieDocument = (override) => {
+  if (!override) {
+    throw { status: 422, message: 'Override data is required to add a new movie' }
+  }
+  const newMovie = new mediaModel();
+  newMovie.tagline = override.tagline ?? null;
+  newMovie.title = override.title ?? null;
+  newMovie.originalTitle = override.originalTitle ?? null;
+  newMovie.overview = override.overview ?? null;
+  newMovie.posterPath = override.posterPath ?? null;
+  newMovie.backdropPath = override.backdropPath ?? null;
+  newMovie.movie = {};
+  newMovie.movie.runtime = override.movie?.runtime ?? null;
+  newMovie.movie.releaseDate = override.movie?.releaseDate ?? null;
+  newMovie.movie.status = override.movie?.status ?? null;
+  newMovie.movie.adult = override.movie?.adult ?? null;
+  newMovie.genres = override.genres ?? null;
+  newMovie.popularity = override.popularity ?? null;
+  newMovie.isManuallyAdded = true;
+  return newMovie;
+}
+
+exports.createNewTvDocument = (override) => {
+  if (!override) {
+    throw { status: 422, message: 'Override data is required to add a new tv show' }
+  }
+  const newTv = new mediaModel();
+  newTv.tagline = override.tagline ?? null;
+  newTv.title = override.title ?? null;
+  newTv.originalTitle = override.originalTitle ?? null;
+  newTv.overview = override.overview ?? null;
+  newTv.posterPath = override.posterPath ?? null;
+  newTv.backdropPath = override.backdropPath ?? null;
+  newTv.tvShow = {};
+  newTv.tvShow.episodeRuntime = override.tvShow?.episodeRuntime ?? null;
+  newTv.tvShow.firstAirDate = override.tvShow?.firstAirDate ?? null;
+  newTv.tvShow.lastAirDate = override.tvShow?.lastAirDate ?? null;
+  newTv.tvShow.status = override.tvShow?.status ?? null;
+  newTv.tvShow.seasonCount = override.tvShow?.seasonCount ?? null;
+  newTv.tvShow.seasons = [];
+  newTv.genres = override.genres ?? null;
+  newTv.popularity = override.popularity ?? null;
+  newTv.isManuallyAdded = true;
+  return newTv;
 }
 
 exports.importMovieCredits = async (id) => {
@@ -77,28 +123,83 @@ exports.importStream = async (path_) => {
   return newStream._id;
 }
 
-exports.createSeasonObject = async (id, season) => {
+exports.createSeasonDocument = async (id, season, override) => {
   const tvSeasonResponse = await tmdbService.tvSeason(id, season);
   const tvSeasonData = mediaModule.parseSeasonData(tvSeasonResponse.data);
+  tvSeasonData.isAdded = true;
   return tvSeasonData;
 }
 
-exports.createEpisodeObject = async (id, season, episode) => {
+exports.createEpisodeDocument = async (id, season, episode, override) => {
   const tvEpisodeResponse = await tmdbService.tvEpisode(id, season, episode);
   const tvEpisodeData = mediaModule.parseEpisodeData(tvEpisodeResponse.data);
+  tvEpisodeData.isAdded = true;
   return tvEpisodeData;
+}
+
+exports.createNewSeasonDocument = (season, override) => {
+  if (!override) {
+    throw { status: 422, message: 'Override data is required to add a new season' }
+  }
+  const tvSeasonData = {};
+  tvSeasonData.seasonNumber = season;
+  tvSeasonData.airDate = override.airDate ?? null;
+  tvSeasonData.episodeCount = override.episodeCount ?? null;
+  tvSeasonData.name = override.name ?? null;
+  tvSeasonData.overview = override.overview ?? null;
+  tvSeasonData.posterPath = override.posterPath ?? null;
+  tvSeasonData.episodes = [];
+  tvSeasonData.isAdded = true;
+  tvSeasonData.isManuallyAdded = true;
+  return tvSeasonData;
+}
+
+exports.createNewEpisodeDocument = (episode, override) => {
+  if (!override) {
+    throw { status: 422, message: 'Override data is required to add a new episode' }
+  }
+  const tvEpisodeData = {};
+  tvEpisodeData.episodeNumber = episode;
+  tvEpisodeData.runtime = override.runtime ?? null;
+  tvEpisodeData.name = override.name ?? null;
+  tvEpisodeData.overview = override.overview ?? null;
+  tvEpisodeData.airDate = override.airDate ?? null;
+  tvEpisodeData.stillPath = override.stillPath ?? null;
+  tvEpisodeData.isAdded = true;
+  tvEpisodeData.isManuallyAdded = true;
+  return tvEpisodeData;
+}
+
+exports.updateMovie = (media, override) => {
+  // Override media and its nested property
+  miscModule.overrideData(media, override, config.readonly_fields);
+  miscModule.overrideData(media.movie, override?.movie, config.readonly_fields);
+}
+
+exports.updateTv = (media, override) => {
+  miscModule.overrideData(media, override, config.readonly_fields);
+  miscModule.overrideData(media.tvShow, override?.tvShow, config.readonly_fields);
+}
+
+exports.updateTvSeason = (season, override) => {
+  miscModule.overrideData(season, override, config.readonly_fields);
+}
+
+exports.updateTvEpisode = (episode, override) => {
+  miscModule.overrideData(episode, override, config.readonly_fields);
 }
 
 exports.findMediaById = async (id) => {
   return await mediaModel.findById(id);
 }
 
-exports.findMediaDetailsById = async (id, isPublic, exclude_) => {
-  exclude = exclude_ ? miscModule.toExclusionString(exclude_) : '';
-  const result_ = await mediaModel.findMediaDetailsById(id, isPublic, exclude);
+exports.findMediaDetailsById = async (id, isPublic, exclusions) => {
+  const fields = exclusions ? miscModule.toExclusionString(exclusions) : '';
+  const result_ = await mediaModel.findMediaDetailsById(id, isPublic, fields);
   if (!result_) {
     throw { status: 404, message: 'The resource could not be found' }
   }
+  // Process images
   const posterUrl = `${process.env.IMAGECDN_URL}${config.poster_url}`;
   const backdropUrl = `${process.env.IMAGECDN_URL}${config.backdrop_url}`;
   const profileUrl = `${process.env.IMAGECDN_URL}${config.profile_url}`;
@@ -113,35 +214,57 @@ exports.findMediaDetailsById = async (id, isPublic, exclude_) => {
   return result;
 }
 
-exports.fetchMedia = async (query, type, genre, sortString, isPublic, page_, limit_) => {
-  const page = page_ ? Number(page_) : 1;
-  const limit = limit_ ? Number(limit_) : 30;
+exports.findTvSeason = (media, season, isAdded = null) => {
+  if (!media?.tvShow) {
+    throw { status: 404, message: 'TV Show not found' }
+  }
+  if (typeof isAdded === 'boolean') {
+    return media.tvShow.seasons.find(s => s.seasonNumber === season && s.isAdded === isAdded);
+  }
+  return media.tvShow.seasons.find(s => s.seasonNumber === season);
+}
+
+exports.findSeasonEpisode = (season, episode, isAdded = null) => {
+  if (!season) {
+    throw { status: 404, message: 'Season not found' }
+  }
+  if (!season.isAdded) {
+    throw { status: 422, message: 'This season is not available' }
+  }
+  if (typeof isAdded === 'boolean') {
+    return season.episodes.find(e => e.episodeNumber === episode && e.isAdded === isAdded);
+  }
+  return season.episodes.find(e => e.episodeNumber === episode);
+}
+
+exports.fetchMedia = async (query, type, genre, sortString, isPublic, page, limit) => {
   const sort = sortString ? miscModule.toSortQuery(sortString) : null;
   const skip = miscModule.calculatePageSkip(page, limit);
   const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit);
-  if (results[0]) {
+  // Aggregation always returns an array, result is the first one
+  const result = results.shift();
+  if (result) {
     const posterUrl = `${process.env.IMAGECDN_URL}${config.poster_url}`;
     const backdropUrl = `${process.env.IMAGECDN_URL}${config.backdrop_url}`;
-    for (let i = 0; i < results[0].results.length; i++) {
-      results[0].results[i] = mediaModule.parseMediaResult(posterUrl, backdropUrl, results[0].results[i]);
+    for (let i = 0; i < result.results.length; i++) {
+      result.results[i] = mediaModule.parseMediaResult(posterUrl, backdropUrl, result.results[i]);
     }
-    results[0].page = page;
-  } else {
-    results.push({ totalResults: 0, results: [], page });
+    result.page = page;
+    return result;
   }
-  return results[0];
+  return { totalResults: 0, results: [], page };
 }
 
 exports.findStreamByMedia = async (media, seasonNumber, episodeNumber) => {
+  // Media -> Movie -> Stream
+  // Media -> Tv Show -> Season -> Episode -> Stream
   if (media.movie?.stream) {
     return media.movie.stream;
   } else if (media.tvShow?.seasons) {
-    const season = media.tvShow.seasons.find(s => s.seasonNumber === Number(seasonNumber));
-    if (season?.episodes) {
-      const episode = season.episodes.find(e => e.episodeNumber === Number(episodeNumber));
-      if (episode?.stream) {
-        return episode.stream;
-      }
+    const season = this.findTvSeason(media, seasonNumber, true);
+    const episode = this.findSeasonEpisode(season, episodeNumber, true);
+    if (episode?.stream) {
+      return episode.stream;
     }
   }
   throw { status: 404, message: 'The resource could not be found' }
@@ -155,9 +278,4 @@ exports.createStreamUrls = async (id) => {
   }
   const urls = mediaModule.createStreamUrls(baseUrl, stream);
   return urls;
-}
-
-exports.updateTvSeason = (tvDocument, seasonObject) => {
-  const season = tvDocument.tvShow.seasons.find(s => s.seasonNumber === seasonObject.seasonNumber);
-  season.set(seasonObject);
 }

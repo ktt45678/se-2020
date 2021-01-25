@@ -7,7 +7,7 @@ const { validationResult } = require('express-validator');
 exports.view = async (req, res, next) => {
   const user = req.currentUser;
   const { id } = req.params;
-  if (!id || Number(id) === user._id) {
+  if (!id || id === user._id) {
     const { username, displayName, email, dateOfBirth, role, createdAt } = user;
     return res.status(200).send({ username, displayName, email, dateOfBirth, role, createdAt });
   }

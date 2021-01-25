@@ -1,4 +1,4 @@
-const config = require('../../config.json').tmdb;
+const config = require('../../config.json').media;
 const request = require('../modules/request');
 const tmdbModule = require('../modules/tmdb');
 

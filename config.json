@@ -21,11 +21,12 @@
     "avatar_sizes": [480, 256, 128],
     "background_sizes": [1920, 1280]
   },
-  "tmdb": {
+  "media": {
     "poster_url": "https://image.tmdb.org/t/p/w342",
     "backdrop_url": "https://image.tmdb.org/t/p/original",
     "still_url": "https://image.tmdb.org/t/p/w300",
     "profile_url": "https://image.tmdb.org/t/p/w185",
-    "credit_limit": 10
+    "credit_limit": 10,
+    "readonly_fields": ["imdbId", "tmdbId", "movie", "tvShow", "videos", "credits", "isPublic", "addedBy", "stream", "seasons", "episodes", "isManuallyAdded", "isDeleted"]
   }
 }

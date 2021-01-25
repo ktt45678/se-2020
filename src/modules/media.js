@@ -1,4 +1,4 @@
-const config = require('../../config.json').tmdb;
+const config = require('../../config.json').media;
 
 exports.parseMovieData = (data) => {
   const { adult, backdrop_path, genres, id, imdb_id, original_title, overview, popularity, poster_path, release_date, runtime, tagline, title, status } = data;
