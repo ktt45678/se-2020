@@ -10,6 +10,9 @@ exports.calculatePageSkip = (page, limit) => {
 }
 
 exports.toSortQuery = (sortString) => {
+  if (!sortString) {
+    return null;
+  }
   const sort = {}
   const sortList = sortString.split(',');
   for (let i = 0; i < sortList.length; i++) {

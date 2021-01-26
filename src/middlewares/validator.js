@@ -103,7 +103,7 @@ exports.viewUserRules = () => {
     param('id')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 1 }).withMessage('User id must be a positive integer and greater than 0')
+      .isInt({ min: 1 }).withMessage('User id must be a positive integer')
   ]
 }
 
@@ -185,12 +185,13 @@ exports.addMovieRules = () => {
     body('tmdbId')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('TMDb id must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('TMDb id must be a positive integer or 0'),
     body('streamPath')
       .notEmpty().withMessage('Stream path must not be empty'),
     body('isPublic')
       .toBoolean(true),
     body('override')
+      .optional({ nullable: true })
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
@@ -219,7 +220,7 @@ exports.addMovieRules = () => {
     body('override.movie.runtime')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer or 0'),
     body('override.movie.releaseDate')
       .optional({ nullable: true })
       .isDate({ format: 'YYYY-MM-DD', strictMode: true }).withMessage('Release date must be a valid date in YYYY-MM-DD format'),
@@ -255,7 +256,7 @@ exports.addTvRules = () => {
     body('tmdbId')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('TMDb id must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('TMDb id must be a positive  or 0'),
     body('isPublic')
       .toBoolean(true),
     body('override')
@@ -322,7 +323,7 @@ exports.addTvRules = () => {
     body('override.tvShow.seasonCount')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('Season count must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('Season count must be a positive integer or 0'),
     body('override.genres')
       .optional({ nullable: true })
       .isArray({ max: 64 }).withMessage('Genres must be an array and up to 64 items')
@@ -347,10 +348,10 @@ exports.addTvSeasonRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('season')
       .toInt()
-      .isInt().withMessage('Season number must be an integer'),
+      .isInt().withMessage('Season number must be an integer or 0'),
     body('isPublic')
       .toBoolean(true),
     body('override')
@@ -389,7 +390,7 @@ exports.addTvEpisodeRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('season')
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
@@ -416,7 +417,7 @@ exports.addTvEpisodeRules = () => {
     body('override.runtime')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer or 0'),
     body('override.name')
       .optional({ nullable: true })
       .isLength({ max: 128 }).withMessage('Name must not be longer than 128 characters long'),
@@ -436,12 +437,13 @@ exports.updateMovieRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('streamPath')
       .notEmpty().withMessage('Stream path must not be empty'),
     body('isPublic')
       .toBoolean(true),
     body('override')
+      .optional({ nullable: true })
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
@@ -470,7 +472,7 @@ exports.updateMovieRules = () => {
     body('override.movie.runtime')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer or 0'),
     body('override.movie.releaseDate')
       .optional({ nullable: true })
       .isDate({ format: 'YYYY-MM-DD', strictMode: true }).withMessage('Release date must be a valid date in YYYY-MM-DD format'),
@@ -505,7 +507,7 @@ exports.updateTvRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('isPublic')
       .toBoolean(true),
     body('override')
@@ -572,7 +574,7 @@ exports.updateTvRules = () => {
     body('override.tvShow.seasonCount')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('Season count must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('Season count must be a positive integer or 0'),
     body('override.genres')
       .optional({ nullable: true })
       .isArray({ max: 64 }).withMessage('Genres must be an array and up to 64 items')
@@ -597,7 +599,7 @@ exports.updateTvSeasonRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('season')
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
@@ -639,7 +641,7 @@ exports.updateTvEpisodeRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('season')
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
@@ -666,7 +668,7 @@ exports.updateTvEpisodeRules = () => {
     body('override.runtime')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 0 }).withMessage('Runtime must be a positive integer'),
+      .isInt({ min: 0 }).withMessage('Runtime must be a positive  or 0'),
     body('override.name')
       .optional({ nullable: true })
       .isLength({ max: 128 }).withMessage('Name must not be longer than 128 characters long'),
@@ -686,7 +688,7 @@ exports.deleteMediaRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0')
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
   ]
 }
 
@@ -694,7 +696,7 @@ exports.deleteTvSeasonRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('season')
       .toInt()
       .isInt().withMessage('Season number must be an integer')
@@ -705,7 +707,7 @@ exports.deleteTvEpisodeRules = () => {
   return [
     body('mediaId')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('season')
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
@@ -719,8 +721,8 @@ exports.viewMediaRules = () => {
   return [
     param('id')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
-    query('exclude')
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
+    query('exclusions')
       .optional({ nullable: true })
       .isLength({ max: 250 }).withMessage('Exclusion string must not be longer than 250 characters long')
       .bail()
@@ -741,11 +743,11 @@ exports.fetchMediaRules = () => {
     query('page')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 1, max: 1000 }).withMessage('Page must be between 1 and 1000'),
+      .isInt({ min: 1, max: 1000 }).withMessage('Page must be an integer between 1 and 1000'),
     query('limit')
       .optional({ nullable: true })
       .toInt()
-      .isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50')
+      .isInt({ min: 1, max: 50 }).withMessage('Limit must be an integer between 1 and 50')
   ]
 }
 
@@ -753,7 +755,7 @@ exports.checkRatingRules = () => {
   return [
     param('id')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0')
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
   ]
 }
 
@@ -761,7 +763,7 @@ exports.countRatingRules = () => {
   return [
     param('id')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     query('rating')
       .isIn(['like', 'dislike']).withMessage('Rating type must be like or dislike')
   ]
@@ -771,7 +773,7 @@ exports.ratingRules = () => {
   return [
     param('id')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('rating')
       .isIn(['like', 'dislike', 'none']).withMessage('Rating type must be like, dislike or none')
   ]
@@ -781,7 +783,7 @@ exports.streamRules = () => {
   return [
     param('id')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer and greater than 0'),
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     query('season')
       .optional({ nullable: true })
       .toInt()

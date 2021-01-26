@@ -7,7 +7,7 @@ const validator = require('../../middlewares/validator');
 const authGuard = require('../../middlewares/auth-guard');
 const rateLimiter = require('../../middlewares/rate-limiter');
 
-router.use(authGuard);
+router.use(authGuard());
 router.use('/:id?/avatar', validator.viewUserRules(), avatarRouter);
 router.use('/:id?/background', validator.viewUserRules(), backgroundRouter);
 router.use('/:id?/music', validator.viewUserRules(), musicRouter);

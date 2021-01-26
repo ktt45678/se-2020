@@ -4,7 +4,7 @@ const authGuard = require('../../middlewares/auth-guard');
 const roleGuard = require('../../middlewares/role-guard');
 const validator = require('../../middlewares/validator');
 
-router.use(authGuard);
+router.use(authGuard());
 router.use(roleGuard.regular);
 router.get('/:id/check', validator.checkRatingRules(), controller.check);
 router.get('/:id/count', validator.countRatingRules(), controller.count);

@@ -238,7 +238,7 @@ exports.findSeasonEpisode = (season, episode, isAdded = null) => {
 }
 
 exports.fetchMedia = async (query, type, genre, sortString, isPublic, page, limit) => {
-  const sort = sortString ? miscModule.toSortQuery(sortString) : null;
+  const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
   const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit);
   // Aggregation always returns an array, result is the first one

@@ -119,8 +119,10 @@ exports.parseCreditData = (data) => {
 }
 
 exports.parseVideoData = (data) => {
+  const { video_limit } = config;
+  const videoLimit = data.results.length > video_limit ? video_limit : data.results.length;
   const miniData = [];
-  for (let i = 0; i < data.results.length; i++) {
+  for (let i = 0; i < videoLimit; i++) {
     const { name, site, key, type } = data.results[i];
     miniData.push({ name, site, key, type });
   }

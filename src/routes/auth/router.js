@@ -8,7 +8,7 @@ const rateLimiter = require('../../middlewares/rate-limiter');
 router.get('/', controller.index);
 router.post('/login', rateLimiter(600, 5, true), validator.loginRules(), controller.login);
 router.post('/register', validator.registrationRules(), controller.register);
-router.post('/sendconfirmemail', authGuard, rateLimiter(120), controller.sendConfirmEmail);
+router.post('/sendconfirmemail', authGuard(), rateLimiter(120), controller.sendConfirmEmail);
 router.post('/sendrecoveryemail', rateLimiter(120), validator.recoveryRules(), controller.sendRecoveryEmail);
 router.post('/confirmemail', controller.confirmEmail);
 router.post('/passwordrecovery', controller.passwordRecovery);

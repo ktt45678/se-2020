@@ -5,11 +5,11 @@ const roleGuard = require('../../middlewares/role-guard');
 const validator = require('../../middlewares/validator');
 
 router.get('/', controller.index);
-router.get('/fetch', validator.fetchMediaRules(), controller.fetch);
-router.get('/details/:id', validator.viewMediaRules(), controller.details);
-router.get('/stream/:id', validator.streamRules(), controller.stream);
+router.get('/fetch', authGuard(true), validator.fetchMediaRules(), controller.fetch);
+router.get('/details/:id', authGuard(true), validator.viewMediaRules(), controller.details);
+router.get('/stream/:id', authGuard(true), validator.streamRules(), controller.stream);
 
-router.use(authGuard);
+router.use(authGuard());
 router.use(roleGuard.admin);
 router.post('/movie', validator.addMovieRules(), controller.addMovie);
 router.post('/tv', validator.addTvRules(), controller.addTv);

@@ -141,10 +141,14 @@ const mediaSchema = new Schema({
 
 mediaSchema.statics = {
   findMediaDetailsById: async function (id, isPublic, fields) {
-    return await this.findOne({ _id: id, isPublic, isDeleted: false }, fields).populate('credits').exec();
+    const filters = { _id: id, isDeleted: false };
+    if (typeof isPublic === 'boolean') {
+      filters.isPublic = isPublic;
+    }
+    return await this.findOne(filters, fields).select('-isDeleted -movie.stream -tvShow.seasons.episodes.stream').populate('credits').exec();
   },
   fetchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
-    const filters = { isDeleted: false }
+    const filters = { isDeleted: false };
     if (query) {
       filters.$text = { $search: query }
     }
@@ -159,19 +163,22 @@ mediaSchema.statics = {
     if (typeof isPublic === 'boolean') {
       filters.isPublic = isPublic;
     }
+    const aggregateStage2 = [
+      { $skip: skip },
+      { $limit: limit },
+      { $project: { credits: 0, addedBy: 0, videos: 0, 'tvShow.seasons': 0, 'movie.stream': 0, isDeleted: 0, isManuallyAdded: 0, __v: 0 } },
+      { $addFields: { releaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } } }
+    ];
+    if (sort) {
+      aggregateStage2.push({ $sort: sort });
+    }
     return await this.aggregate([
       { $match: filters },
       {
         $facet:
         {
           'stage1': [{ $group: { _id: null, count: { $sum: 1 } } }],
-          'stage2': [
-            { $skip: skip },
-            { $limit: limit },
-            { $project: { credits: 0, addedBy: 0, videos: 0, 'tvShow.seasons': 0, __v: 0 } },
-            { $addFields: { releaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } } },
-            { $sort: sort }
-          ]
+          'stage2': aggregateStage2
         }
       },
       { $unwind: '$stage1' },

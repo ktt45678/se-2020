@@ -156,11 +156,13 @@ exports.parseImageData = (data, backdrop_url = '', poster_url = '') => {
 }
 
 exports.parseVideoData = (data) => {
+  const { video_limit } = config;
+  const videoLimit = data.results.length > video_limit ? video_limit : data.results.length;
   const miniData = {
     tmdbId: data.id,
     results: []
   }
-  for (let i = 0; i < data.results.length; i++) {
+  for (let i = 0; i < videoLimit; i++) {
     const { name, site, key, type } = data.results[i];
     miniData.results.push({ name, site, key, type });
   }
@@ -168,12 +170,15 @@ exports.parseVideoData = (data) => {
 }
 
 exports.parseCreditData = (data, profile_url = '') => {
+  const { credit_limit } = config;
+  const castLimit = data.cast.length > credit_limit ? credit_limit : data.cast.length;
+  const crewLimit = data.crew.length > credit_limit ? credit_limit : data.crew.length;
   const miniData = {
     tmdbId: data.id,
     cast: [],
     crew: []
   }
-  for (let i = 0; i < data.cast.length; i++) {
+  for (let i = 0; i < castLimit; i++) {
     const { name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.cast.push({
       name: name,
@@ -183,7 +188,7 @@ exports.parseCreditData = (data, profile_url = '') => {
       character: character
     });
   }
-  for (let i = 0; i < data.crew.length; i++) {
+  for (let i = 0; i < crewLimit; i++) {
     const { name, original_name, profile_path, department, job } = data.crew[i];
     miniData.crew.push({
       name: name,
