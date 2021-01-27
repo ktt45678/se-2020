@@ -23,8 +23,7 @@ exports.viewRating = async (userId, mediaId) => {
   return ratingRecord;
 }
 
-exports.countRating = async (mediaId, rating) => {
-  const liked = rating === 'like';
+exports.countRating = async (mediaId, liked) => {
   const ratingCount = await userLikeListModel.countRecordsByMedia(mediaId, liked);
   return ratingCount;
 }

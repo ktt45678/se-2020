@@ -34,9 +34,9 @@ exports.register = async (req, res, next) => {
     return res.status(422).send({ errors: errors.array() });
   }
   const { username, displayName, dateOfBirth, email, password } = req.body;
-  // Create user
-  const user = authService.createUser(username, displayName, dateOfBirth, email, password);
   try {
+    // Create user
+    const user = await authService.createUser(username, displayName, dateOfBirth, email, password);
     // Send confirmation email and response user info
     user.activationCode = await emailService.sendConfirmEmail(user);
     // Save user in database

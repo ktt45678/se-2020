@@ -29,10 +29,10 @@ exports.count = async (req, res, next) => {
     return res.status(422).send({ errors: errors.array() });
   }
   const { id } = req.params;
-  const { rating } = req.query;
   try {
-    const ratingCount = await ratingService.countRating(id, rating);
-    res.status(200).send({ count: ratingCount });
+    const liked = await ratingService.countRating(id, true);
+    const disliked = await ratingService.countRating(id, false);
+    res.status(200).send({ liked, disliked });
   } catch (e) {
     next(e);
   }

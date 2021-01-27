@@ -4,15 +4,15 @@ const authModule = require('../modules/auth');
 
 exports.authenticate = async (username, password) => {
   const user = await userModel.findByUsernameOrEmail(username);
-  if (user && userModel.comparePassword(password, user.password)) {
+  if (user && await userModel.comparePassword(password, user.password)) {
     return user;
   }
   throw { status: 400, message: 'Authentication failed' };
 }
 
-exports.createUser = (username, displayName, dateOfBirth, email, password) => {
+exports.createUser = async (username, displayName, dateOfBirth, email, password) => {
   const role = email === process.env.OWNER_EMAIL ? 'admin' : 'member';
-  const hashedPassword = userModel.hashPassword(password);
+  const hashedPassword = await userModel.hashPassword(password);
   const user = new userModel({
     username,
     displayName,
@@ -24,8 +24,8 @@ exports.createUser = (username, displayName, dateOfBirth, email, password) => {
   return user;
 }
 
-exports.hashPassword = (password) => {
-  return userModel.hashPassword(password);
+exports.hashPassword = async (password) => {
+  return await userModel.hashPassword(password);
 }
 
 exports.signAccessToken = (user) => {
@@ -63,7 +63,7 @@ exports.findUserByRecoveryCode = async (recoveryCode) => {
 }
 
 exports.resetPassword = async (recoveryCode, password) => {
-  hashedPassword = userModel.hashPassword(password);
+  hashedPassword = await userModel.hashPassword(password);
   const user = await userModel.resetPassword(recoveryCode, hashedPassword);
   return user;
 }

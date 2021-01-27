@@ -1,8 +1,13 @@
 const userService = require('../../../services/user');
 const multer = require('../../../middlewares/multer');
 const musicUpload = multer.audio.single('audio');
+const { validationResult } = require('express-validator');
 
 exports.view = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
   const { id } = req.params;
   try {
     const search = id ? await userService.findUserById(id) : id;
@@ -30,6 +35,10 @@ exports.view = async (req, res, next) => {
 
 exports.upload = (req, res, next) => {
   musicUpload(req, res, async (err) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).send({ errors: errors.array() });
+    }
     if (err) {
       return res.status(400).send({ error: err.message });
     }
@@ -54,6 +63,10 @@ exports.upload = (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
   const user = req.currentUser;
   const music = userService.findMusic(user);
   if (!music) {

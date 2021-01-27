@@ -114,6 +114,7 @@ exports.updateUserRules = () => {
       .isAlphanumeric().withMessage('Username must be alphanumeric')
       .isLength({ min: 3, max: 32 }).withMessage('Username must be between 3 and 32 characters long')
       .bail()
+      .if((username, { req }) => username !== req.currentUser?.username)
       .custom(async (username) => {
         try {
           var user = await userService.findUserByUsername(username);
@@ -129,6 +130,7 @@ exports.updateUserRules = () => {
     body('email')
       .isEmail().withMessage('Email must be valid')
       .bail()
+      .if((email, { req }) => email !== req.currentUser?.email)
       .custom(async (email) => {
         try {
           var user = await userService.findUserByEmail(email);
@@ -344,7 +346,7 @@ exports.addTvRules = () => {
   ]
 }
 
-exports.addTvSeasonRules = () => {
+exports.addAndUpdateTvSeasonRules = () => {
   return [
     body('mediaId')
       .toInt()
@@ -386,7 +388,7 @@ exports.addTvSeasonRules = () => {
   ]
 }
 
-exports.addTvEpisodeRules = () => {
+exports.addAndUpdateTvEpisodeRules = () => {
   return [
     body('mediaId')
       .toInt()
@@ -595,95 +597,6 @@ exports.updateTvRules = () => {
   ]
 }
 
-exports.updateTvSeasonRules = () => {
-  return [
-    body('mediaId')
-      .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
-    body('season')
-      .toInt()
-      .isInt().withMessage('Season number must be an integer'),
-    body('isPublic')
-      .toBoolean(true),
-    body('override')
-      .notEmpty().withMessage('Override must not be empty')
-      .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
-      .isJSON().withMessage('Override must be a valid json string')
-      .bail()
-      .customSanitizer(override => {
-        override = JSON.parse(override);
-        return override
-      }),
-    body('override.airDate')
-      .optional({ nullable: true })
-      .isDate({ format: 'YYYY-MM-DD', strictMode: true }).withMessage('Air date must be a valid date in YYYY-MM-DD format'),
-    body('override.seasonNumber')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt().withMessage('Season number must be an integer'),
-    body('override.episodeCount')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt().withMessage('Episode count must be an integer'),
-    body('override.name')
-      .optional({ nullable: true })
-      .isLength({ max: 128 }).withMessage('Name must not be longer than 128 characters long'),
-    body('override.overview')
-      .optional({ nullable: true })
-      .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
-    body('override.posterPath')
-      .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Poster path must not be longer than 64 characters long')
-  ]
-}
-
-exports.updateTvEpisodeRules = () => {
-  return [
-    body('mediaId')
-      .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
-    body('season')
-      .toInt()
-      .isInt().withMessage('Season number must be an integer'),
-    body('episode')
-      .toInt()
-      .isInt().withMessage('Episode number must be an integer'),
-    body('streamPath')
-      .notEmpty().withMessage('Stream path must not be empty'),
-    body('isPublic')
-      .toBoolean(true),
-    body('override')
-      .notEmpty().withMessage('Override must not be empty')
-      .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
-      .isJSON().withMessage('Override must be a valid json string')
-      .bail()
-      .customSanitizer(override => {
-        override = JSON.parse(override);
-        return override
-      }),
-    body('override.episodeNumber')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt().withMessage('Episode number must be an integer'),
-    body('override.runtime')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt({ min: 0 }).withMessage('Runtime must be a positive  or 0'),
-    body('override.name')
-      .optional({ nullable: true })
-      .isLength({ max: 128 }).withMessage('Name must not be longer than 128 characters long'),
-    body('override.overview')
-      .optional({ nullable: true })
-      .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
-    body('override.airDate')
-      .optional({ nullable: true })
-      .isDate({ format: 'YYYY-MM-DD', strictMode: true }).withMessage('Air date must be a valid date in YYYY-MM-DD format'),
-    body('override.stillPath')
-      .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Still path must not be longer than 64 characters long')
-  ]
-}
-
 exports.deleteMediaRules = () => {
   return [
     body('mediaId')
@@ -763,9 +676,7 @@ exports.countRatingRules = () => {
   return [
     param('id')
       .toInt()
-      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
-    query('rating')
-      .isIn(['like', 'dislike']).withMessage('Rating type must be like or dislike')
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
   ]
 }
 

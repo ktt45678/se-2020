@@ -1,8 +1,13 @@
 const userService = require('../../../services/user');
 const multer = require('../../../middlewares/multer');
 const backgroundUpload = multer.background.single('image');
+const { validationResult } = require('express-validator');
 
 exports.view = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
   const { id } = req.params;
   const { size } = req.query;
   try {
@@ -31,6 +36,10 @@ exports.view = async (req, res, next) => {
 
 exports.upload = (req, res, next) => {
   backgroundUpload(req, res, async (err) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).send({ errors: errors.array() });
+    }
     if (err) {
       return res.status(422).send({ error: err.message });
     }
@@ -55,6 +64,10 @@ exports.upload = (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
   const user = req.currentUser;
   const background = userService.findBackground(user);
   if (!background) {

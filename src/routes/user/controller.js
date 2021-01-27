@@ -5,6 +5,10 @@ const redisService = require('../../services/redis');
 const { validationResult } = require('express-validator');
 
 exports.view = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
   const user = req.currentUser;
   const { id } = req.params;
   if (!id || id === user._id) {
@@ -51,7 +55,7 @@ exports.update = async (req, res, next) => {
       user.activationCode = await emailService.sendUpdateEmail(user);
     }
     if (newPassword) {
-      user.password = authService.hashPassword(newPassword);
+      user.password = await authService.hashPassword(newPassword);
     }
     await user.save();
     const accessToken = authService.signAccessToken(user);

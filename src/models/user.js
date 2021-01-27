@@ -97,11 +97,11 @@ userSchema.statics = {
       password: password
     }).exec();
   },
-  hashPassword: function (password) {
-    return bcrypt.hashSync(password, 10);
+  hashPassword: async function (password) {
+    return await bcrypt.hash(password, 10);
   },
-  comparePassword: function (password, hash) {
-    return bcrypt.compareSync(password, hash);
+  comparePassword: async function (password, hash) {
+    return await bcrypt.compare(password, hash);
   }
 }
 
