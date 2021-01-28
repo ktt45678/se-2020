@@ -121,6 +121,7 @@ exports.addTvSeason = async (req, res, next) => {
       miniSeason.set(seasonDocument);
     } else {
       media.tvShow.seasons.push(seasonDocument);
+      media.tvShow.seasonCount++;
     }
     await media.save();
     res.status(200).send({ message: 'Season has been added successfully' });
@@ -155,6 +156,7 @@ exports.addTvEpisode = async (req, res, next) => {
       miniEpisode.set(episodeDocument);
     } else {
       media.tvShow.seasons[season].episodes.push(episodeDocument);
+      media.tvShow.seasons[season].episodeCount++;
     }
     await media.save();
     res.status(200).send({ message: 'Episode has been added successfully' });

@@ -194,7 +194,7 @@ exports.findMediaById = async (id) => {
 }
 
 exports.findMediaDetailsById = async (id, isPublic, exclusions) => {
-  const fields = exclusions ? miscModule.toExclusionString(exclusions) : '';
+  const fields = miscModule.toExclusionQuery(exclusions);
   const result_ = await mediaModel.findMediaDetailsById(id, isPublic, fields);
   if (!result_) {
     throw { status: 404, message: 'The resource could not be found' }

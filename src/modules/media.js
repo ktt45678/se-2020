@@ -20,8 +20,10 @@ exports.parseMovieData = (data) => {
       adult: adult
     }
   }
-  for (let i = 0; i < genres.length; i++) {
+  let i = 0;
+  while (i < genres.length) {
     miniData.genres.push(genres[i].name);
+    i++;
   }
   return miniData;
 }
@@ -47,12 +49,16 @@ exports.parseTvData = (data) => {
       seasons: []
     }
   }
-  for (let i = 0; i < genres.length; i++) {
+  let i = 0;
+  while (i < genres.length) {
     miniData.genres.push(genres[i].name);
+    i++;
   }
-  for (let i = 0; i < seasons.length; i++) {
+  i = 0;
+  while (i < seasons.length) {
     const { air_date, season_number } = seasons[i];
     miniData.tvShow.seasons.push({ airDate: air_date, seasonNumber: season_number });
+    i++;
   }
   return miniData;
 }
@@ -68,9 +74,11 @@ exports.parseSeasonData = (data) => {
     overview: overview,
     posterPath: poster_path
   }
-  for (let i = 0; i < episodes.length; i++) {
+  let i = 0;
+  while (i < episodes.length) {
     const { air_date, episode_number } = episodes[i];
     miniData.episodes.push({ airDate: air_date, episodeNumber: episode_number });
+    i++;
   }
   return miniData;
 }
@@ -93,7 +101,8 @@ exports.parseCreditData = (data) => {
   const castLimit = data.cast.length > credit_limit ? credit_limit : data.cast.length;
   const crewLimit = data.crew.length > credit_limit ? credit_limit : data.crew.length;
   const miniData = [];
-  for (let i = 0; i < castLimit; i++) {
+  let i = 0;
+  while (i < castLimit) {
     const { credit_id, name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.push({
       tmdbId: credit_id,
@@ -103,8 +112,10 @@ exports.parseCreditData = (data) => {
       department: known_for_department,
       cast: { character }
     });
+    i++;
   }
-  for (let i = 0; i < crewLimit; i++) {
+  i = 0;
+  while (i < crewLimit) {
     const { credit_id, name, original_name, profile_path, department, job } = data.crew[i];
     miniData.push({
       tmdbId: credit_id,
@@ -114,6 +125,7 @@ exports.parseCreditData = (data) => {
       department: department,
       crew: { job }
     });
+    i++;
   }
   return miniData;
 }
@@ -122,9 +134,11 @@ exports.parseVideoData = (data) => {
   const { video_limit } = config;
   const videoLimit = data.results.length > video_limit ? video_limit : data.results.length;
   const miniData = [];
-  for (let i = 0; i < videoLimit; i++) {
+  let i = 0;
+  while (i < videoLimit) {
     const { name, site, key, type } = data.results[i];
     miniData.push({ name, site, key, type });
+    i++;
   }
   return miniData;
 }
@@ -136,12 +150,14 @@ exports.parseMediaResult = (posterUrl, backdropUrl, result) => {
 }
 
 exports.parseTvSeasonResult = (posterUrl, stillUrl, seasons) => {
-  for (let i = 0; i < seasons.length; i++) {
+  let i = seasons.length;
+  while (i--) {
     if (!seasons[i].isAdded) {
       continue;
     }
     seasons[i].posterPath = seasons[i].posterPath ? `${posterUrl}${seasons[i].posterPath}` : null;
-    for (let j = 0; j < seasons[i].episodes.length; j++) {
+    let j = seasons[i].episodes.length;
+    while (j--) {
       if (!seasons[i].episodes[j].isAdded) {
         continue;
       }
@@ -152,7 +168,8 @@ exports.parseTvSeasonResult = (posterUrl, stillUrl, seasons) => {
 }
 
 exports.parseCreditResult = (profileUrl, credits) => {
-  for (let i = 0; i < credits.length; i++) {
+  let i = credits.length;
+  while (i--) {
     credits[i].profilePath = credits[i].profilePath ? `${profileUrl}${credits[i].profilePath}` : null;
   }
   return credits;
@@ -160,11 +177,14 @@ exports.parseCreditResult = (profileUrl, credits) => {
 
 exports.createStreamUrls = (baseUrl, stream) => {
   const urls = [];
-  for (let i = 0; i < stream.quality.length; i++) {
+  let i = 0;
+  while (i < stream.quality.length) {
     urls.push({
       quality: stream.quality[i],
+      mimeType: stream.mimeType,
       url: `${baseUrl}/${stream.path}${stream.file}_${stream.quality[i]}p${stream.ext}`
     });
+    i++;
   }
   return urls;
 }

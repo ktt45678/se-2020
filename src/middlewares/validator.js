@@ -189,7 +189,7 @@ exports.addMovieRules = () => {
       .toInt()
       .isInt({ min: 0 }).withMessage('TMDb id must be a positive integer or 0'),
     body('streamPath')
-      .notEmpty().withMessage('Stream path must not be empty'),
+      .isLength({ min: 1, max: 1000 }).withMessage('Stream path must be between 1 and 1000 characters long'),
     body('isPublic')
       .toBoolean(true),
     body('override')
@@ -400,7 +400,7 @@ exports.addAndUpdateTvEpisodeRules = () => {
       .toInt()
       .isInt().withMessage('Episode number must be an integer'),
     body('streamPath')
-      .notEmpty().withMessage('Stream path must not be empty'),
+      .isLength({ min: 1, max: 1000 }).withMessage('Stream path must be between 1 and 1000 characters long'),
     body('isPublic')
       .toBoolean(true),
     body('override')
@@ -441,7 +441,7 @@ exports.updateMovieRules = () => {
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('streamPath')
-      .notEmpty().withMessage('Stream path must not be empty'),
+      .isLength({ min: 1, max: 1000 }).withMessage('Stream path must be between 1 and 1000 characters long'),
     body('isPublic')
       .toBoolean(true),
     body('override')

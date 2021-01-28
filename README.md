@@ -17,4 +17,5 @@ npm start
 4. [Azure Blob Storage](https://azure.microsoft.com/en-us/services/storage/blobs)
 5. [TMDb API](https://developers.themoviedb.org/3/getting-started/introduction) (v3)
 6. [Redis](https://redis.io) (v5.0.10 or later)
-7. [Images.weserv.nl](https://images.weserv.nl)
+7. [Image CDN](https://images.weserv.nl)
+8. [GDIndex](https://github.com/maple3142/GDIndex)

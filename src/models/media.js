@@ -145,7 +145,9 @@ mediaSchema.statics = {
     if (typeof isPublic === 'boolean') {
       filters.isPublic = isPublic;
     }
-    return await this.findOne(filters, fields).select('-isDeleted -movie.stream -tvShow.seasons.episodes.stream').populate('credits').exec();
+    fields = fields ?? {};
+    fields.isDeleted = 0;
+    return await this.findOne(filters, fields).populate('credits').exec();
   },
   fetchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
     const filters = { isDeleted: false };

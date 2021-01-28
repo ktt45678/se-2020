@@ -6,7 +6,8 @@ exports.parseMovieSearch = (data, poster_url = '') => {
     totalResults: total_results,
     results: []
   }
-  for (let i = 0; i < results.length; i++) {
+  let i = 0;
+  while (i < results.length) {
     const { adult, id, original_title, overview, popularity, poster_path, release_date, title } = results[i];
     miniData.results.push({
       adult: adult,
@@ -18,6 +19,7 @@ exports.parseMovieSearch = (data, poster_url = '') => {
       releaseDate: release_date,
       title: title
     });
+    i++;
   }
   return miniData;
 }
@@ -30,7 +32,8 @@ exports.parseTvSearch = (data, poster_url = '') => {
     totalResults: total_results,
     results: []
   }
-  for (let i = 0; i < results.length; i++) {
+  let i = 0;
+  while (i < results.length) {
     const { id, original_name, overview, popularity, poster_path, first_air_date, name } = results[i];
     miniData.results.push({
       tmdbId: id,
@@ -41,6 +44,7 @@ exports.parseTvSearch = (data, poster_url = '') => {
       firstAirDate: first_air_date,
       title: name
     });
+    i++;
   }
   return miniData;
 }
@@ -63,8 +67,10 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
     title: title,
     status: status
   }
-  for (let i = 0; i < genres.length; i++) {
+  let i = 0;
+  while (i < genres.length) {
     miniData.genres.push(genres[i].name);
+    i++;
   }
   return miniData;
 }
@@ -88,10 +94,13 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
     tagline: tagline,
     title: name
   }
-  for (let i = 0; i < genres.length; i++) {
+  let i = 0;
+  while (i < genres.length) {
     miniData.genres.push(genres[i].name);
+    i++;
   }
-  for (let i = 0; i < seasons.length; i++) {
+  i = 0;
+  while (i < seasons.length) {
     const { air_date, season_number, episode_count, name, overview, poster_path } = seasons[i];
     miniData.seasons.push({
       airDate: air_date,
@@ -101,6 +110,7 @@ exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
       overview: overview,
       posterPath: poster_path ? poster_url + poster_path : null
     });
+    i++;
   }
   return miniData;
 }
@@ -116,9 +126,11 @@ exports.parseSeasonData = (data, poster_url = '') => {
     overview: overview,
     posterPath: poster_path ? poster_url + poster_path : null
   }
-  for (let i = 0; i < episodes.length; i++) {
+  let i = 0;
+  while (i < episodes.length) {
     const { air_date, episode_number } = episodes[i];
     miniData.episodes.push({ airDate: air_date, episodeNumber: episode_number });
+    i++;
   }
   return miniData;
 }
@@ -144,13 +156,17 @@ exports.parseImageData = (data, backdrop_url = '', poster_url = '') => {
     posters: [],
     backdrops: []
   }
-  for (let i = 0; i < backdrops.length; i++) {
+  let i = 0;
+  while (i < backdrops.length) {
     const backdrop_path = backdrops[i].file_path;
     miniData.backdrops.push(backdrop_url + backdrop_path);
+    i++;
   }
-  for (let i = 0; i < posters.length; i++) {
+  i = 0;
+  while (i < posters.length) {
     const poster_path = posters[i].file_path;
     miniData.posters.push(poster_url + poster_path);
+    i++;
   }
   return miniData;
 }
@@ -162,9 +178,11 @@ exports.parseVideoData = (data) => {
     tmdbId: data.id,
     results: []
   }
-  for (let i = 0; i < videoLimit; i++) {
+  let i = 0;
+  while (i < videoLimit) {
     const { name, site, key, type } = data.results[i];
     miniData.results.push({ name, site, key, type });
+    i++;
   }
   return miniData;
 }
@@ -178,7 +196,8 @@ exports.parseCreditData = (data, profile_url = '') => {
     cast: [],
     crew: []
   }
-  for (let i = 0; i < castLimit; i++) {
+  let i = 0;
+  while (i < castLimit) {
     const { name, original_name, profile_path, known_for_department, character } = data.cast[i];
     miniData.cast.push({
       name: name,
@@ -187,8 +206,10 @@ exports.parseCreditData = (data, profile_url = '') => {
       department: known_for_department,
       character: character
     });
+    i++;
   }
-  for (let i = 0; i < crewLimit; i++) {
+  i = 0;
+  while (i < crewLimit) {
     const { name, original_name, profile_path, department, job } = data.crew[i];
     miniData.crew.push({
       name: name,
@@ -197,6 +218,7 @@ exports.parseCreditData = (data, profile_url = '') => {
       department: department,
       job: job
     });
+    i++;
   }
   return miniData;
 }

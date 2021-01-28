@@ -1,5 +1,14 @@
-exports.toExclusionString = (string) => {
-  return `-${string.replace(',', ' -')}`;
+exports.toExclusionQuery = (exclusionString) => {
+  if (!exclusionString) {
+    return null;
+  }
+  const exclusion = {};
+  const exclusionList = exclusionString.split(',');
+  let i = exclusionList.length;
+  while (i--) {
+    exclusion[exclusionList[i]] = 0;
+  }
+  return exclusion;
 }
 
 exports.calculatePageSkip = (page, limit) => {
@@ -13,9 +22,10 @@ exports.toSortQuery = (sortString) => {
   if (!sortString) {
     return null;
   }
-  const sort = {}
+  const sort = {};
   const sortList = sortString.split(',');
-  for (let i = 0; i < sortList.length; i++) {
+  let i = sortList.length;
+  while (i--) {
     const sortItem = sortList[i].split(':');
     sort[sortItem[0]] = Number(sortItem[1]);
   }
@@ -28,7 +38,8 @@ exports.overrideData = (source, target, exclusions = []) => {
   }
   const isMongooseModel = typeof source.toObject === 'function';
   const keys = isMongooseModel ? Object.keys(source.toObject()) : Object.keys(source);
-  for (let i = 0; i < keys.length; i++) {
+  let i = keys.length;
+  while (i--) {
     const key = keys[i];
     if (exclusions.includes(key)) {
       continue;
