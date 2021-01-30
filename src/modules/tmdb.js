@@ -76,10 +76,11 @@ exports.parseMovieData = (data, backdrop_url = '', poster_url = '') => {
 }
 
 exports.parseTvData = (data, backdrop_url = '', poster_url = '') => {
-  const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name } = data;
+  const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name, external_ids } = data;
   const miniData = {
     backdropPath: backdrop_path ? backdrop_url + backdrop_path : null,
     genres: [],
+    imdbId: external_ids?.imdb_id,
     tmdbId: id,
     originalTitle: original_name,
     overview: overview,

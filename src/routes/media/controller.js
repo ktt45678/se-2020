@@ -25,6 +25,8 @@ exports.details = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
+  // Force to remove stream from query
+  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
   const { id } = req.params;
   const { exclusions } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;

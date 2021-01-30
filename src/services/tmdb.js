@@ -13,7 +13,7 @@ exports.search = async (type, query, page, include_adult, primary_release_year, 
 }
 
 exports.movie = async (id) => {
-  return await request.get(`${url}/movie/${id}`, { headers });
+  return await request.get(`${url}/movie/${id}?append_to_response=videos`, { headers });
 }
 
 exports.movieCredits = async (id) => {
@@ -29,7 +29,7 @@ exports.movieVideos = async (id) => {
 }
 
 exports.tv = async (id) => {
-  return await request.get(`${url}/tv/${id}`, { headers });
+  return await request.get(`${url}/tv/${id}?append_to_response=external_ids,videos`, { headers });
 }
 
 exports.tvSeason = async (id, season) => {

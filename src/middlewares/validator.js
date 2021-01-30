@@ -101,7 +101,7 @@ exports.resetPasswordRules = () => {
 exports.viewUserRules = () => {
   return [
     param('id')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt({ min: 1 }).withMessage('User id must be a positive integer')
   ]
@@ -144,7 +144,7 @@ exports.updateUserRules = () => {
         return true;
       }),
     body('newPassword')
-      .optional({ nullable: true })
+      .optional()
       .isLength({ min: 8, max: 128 }).withMessage('New password must be between 8 and 128 characters long')
       .bail()
       .custom((newPassword, { req }) => {
@@ -174,7 +174,7 @@ exports.tmdbSearchRules = () => {
     query('query')
       .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
     query('page')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt({ min: 1, max: 1000 }).withMessage('Page must be between 1 and 1000'),
     param('type')
@@ -185,7 +185,7 @@ exports.tmdbSearchRules = () => {
 exports.addMovieRules = () => {
   return [
     body('tmdbId')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt({ min: 0 }).withMessage('TMDb id must be a positive integer or 0'),
     body('streamPath')
@@ -193,13 +193,13 @@ exports.addMovieRules = () => {
     body('isPublic')
       .toBoolean(true),
     body('override')
-      .optional({ nullable: true })
+      .optional()
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
       .customSanitizer(override => {
         override = JSON.parse(override);
-        return override
+        return override;
       }),
     body('override.title')
       .optional({ nullable: true })
@@ -256,19 +256,19 @@ exports.addMovieRules = () => {
 exports.addTvRules = () => {
   return [
     body('tmdbId')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt({ min: 0 }).withMessage('TMDb id must be a positive  or 0'),
     body('isPublic')
       .toBoolean(true),
     body('override')
-      .optional({ nullable: true })
+      .optional()
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
       .customSanitizer(override => {
         override = JSON.parse(override);
-        return override
+        return override;
       }),
     body('override.title')
       .optional({ nullable: true })
@@ -357,13 +357,13 @@ exports.addAndUpdateTvSeasonRules = () => {
     body('isPublic')
       .toBoolean(true),
     body('override')
-      .optional({ nullable: true })
+      .optional()
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
       .customSanitizer(override => {
         override = JSON.parse(override);
-        return override
+        return override;
       }),
     body('override.airDate')
       .optional({ nullable: true })
@@ -404,13 +404,13 @@ exports.addAndUpdateTvEpisodeRules = () => {
     body('isPublic')
       .toBoolean(true),
     body('override')
-      .optional({ nullable: true })
+      .optional()
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
       .customSanitizer(override => {
         override = JSON.parse(override);
-        return override
+        return override;
       }),
     body('override.episodeNumber')
       .optional({ nullable: true })
@@ -445,13 +445,13 @@ exports.updateMovieRules = () => {
     body('isPublic')
       .toBoolean(true),
     body('override')
-      .optional({ nullable: true })
+      .optional()
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
       .customSanitizer(override => {
         override = JSON.parse(override);
-        return override
+        return override;
       }),
     body('override.title')
       .optional({ nullable: true })
@@ -513,13 +513,13 @@ exports.updateTvRules = () => {
     body('isPublic')
       .toBoolean(true),
     body('override')
-      .optional({ nullable: true })
+      .optional()
       .if((_, { req }) => req.is('application/x-www-form-urlencoded'))
       .isJSON().withMessage('Override must be a valid json string')
       .bail()
       .customSanitizer(override => {
         override = JSON.parse(override);
-        return override
+        return override;
       }),
     body('override.title')
       .optional({ nullable: true })
@@ -636,7 +636,7 @@ exports.viewMediaRules = () => {
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     query('exclusions')
-      .optional({ nullable: true })
+      .optional()
       .isLength({ max: 250 }).withMessage('Exclusion string must not be longer than 250 characters long')
       .bail()
       .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
@@ -646,19 +646,19 @@ exports.viewMediaRules = () => {
 exports.fetchMediaRules = () => {
   return [
     query('query')
-      .optional({ nullable: true })
+      .optional()
       .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
     query('sort')
-      .optional({ nullable: true })
+      .optional()
       .isLength({ max: 250 }).withMessage('Sort string must not be longer than 250 characters long')
       .bail()
       .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
     query('page')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt({ min: 1, max: 1000 }).withMessage('Page must be an integer between 1 and 1000'),
     query('limit')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt({ min: 1, max: 50 }).withMessage('Limit must be an integer between 1 and 50')
   ]
@@ -696,11 +696,11 @@ exports.streamRules = () => {
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     query('season')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
     query('episode')
-      .optional({ nullable: true })
+      .optional()
       .toInt()
       .isInt().withMessage('Episode number must be an integer')
   ]

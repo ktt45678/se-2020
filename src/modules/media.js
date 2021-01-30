@@ -29,8 +29,9 @@ exports.parseMovieData = (data) => {
 }
 
 exports.parseTvData = (data) => {
-  const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name } = data;
+  const { backdrop_path, genres, id, original_name, overview, popularity, poster_path, first_air_date, last_air_date, episode_run_time, number_of_seasons, seasons, status, tagline, name, external_ids } = data;
   const miniData = {
+    imdbId: external_ids?.imdb_id,
     tmdbId: id,
     tagline: tagline,
     title: name,
@@ -144,8 +145,8 @@ exports.parseVideoData = (data) => {
 }
 
 exports.parseMediaResult = (posterUrl, backdropUrl, result) => {
-  result.posterPath = result.posterPath ? `${posterUrl}${result.posterPath}` : null;
-  result.backdropPath = result.backdropPath ? `${backdropUrl}${result.backdropPath}` : null;
+  result.posterPath = setImageUrl(result.posterPath, posterUrl);
+  result.backdropPath = setImageUrl(result.backdropPath, backdropUrl);
   return result;
 }
 
@@ -155,13 +156,13 @@ exports.parseTvSeasonResult = (posterUrl, stillUrl, seasons) => {
     if (!seasons[i].isAdded) {
       continue;
     }
-    seasons[i].posterPath = seasons[i].posterPath ? `${posterUrl}${seasons[i].posterPath}` : null;
+    seasons[i].posterPath = setImageUrl(seasons[i].posterPath, posterUrl);
     let j = seasons[i].episodes.length;
     while (j--) {
       if (!seasons[i].episodes[j].isAdded) {
         continue;
       }
-      seasons[i].episodes[j].stillPath = seasons[i].episodes[j].stillPath ? `${stillUrl}${seasons[i].episodes[j].stillPath}` : null;
+      seasons[i].episodes[j].stillPath = setImageUrl(seasons[i].episodes[j].stillPath, stillUrl);
     }
   }
   return seasons;
@@ -170,7 +171,7 @@ exports.parseTvSeasonResult = (posterUrl, stillUrl, seasons) => {
 exports.parseCreditResult = (profileUrl, credits) => {
   let i = credits.length;
   while (i--) {
-    credits[i].profilePath = credits[i].profilePath ? `${profileUrl}${credits[i].profilePath}` : null;
+    credits[i].profilePath = setImageUrl(credits[i].profilePath, profileUrl);
   }
   return credits;
 }
@@ -187,4 +188,14 @@ exports.createStreamUrls = (baseUrl, stream) => {
     i++;
   }
   return urls;
+}
+
+const setImageUrl = (path, url = '') => {
+  if (!path) {
+    return null;
+  }
+  if (path.match(/\/[^\/]+$/)) {
+    return `${process.env.IMAGECDN_URL}${url}${path}`;
+  }
+  return `${process.env.IMAGECDN_URL}${path}`;
 }

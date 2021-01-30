@@ -7,22 +7,18 @@ const mediaStorageModel = require('../models/media-storage');
 const tmdbService = require('./tmdb');
 const driveService = require('./drive');
 
-exports.createMovieDocument = async (id, override) => {
+exports.createMovieDocument = async (id) => {
   const movieResponse = await tmdbService.movie(id);
-  const movieVideoResponse = await tmdbService.movieVideos(id);
   const movieData = mediaModule.parseMovieData(movieResponse.data);
-  const videoData = mediaModule.parseVideoData(movieVideoResponse.data);
-  movieData.videos = videoData;
+  movieData.videos = mediaModule.parseVideoData(movieResponse.data.videos);
   const movie = new mediaModel(movieData);
   return movie;
 }
 
-exports.createTvDocument = async (id, override) => {
+exports.createTvDocument = async (id) => {
   const tvResponse = await tmdbService.tv(id);
-  const tvVideoResponse = await tmdbService.tvVideos(id);
   const tvData = mediaModule.parseTvData(tvResponse.data);
-  const videoData = mediaModule.parseVideoData(tvVideoResponse.data);
-  tvData.videos = videoData;
+  tvData.videos = mediaModule.parseVideoData(tvResponse.data.videos);
   const tv = new mediaModel(tvData);
   return tv;
 }
@@ -200,16 +196,12 @@ exports.findMediaDetailsById = async (id, isPublic, exclusions) => {
     throw { status: 404, message: 'The resource could not be found' }
   }
   // Process images
-  const posterUrl = `${process.env.IMAGECDN_URL}${config.poster_url}`;
-  const backdropUrl = `${process.env.IMAGECDN_URL}${config.backdrop_url}`;
-  const profileUrl = `${process.env.IMAGECDN_URL}${config.profile_url}`;
-  const stillUrl = `${process.env.IMAGECDN_URL}${config.still_url}`;
-  const result = mediaModule.parseMediaResult(posterUrl, backdropUrl, result_);
+  const result = mediaModule.parseMediaResult(config.poster_url, config.backdrop_url, result_);
   if (result.credits) {
-    result.credits = mediaModule.parseCreditResult(profileUrl, result.credits);
+    result.credits = mediaModule.parseCreditResult(config.profile_url, result.credits);
   }
   if (result.tvShow) {
-    result.tvShow.seasons = mediaModule.parseTvSeasonResult(posterUrl, stillUrl, result.tvShow.seasons);
+    result.tvShow.seasons = mediaModule.parseTvSeasonResult(config.poster_url, config.still_url, result.tvShow.seasons);
   }
   return result;
 }
@@ -237,22 +229,22 @@ exports.findSeasonEpisode = (season, episode, isAdded = null) => {
   return season.episodes.find(e => e.episodeNumber === episode);
 }
 
-exports.fetchMedia = async (query, type, genre, sortString, isPublic, page, limit) => {
+exports.fetchMedia = async (query, type, genre, sortString, isPublic, page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
   const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit);
   // Aggregation always returns an array, result is the first one
   const result = results.shift();
   if (result) {
-    const posterUrl = `${process.env.IMAGECDN_URL}${config.poster_url}`;
-    const backdropUrl = `${process.env.IMAGECDN_URL}${config.backdrop_url}`;
-    for (let i = 0; i < result.results.length; i++) {
-      result.results[i] = mediaModule.parseMediaResult(posterUrl, backdropUrl, result.results[i]);
+    let i = result.results.length;
+    while (i--) {
+      result.results[i] = mediaModule.parseMediaResult(config.poster_url, config.backdrop_url, result.results[i]);
     }
     result.page = page;
+    result.totalPages = Math.ceil(result.totalResults / limit);
     return result;
   }
-  return { totalResults: 0, results: [], page };
+  return { totalResults: 0, results: [], page, totalPages: 0 };
 }
 
 exports.findStreamByMedia = async (media, seasonNumber, episodeNumber) => {

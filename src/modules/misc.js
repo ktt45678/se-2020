@@ -2,13 +2,13 @@ exports.toExclusionQuery = (exclusionString) => {
   if (!exclusionString) {
     return null;
   }
-  const exclusion = {};
+  const exclusions = {};
   const exclusionList = exclusionString.split(',');
   let i = exclusionList.length;
   while (i--) {
-    exclusion[exclusionList[i]] = 0;
+    exclusions[exclusionList[i]] = 0;
   }
-  return exclusion;
+  return exclusions;
 }
 
 exports.calculatePageSkip = (page, limit) => {
