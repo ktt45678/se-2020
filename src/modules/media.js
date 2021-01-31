@@ -194,8 +194,8 @@ const setImageUrl = (path, url = '') => {
   if (!path) {
     return null;
   }
-  if (path.match(/\/[^\/]+$/)) {
+  if (path.startsWith('/')) {
     return `${process.env.IMAGECDN_URL}${url}${path}`;
   }
-  return `${process.env.IMAGECDN_URL}${path}`;
+  return path;
 }

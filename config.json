@@ -28,6 +28,6 @@
     "profile_url": "https://image.tmdb.org/t/p/w185",
     "credit_limit": 10,
     "video_limit": 5,
-    "readonly_fields": ["imdbId", "tmdbId", "movie", "tvShow", "videos", "credits", "isPublic", "addedBy", "stream", "seasons", "episodes", "isManuallyAdded", "isDeleted"]
+    "readonly_fields": ["imdbId", "tmdbId", "movie", "tvShow", "videos", "credits", "isPublic", "addedBy", "stream", "seasonCount", "seasonNumber", "seasons", "episodeCount", "episodeNumber", "episodes", "isManuallyAdded", "isDeleted"]
   }
 }

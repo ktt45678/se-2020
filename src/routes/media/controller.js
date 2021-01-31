@@ -72,7 +72,7 @@ exports.addMovie = async (req, res, next) => {
     media.isPublic = isPublic;
     media.addedBy = req.currentUser._id;
     const result = await media.save();
-    res.status(200).send({ id: result._id, message: 'Movie has been added successfully' });
+    res.status(200).send({ _id: result._id, message: 'Movie has been added successfully' });
   } catch (e) {
     next(e);
   }
@@ -93,7 +93,7 @@ exports.addTv = async (req, res, next) => {
     media.isPublic = isPublic;
     media.addedBy = req.currentUser._id;
     const result = await media.save();
-    res.status(200).send({ id: result._id, message: 'TV Show has been added successfully' });
+    res.status(200).send({ _id: result._id, message: 'TV Show has been added successfully' });
   } catch (e) {
     next(e);
   }
@@ -183,7 +183,7 @@ exports.updateMovie = async (req, res, next) => {
     media.isPublic = isPublic;
     media.addedBy = req.currentUser._id;
     const result = await media.save();
-    res.status(200).send({ id: result._id, message: 'Movie has been updated successfully' });
+    res.status(200).send({ message: 'Movie has been updated successfully' });
   } catch (e) {
     next(e);
   }
@@ -204,7 +204,7 @@ exports.updateTv = async (req, res, next) => {
     media.isPublic = isPublic;
     media.addedBy = req.currentUser._id;
     const result = await media.save();
-    res.status(200).send({ id: result._id, message: 'TV Show has been updated successfully' });
+    res.status(200).send({ message: 'TV Show has been updated successfully' });
   } catch (e) {
     next(e);
   }
@@ -270,7 +270,7 @@ exports.deleteMovie = async (req, res, next) => {
     }
     media.isDeleted = true;
     const result = await media.save();
-    res.status(200).send({ id: result._id, message: 'Movie has been deleted successfully' });
+    res.status(200).send({ message: 'Movie has been deleted successfully' });
   } catch (e) {
     next(e);
   }
@@ -292,7 +292,7 @@ exports.deleteTv = async (req, res, next) => {
     }
     media.isDeleted = true;
     const result = await media.save();
-    res.status(200).send({ id: result._id, message: 'TV Show has been deleted successfully' });
+    res.status(200).send({ message: 'TV Show has been deleted successfully' });
   } catch (e) {
     next(e);
   }

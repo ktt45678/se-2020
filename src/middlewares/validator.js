@@ -215,10 +215,10 @@ exports.addMovieRules = () => {
       .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
     body('override.posterPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Poster path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Poster path must not be longer than 2000 characters long'),
     body('override.backdropPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Backdrop path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Backdrop path must not be longer than 2000 characters long'),
     body('override.movie.runtime')
       .optional({ nullable: true })
       .toInt()
@@ -284,10 +284,10 @@ exports.addTvRules = () => {
       .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
     body('override.posterPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Poster path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Poster path must not be longer than 2000 characters long'),
     body('override.backdropPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Backdrop path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Backdrop path must not be longer than 2000 characters long'),
     body('override.tvShow.episodeRuntime')
       .optional({ nullable: true })
       .isArray({ max: 100 }).withMessage('Episode runtime must be an array and up to 100 items')
@@ -322,10 +322,6 @@ exports.addTvRules = () => {
     body('override.tvShow.status')
       .optional({ nullable: true })
       .isLength({ max: 32 }).withMessage('Status must not be longer than 32 characters long'),
-    body('override.tvShow.seasonCount')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt({ min: 0 }).withMessage('Season count must be a positive integer or 0'),
     body('override.genres')
       .optional({ nullable: true })
       .isArray({ max: 64 }).withMessage('Genres must be an array and up to 64 items')
@@ -368,14 +364,6 @@ exports.addAndUpdateTvSeasonRules = () => {
     body('override.airDate')
       .optional({ nullable: true })
       .isDate({ format: 'YYYY-MM-DD', strictMode: true }).withMessage('Air date must be a valid date in YYYY-MM-DD format'),
-    body('override.seasonNumber')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt().withMessage('Season number must be an integer'),
-    body('override.episodeCount')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt().withMessage('Episode count must be an integer'),
     body('override.name')
       .optional({ nullable: true })
       .isLength({ max: 128 }).withMessage('Name must not be longer than 128 characters long'),
@@ -384,7 +372,7 @@ exports.addAndUpdateTvSeasonRules = () => {
       .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
     body('override.posterPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Poster path must not be longer than 64 characters long')
+      .isLength({ max: 2000 }).withMessage('Poster path must not be longer than 2000 characters long')
   ]
 }
 
@@ -412,10 +400,6 @@ exports.addAndUpdateTvEpisodeRules = () => {
         override = JSON.parse(override);
         return override;
       }),
-    body('override.episodeNumber')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt().withMessage('Episode number must be an integer'),
     body('override.runtime')
       .optional({ nullable: true })
       .toInt()
@@ -431,7 +415,7 @@ exports.addAndUpdateTvEpisodeRules = () => {
       .isDate({ format: 'YYYY-MM-DD', strictMode: true }).withMessage('Air date must be a valid date in YYYY-MM-DD format'),
     body('override.stillPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Still path must not be longer than 64 characters long')
+      .isLength({ max: 2000 }).withMessage('Still path must not be longer than 2000 characters long')
   ]
 }
 
@@ -467,10 +451,10 @@ exports.updateMovieRules = () => {
       .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
     body('override.posterPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Poster path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Poster path must not be longer than 2000 characters long'),
     body('override.backdropPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Backdrop path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Backdrop path must not be longer than 2000 characters long'),
     body('override.movie.runtime')
       .optional({ nullable: true })
       .toInt()
@@ -535,10 +519,10 @@ exports.updateTvRules = () => {
       .isLength({ min: 10, max: 1000 }).withMessage('Overview must be between 10 and 1000 characters long'),
     body('override.posterPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Poster path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Poster path must not be longer than 2000 characters long'),
     body('override.backdropPath')
       .optional({ nullable: true })
-      .isLength({ max: 64 }).withMessage('Backdrop path must not be longer than 64 characters long'),
+      .isLength({ max: 2000 }).withMessage('Backdrop path must not be longer than 2000 characters long'),
     body('override.tvShow.episodeRuntime')
       .optional({ nullable: true })
       .isArray({ max: 100 }).withMessage('Episode runtime must be an array and up to 100 items')
@@ -573,10 +557,6 @@ exports.updateTvRules = () => {
     body('override.tvShow.status')
       .optional({ nullable: true })
       .isLength({ max: 32 }).withMessage('Status must not be longer than 32 characters long'),
-    body('override.tvShow.seasonCount')
-      .optional({ nullable: true })
-      .toInt()
-      .isInt({ min: 0 }).withMessage('Season count must be a positive integer or 0'),
     body('override.genres')
       .optional({ nullable: true })
       .isArray({ max: 64 }).withMessage('Genres must be an array and up to 64 items')

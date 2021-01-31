@@ -24,47 +24,41 @@ exports.createTvDocument = async (id) => {
 }
 
 exports.createNewMovieDocument = (override) => {
-  if (!override) {
-    throw { status: 422, message: 'Override data is required to add a new movie' }
-  }
   const newMovie = new mediaModel();
-  newMovie.tagline = override.tagline ?? null;
-  newMovie.title = override.title ?? null;
-  newMovie.originalTitle = override.originalTitle ?? null;
-  newMovie.overview = override.overview ?? null;
-  newMovie.posterPath = override.posterPath ?? null;
-  newMovie.backdropPath = override.backdropPath ?? null;
+  newMovie.tagline = override?.tagline ?? null;
+  newMovie.title = override?.title ?? null;
+  newMovie.originalTitle = override?.originalTitle ?? null;
+  newMovie.overview = override?.overview ?? null;
+  newMovie.posterPath = override?.posterPath ?? null;
+  newMovie.backdropPath = override?.backdropPath ?? null;
   newMovie.movie = {};
-  newMovie.movie.runtime = override.movie?.runtime ?? null;
-  newMovie.movie.releaseDate = override.movie?.releaseDate ?? null;
-  newMovie.movie.status = override.movie?.status ?? null;
-  newMovie.movie.adult = override.movie?.adult ?? null;
-  newMovie.genres = override.genres ?? null;
-  newMovie.popularity = override.popularity ?? null;
+  newMovie.movie.runtime = override?.movie?.runtime ?? null;
+  newMovie.movie.releaseDate = override?.movie?.releaseDate ?? null;
+  newMovie.movie.status = override?.movie?.status ?? null;
+  newMovie.movie.adult = override?.movie?.adult ?? null;
+  newMovie.genres = override?.genres ?? null;
+  newMovie.popularity = override?.popularity ?? null;
   newMovie.isManuallyAdded = true;
   return newMovie;
 }
 
 exports.createNewTvDocument = (override) => {
-  if (!override) {
-    throw { status: 422, message: 'Override data is required to add a new tv show' }
-  }
   const newTv = new mediaModel();
-  newTv.tagline = override.tagline ?? null;
-  newTv.title = override.title ?? null;
-  newTv.originalTitle = override.originalTitle ?? null;
-  newTv.overview = override.overview ?? null;
-  newTv.posterPath = override.posterPath ?? null;
-  newTv.backdropPath = override.backdropPath ?? null;
+  newTv.tagline = override?.tagline ?? null;
+  newTv.title = override?.title ?? null;
+  newTv.originalTitle = override?.originalTitle ?? null;
+  newTv.overview = override?.overview ?? null;
+  newTv.posterPath = override?.posterPath ?? null;
+  newTv.backdropPath = override?.backdropPath ?? null;
   newTv.tvShow = {};
-  newTv.tvShow.episodeRuntime = override.tvShow?.episodeRuntime ?? null;
-  newTv.tvShow.firstAirDate = override.tvShow?.firstAirDate ?? null;
-  newTv.tvShow.lastAirDate = override.tvShow?.lastAirDate ?? null;
-  newTv.tvShow.status = override.tvShow?.status ?? null;
-  newTv.tvShow.seasonCount = override.tvShow?.seasonCount ?? null;
+  newTv.tvShow.episodeRuntime = override?.tvShow?.episodeRuntime ?? null;
+  newTv.tvShow.firstAirDate = override?.tvShow?.firstAirDate ?? null;
+  newTv.tvShow.lastAirDate = override?.tvShow?.lastAirDate ?? null;
+  newTv.tvShow.status = override?.tvShow?.status ?? null;
+  newTv.tvShow.seasonCount = 0;
   newTv.tvShow.seasons = [];
-  newTv.genres = override.genres ?? null;
-  newTv.popularity = override.popularity ?? null;
+  newTv.genres = override?.genres ?? null;
+  newTv.popularity = override?.popularity ?? null;
   newTv.isManuallyAdded = true;
   return newTv;
 }
@@ -119,14 +113,14 @@ exports.importStream = async (path_) => {
   return newStream._id;
 }
 
-exports.createSeasonDocument = async (id, season, override) => {
+exports.createSeasonDocument = async (id, season) => {
   const tvSeasonResponse = await tmdbService.tvSeason(id, season);
   const tvSeasonData = mediaModule.parseSeasonData(tvSeasonResponse.data);
   tvSeasonData.isAdded = true;
   return tvSeasonData;
 }
 
-exports.createEpisodeDocument = async (id, season, episode, override) => {
+exports.createEpisodeDocument = async (id, season, episode) => {
   const tvEpisodeResponse = await tmdbService.tvEpisode(id, season, episode);
   const tvEpisodeData = mediaModule.parseEpisodeData(tvEpisodeResponse.data);
   tvEpisodeData.isAdded = true;
@@ -134,16 +128,13 @@ exports.createEpisodeDocument = async (id, season, episode, override) => {
 }
 
 exports.createNewSeasonDocument = (season, override) => {
-  if (!override) {
-    throw { status: 422, message: 'Override data is required to add a new season' }
-  }
   const tvSeasonData = {};
   tvSeasonData.seasonNumber = season;
-  tvSeasonData.airDate = override.airDate ?? null;
-  tvSeasonData.episodeCount = override.episodeCount ?? null;
-  tvSeasonData.name = override.name ?? null;
-  tvSeasonData.overview = override.overview ?? null;
-  tvSeasonData.posterPath = override.posterPath ?? null;
+  tvSeasonData.airDate = override?.airDate ?? null;
+  tvSeasonData.episodeCount = 0;
+  tvSeasonData.name = override?.name ?? null;
+  tvSeasonData.overview = override?.overview ?? null;
+  tvSeasonData.posterPath = override?.posterPath ?? null;
   tvSeasonData.episodes = [];
   tvSeasonData.isAdded = true;
   tvSeasonData.isManuallyAdded = true;
@@ -151,16 +142,13 @@ exports.createNewSeasonDocument = (season, override) => {
 }
 
 exports.createNewEpisodeDocument = (episode, override) => {
-  if (!override) {
-    throw { status: 422, message: 'Override data is required to add a new episode' }
-  }
   const tvEpisodeData = {};
   tvEpisodeData.episodeNumber = episode;
-  tvEpisodeData.runtime = override.runtime ?? null;
-  tvEpisodeData.name = override.name ?? null;
-  tvEpisodeData.overview = override.overview ?? null;
-  tvEpisodeData.airDate = override.airDate ?? null;
-  tvEpisodeData.stillPath = override.stillPath ?? null;
+  tvEpisodeData.runtime = override?.runtime ?? null;
+  tvEpisodeData.name = override?.name ?? null;
+  tvEpisodeData.overview = override?.overview ?? null;
+  tvEpisodeData.airDate = override?.airDate ?? null;
+  tvEpisodeData.stillPath = override?.stillPath ?? null;
   tvEpisodeData.isAdded = true;
   tvEpisodeData.isManuallyAdded = true;
   return tvEpisodeData;
