@@ -142,12 +142,21 @@ const mediaSchema = new Schema({
 mediaSchema.statics = {
   findMediaDetailsById: async function (id, isPublic, fields) {
     const filters = { _id: id, isDeleted: false };
-    if (typeof isPublic === 'boolean') {
+    const isValidPublicType = typeof isPublic === 'boolean';
+    if (isValidPublicType) {
       filters.isPublic = isPublic;
     }
     fields = fields ?? {};
     fields.isDeleted = 0;
-    return await this.findOne(filters, fields).populate('credits').exec();
+    const result = await this.findOne(filters, fields).populate('credits').exec();
+    if (result.tvShow && isValidPublicType) {
+      result.tvShow.seasons = result.tvShow.seasons.filter(s => s.isPublic === isPublic);
+      let i = result.tvShow.seasons.length;
+      while (i--) {
+        result.tvShow.seasons[i].episodes = result.tvShow.seasons[i].episodes.filter(e => e.isPublic === isPublic);
+      }
+    }
+    return result;
   },
   fetchMedia: async function (query, type, genre, sort, isPublic, skip = 0, limit = 30) {
     const filters = { isDeleted: false };
@@ -185,7 +194,7 @@ mediaSchema.statics = {
       },
       { $unwind: '$stage1' },
       { $project: { totalResults: '$stage1.count', results: '$stage2' } }
-    ]);
+    ]).exec();
   }
 }
 

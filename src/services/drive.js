@@ -1,10 +1,20 @@
 const driveModule = require('../modules/drive');
 const request = require('../modules/request');
+const redisService = require('./redis');
+const config = require('../../config.json').drive;
 
 exports.getDirectories = async (path_) => {
   const path = path_ ? path_.endsWith('/') ? path_ : `${path_}/` : '';
   const url = `${process.env.GDRIVE_URL}/${path}`;
-  return await request.post(url);
+  // Cache request
+  let response = await redisService.get(url);
+  if (!response) {
+    response = await request.post(url);
+    redisService.set(url, config.cache_time, JSON.stringify(response));
+  } else {
+    response = JSON.parse(response);
+  }
+  return response;
 }
 
 exports.parseDirectories = (data) => {

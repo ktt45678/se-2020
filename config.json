@@ -21,6 +21,9 @@
     "avatar_sizes": [480, 256, 128],
     "background_sizes": [1920, 1280]
   },
+  "drive": {
+    "cache_time": 300
+  },
   "media": {
     "poster_url": "https://image.tmdb.org/t/p/w342",
     "backdrop_url": "https://image.tmdb.org/t/p/original",

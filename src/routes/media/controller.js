@@ -182,7 +182,7 @@ exports.updateMovie = async (req, res, next) => {
     media.movie.stream = await mediaService.importStream(streamPath);
     media.isPublic = isPublic;
     media.addedBy = req.currentUser._id;
-    const result = await media.save();
+    await media.save();
     res.status(200).send({ message: 'Movie has been updated successfully' });
   } catch (e) {
     next(e);
@@ -203,7 +203,7 @@ exports.updateTv = async (req, res, next) => {
     mediaService.updateTv(media, override);
     media.isPublic = isPublic;
     media.addedBy = req.currentUser._id;
-    const result = await media.save();
+    await media.save();
     res.status(200).send({ message: 'TV Show has been updated successfully' });
   } catch (e) {
     next(e);
@@ -310,6 +310,7 @@ exports.deleteTvSeason = async (req, res, next) => {
     if (!seasonDocument) {
       return res.status(404).send({ error: 'Season not found' });
     }
+    seasonDocument.isPublic = false;
     seasonDocument.isAdded = false;
     await media.save();
     res.status(200).send({ message: 'Season has been deleted successfully' });
@@ -331,6 +332,7 @@ exports.deleteTvEpisode = async (req, res, next) => {
     if (!episodeDocument) {
       return res.status(404).send({ error: 'Episode not found' });
     }
+    episodeDocument.isPublic = false;
     episodeDocument.isAdded = false;
     await media.save();
     res.status(200).send({ message: 'Episode has been deleted successfully' });

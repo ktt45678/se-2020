@@ -617,7 +617,7 @@ exports.viewMediaRules = () => {
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     query('exclusions')
       .optional()
-      .isLength({ max: 250 }).withMessage('Exclusion string must not be longer than 250 characters long')
+      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
       .bail()
       .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
   ]
@@ -630,7 +630,7 @@ exports.fetchMediaRules = () => {
       .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
     query('sort')
       .optional()
-      .isLength({ max: 250 }).withMessage('Sort string must not be longer than 250 characters long')
+      .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
       .bail()
       .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
     query('page')
