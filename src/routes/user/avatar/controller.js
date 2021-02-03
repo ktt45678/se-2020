@@ -36,15 +36,18 @@ exports.view = async (req, res, next) => {
 
 exports.upload = (req, res, next) => {
   avatarUpload(req, res, async (err) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).send({ errors: errors.array() });
-    }
     if (err) {
       return res.status(422).send({ error: err.message });
     }
+    if (req.params.id) {
+      return res.status(400).send({ error: 'Invalid method' });
+    }
     if (!req.file) {
       return res.status(400).send({ error: 'No file provided' });
+    }
+    const mimetypes = ['image/png', 'image/gif', 'image/jpeg'];
+    if (!mimetypes.includes(req.file.detectedMimeType)) {
+      return res.status(422).send({ error: 'Unsupported image format' });
     }
     const user = req.currentUser;
     const avatar = userService.findAvatar(user);
@@ -65,9 +68,8 @@ exports.upload = (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({ errors: errors.array() });
+  if (req.params.id) {
+    return res.status(400).send({ error: 'Invalid method' });
   }
   const user = req.currentUser;
   const avatar = userService.findAvatar(user);

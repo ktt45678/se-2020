@@ -2,6 +2,7 @@ const userModel = require('../models/user');
 const cloudModule = require('../modules/cloud');
 const imageModule = require('../modules/image');
 const config = require('../../config.json').user;
+const getStream = require('get-stream');
 const { nanoid } = require('nanoid');
 
 exports.findUserById = async (_id) => {
@@ -32,18 +33,19 @@ exports.findUserByRecoveryCode = async (recoveryCode) => {
 exports.uploadAvatar = async (file) => {
   const container = config.avatar_container;
   const nanoId = nanoid();
-  const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
+  const fileBuffer = await getStream.buffer(file.stream);
+  const upload = await cloudModule.upload(fileBuffer, container, nanoId, file.originalName, file.size, file.detectedMimeType);
   const sizes = config.avatar_sizes;
   for (let i = 0; i < sizes.length; i++) {
     const size = sizes[i];
     let buffer
-    if (file.mimetype === 'image/gif') {
-      buffer = await imageModule.resizeGif(file.buffer, size, size);
+    if (file.detectedMimeType === 'image/gif') {
+      buffer = await imageModule.resizeGif(fileBuffer, size, size);
     } else {
-      buffer = await imageModule.resize(file.buffer, size, size);
+      buffer = await imageModule.resize(fileBuffer, size, size);
     }
-    const filename = `${size}/${file.originalname}`;
-    await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
+    const filename = `${size}/${file.originalName}`;
+    await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.detectedMimeType);
     upload.quality.push(size);
   }
   return upload;
@@ -74,7 +76,8 @@ exports.deleteAvatar = async (avatar) => {
 exports.uploadMusic = async (file) => {
   const container = config.music_container;
   const nanoId = nanoid();
-  const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
+  const fileBuffer = await getStream.buffer(file.stream);
+  const upload = await cloudModule.upload(fileBuffer, container, nanoId, file.originalName, file.size, file.detectedMimeType);
   return upload;
 }
 
@@ -95,13 +98,14 @@ exports.deleteMusic = async (music) => {
 exports.uploadBackground = async (file) => {
   const container = config.background_container;
   const nanoId = nanoid();
-  const upload = await cloudModule.upload(file.buffer, container, nanoId, file.originalname, file.size, file.mimetype);
+  const fileBuffer = await getStream.buffer(file.stream);
+  const upload = await cloudModule.upload(fileBuffer, container, nanoId, file.originalName, file.size, file.detectedMimeType);
   const sizes = config.background_sizes;
   for (let i = 0; i < sizes.length; i++) {
     const size = sizes[i];
-    const buffer = await imageModule.resize(file.buffer, size, size);
-    const filename = `${size}/${file.originalname}`;
-    await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.mimetype);
+    const buffer = await imageModule.resize(fileBuffer, size, size);
+    const filename = `${size}/${file.originalName}`;
+    await cloudModule.upload(buffer, container, nanoId, filename, file.size, file.detectedMimeType);
     upload.quality.push(size);
   }
   return upload;
@@ -124,7 +128,7 @@ exports.deleteBackground = async (background) => {
   for (let i = 0; i < background.quality.length; i++) {
     const size = background.quality[i];
     const filename = `${size}/${background.blobName}`;
-    await cloudModule.delete(config.avatar_container, background.nanoId, filename);
+    await cloudModule.delete(config.background_container, background.nanoId, filename);
   }
   return result;
 }

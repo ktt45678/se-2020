@@ -19,7 +19,7 @@ exports.view = async (req, res, next) => {
         return res.status(404).send({ error: 'This user does not want music' });
       }
       const musicUri = userService.getMusic(searchMusic);
-      return res.status(200).send({ uri: musicUri });
+      return res.status(200).send({ uri: musicUri, mimeType: searchMusic.mimeType });
     }
     const user = req.currentUser;
     const music = userService.findMusic(user);
@@ -27,7 +27,7 @@ exports.view = async (req, res, next) => {
       return res.status(404).send({ error: 'Music not found' });
     }
     const musicUri = userService.getMusic(music);
-    res.status(200).send({ uri: musicUri });
+    res.status(200).send({ uri: musicUri, mimeType: music.mimeType });
   } catch (e) {
     next(e);
   }
@@ -35,15 +35,18 @@ exports.view = async (req, res, next) => {
 
 exports.upload = (req, res, next) => {
   musicUpload(req, res, async (err) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).send({ errors: errors.array() });
-    }
     if (err) {
       return res.status(400).send({ error: err.message });
     }
+    if (req.params.id) {
+      return res.status(400).send({ error: 'Invalid method' });
+    }
     if (!req.file) {
       return res.status(400).send({ error: 'No file provided' });
+    }
+    const mimetypes = ['audio/wave', 'audio/vnd.wave', 'audio/mpeg', 'audio/ogg', 'audio/opus', 'video/mp4', 'video/webm'];
+    if (!mimetypes.includes(req.file.detectedMimeType)) {
+      return res.status(422).send({ error: 'Unsupported audio format' });
     }
     const user = req.currentUser;
     const music = userService.findMusic(user);
@@ -63,9 +66,8 @@ exports.upload = (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).send({ errors: errors.array() });
+  if (req.params.id) {
+    return res.status(400).send({ error: 'Invalid method' });
   }
   const user = req.currentUser;
   const music = userService.findMusic(user);

@@ -7,7 +7,7 @@ module.exports = (expiry = 120, limit = 1, errorMode = false) => {
       req.currentUser = { _id: req.ip }
     }
     // A combination of user's id (or ip address), request path, request method and error mode
-    const key = JSON.stringify({ user: req.currentUser._id, path: req.path, method: req.method, error: errorMode });
+    const key = JSON.stringify({ user: req.currentUser._id, path: req.originalUrl, method: req.method, error: errorMode });
     try {
       // Check if the key exists. If not, set the quota value to 0
       var value = await redisService.get(key) || 0;
