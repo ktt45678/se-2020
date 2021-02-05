@@ -21,7 +21,11 @@ const userHistorySchema = new Schema({
     default: 0
   }
 }, { _id: false, timestamps: true });
-
+userHistorySchema.statics = {
+  findByUserId: async function (user) {
+    return await this.findOne({ user }).exec();
+  },
+}
 userHistorySchema.plugin(autoIncrement, { id: 'user_history_id', inc_field: '_id' });
 const userHistory = mongoose.model('user_history', userHistorySchema);
 
