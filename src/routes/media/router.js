@@ -5,9 +5,11 @@ const roleGuard = require('../../middlewares/role-guard');
 const validator = require('../../middlewares/validator');
 
 router.get('/', controller.index);
-router.get('/fetch', authGuard(true), validator.fetchMediaRules(), controller.fetch);
-router.get('/details/:id', authGuard(true), validator.viewMediaRules(), controller.details);
-router.get('/stream/:id', authGuard(true), validator.streamRules(), controller.stream);
+router.get('/fetch', authGuard({ bypass: true }), validator.fetchMediaRules(), controller.fetch);
+router.get('/details/:id', authGuard({ bypass: true }), validator.viewMediaRules(), controller.details);
+router.get('/details/:id/season/:season', authGuard({ bypass: true }), validator.viewTvSeasonRules(), controller.tvSeasonDetails);
+router.get('/details/:id/season/:season/episode/:episode', authGuard({ bypass: true }), validator.viewTvEpisodeRules(), controller.tvEpisodeDetails);
+router.get('/stream/:id', authGuard({ bypass: true }), validator.streamRules(), controller.stream);
 
 router.use(authGuard());
 router.use(roleGuard.admin);

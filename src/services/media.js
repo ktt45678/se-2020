@@ -194,7 +194,8 @@ exports.findMediaDetailsById = async (id, isPublic, exclusions) => {
   return result;
 }
 
-exports.findTvSeason = (media, season, isAdded = null) => {
+exports.findTvSeason = (media, season, options = { isAdded: null }) => {
+  const isAdded = options.isAdded ?? null;
   if (!media?.tvShow) {
     throw { status: 404, message: 'TV Show not found' }
   }
@@ -204,7 +205,8 @@ exports.findTvSeason = (media, season, isAdded = null) => {
   return media.tvShow.seasons.find(s => s.seasonNumber === season);
 }
 
-exports.findSeasonEpisode = (season, episode, isAdded = null) => {
+exports.findSeasonEpisode = (season, episode, options = { isAdded: null }) => {
+  const isAdded = options.isAdded ?? null;
   if (!season) {
     throw { status: 404, message: 'Season not found' }
   }

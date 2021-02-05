@@ -1,8 +1,9 @@
 const authService = require('../services/auth');
 const userService = require('../services/user');
 
-module.exports = (bypass = false) => {
+module.exports = (options = { bypass: false }) => {
   return async (req, res, next) => {
+    const bypass = options.bypass;
     const { authorization } = req.headers;
     if (!authorization) {
       if (bypass) {

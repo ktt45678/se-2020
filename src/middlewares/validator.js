@@ -623,6 +623,41 @@ exports.viewMediaRules = () => {
   ]
 }
 
+exports.viewTvSeasonRules = () => {
+  return [
+    param('id')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
+    param('season')
+      .toInt()
+      .isInt().withMessage('Season number must be an integer'),
+    query('exclusions')
+      .optional()
+      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .bail()
+      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+  ]
+}
+
+exports.viewTvEpisodeRules = () => {
+  return [
+    param('id')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
+    param('season')
+      .toInt()
+      .isInt().withMessage('Season number must be an integer'),
+    param('episode')
+      .toInt()
+      .isInt().withMessage('Season number must be an integer'),
+    query('exclusions')
+      .optional()
+      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .bail()
+      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+  ]
+}
+
 exports.fetchMediaRules = () => {
   return [
     query('query')
