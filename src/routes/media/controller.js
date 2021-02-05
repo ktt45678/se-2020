@@ -38,6 +38,49 @@ exports.details = async (req, res, next) => {
   }
 }
 
+exports.tvSeasonDetails = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
+  const { id, season } = req.params;
+  const { exclusions } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
+  try {
+    const media = await mediaService.findMediaDetailsById(id, isPublic, exclusions);
+    const seasonDocument = mediaService.findTvSeason(media, season, { isAdded: true });
+    if (!seasonDocument) {
+      return res.status(404).send({ error: 'Season not found' });
+    }
+    res.status(200).send(seasonDocument);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.tvEpisodeDetails = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
+  const { id, season, episode } = req.params;
+  const { exclusions } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
+  try {
+    const media = await mediaService.findMediaDetailsById(id, isPublic, exclusions);
+    const seasonDocument = mediaService.findTvSeason(media, season, { isAdded: true });
+    const episodeDocument = mediaService.findSeasonEpisode(seasonDocument, episode, { isAdded: true });
+    if (!episodeDocument) {
+      return res.status(404).send({ error: 'Episode not found' });
+    }
+    res.status(200).send(episodeDocument);
+  } catch (e) {
+    next(e);
+  }
+}
+
 exports.stream = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -218,7 +261,7 @@ exports.updateTvSeason = async (req, res, next) => {
   const { mediaId, season, isPublic, override } = req.body;
   try {
     const media = await mediaService.findMediaById(mediaId);
-    const seasonDocument = mediaService.findTvSeason(media, season, true);
+    const seasonDocument = mediaService.findTvSeason(media, season, { isAdded: true });
     if (!seasonDocument) {
       return res.status(404).send({ error: 'Season not found' });
     }
@@ -240,7 +283,7 @@ exports.updateTvEpisode = async (req, res, next) => {
   try {
     const media = await mediaService.findMediaById(mediaId);
     const seasonDocument = mediaService.findTvSeason(media, season);
-    const episodeDocument = mediaService.findSeasonEpisode(seasonDocument, episode, true);
+    const episodeDocument = mediaService.findSeasonEpisode(seasonDocument, episode, { isAdded: true });
     if (!episodeDocument) {
       return res.status(404).send({ error: 'Episode not found' });
     }
@@ -306,7 +349,7 @@ exports.deleteTvSeason = async (req, res, next) => {
   const { mediaId, season } = req.body;
   try {
     const media = await mediaService.findMediaById(mediaId);
-    const seasonDocument = mediaService.findTvSeason(media, season, true);
+    const seasonDocument = mediaService.findTvSeason(media, season, { isAdded: true });
     if (!seasonDocument) {
       return res.status(404).send({ error: 'Season not found' });
     }
@@ -328,7 +371,7 @@ exports.deleteTvEpisode = async (req, res, next) => {
   try {
     const media = await mediaService.findMediaById(mediaId);
     const seasonDocument = mediaService.findTvSeason(media, season);
-    const episodeDocument = mediaService.findSeasonEpisode(seasonDocument, episode, true);
+    const episodeDocument = mediaService.findSeasonEpisode(seasonDocument, episode, { isAdded: true });
     if (!episodeDocument) {
       return res.status(404).send({ error: 'Episode not found' });
     }
