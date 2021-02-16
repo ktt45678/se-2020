@@ -1,6 +1,6 @@
 const userModel = require("../models/user");
 const cloudModule = require("../modules/cloud");
-const historyModel = require('../models/user-history');
+const historyModel = require('../models/history');
 const mediaModel = require('../models/media');
 const miscModule = require('../modules/misc');
 

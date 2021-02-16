@@ -3,7 +3,7 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
-const userCommentSchema = new Schema({
+const commentSchema = new Schema({
   _id: Number,
   user: {
     type: Number,
@@ -26,8 +26,8 @@ const userCommentSchema = new Schema({
   }
 }, { _id: false, timestamps: true });
 
-userCommentSchema.index({ content: 'text' }, { default_language: 'none' });
-userCommentSchema.plugin(autoIncrement, { id: 'user_comment_id', inc_field: '_id' });
-const userComment = mongoose.model('user_comment', userCommentSchema);
+commentSchema.index({ content: 'text' }, { default_language: 'none' });
+commentSchema.plugin(autoIncrement, { id: 'comment_id', inc_field: '_id' });
+const comment = mongoose.model('comment', commentSchema);
 
-module.exports = userComment;
+module.exports = comment;

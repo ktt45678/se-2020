@@ -1,6 +1,7 @@
 const { DateTime } = require('luxon');
 const { body, query, param } = require('express-validator');
 const userService = require('../services/user');
+const watchlistService = require('../services/watchlist');
 
 exports.registrationRules = () => {
   return [
@@ -718,5 +719,51 @@ exports.streamRules = () => {
       .optional()
       .toInt()
       .isInt().withMessage('Episode number must be an integer')
+  ]
+}
+
+exports.fetchWatchlistRules = () => {
+  return [
+    query('sort')
+      .optional()
+      .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
+      .bail()
+      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+    query('page')
+      .optional()
+      .toInt()
+      .isInt({ min: 1, max: 1000 }).withMessage('Page must be an integer between 1 and 1000'),
+    query('limit')
+      .optional()
+      .toInt()
+      .isInt({ min: 1, max: 50 }).withMessage('Limit must be an integer between 1 and 50')
+  ]
+}
+
+exports.addToWatchlistRules = () => {
+  return [
+    body('mediaId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
+      .custom(async (mediaId, { req }) => {
+        try {
+          var media = await watchlistService.findByUserAndMedia(req.currentUser._id, mediaId);
+        } catch (e) {
+          console.error(e);
+          throw Error('Internal server error')
+        }
+        if (media) {
+          throw Error('Media has already been added');
+        }
+        return true;
+      })
+  ]
+}
+
+exports.deleteFromWatchlistRules = () => {
+  return [
+    param('id')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Id must be a positive integer')
   ]
 }

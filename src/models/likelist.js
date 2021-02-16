@@ -3,7 +3,7 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
-const userLikelistSchema = new Schema({
+const likelistSchema = new Schema({
   _id: Number,
   user: {
     type: Number,
@@ -18,7 +18,7 @@ const userLikelistSchema = new Schema({
   liked: Boolean
 }, { _id: false, timestamps: true });
 
-userLikelistSchema.statics = {
+likelistSchema.statics = {
   findRecordByUserAndMedia: async function (user, media) {
     return await this.findOne({ user, media }).exec();
   },
@@ -27,7 +27,7 @@ userLikelistSchema.statics = {
   }
 }
 
-userLikelistSchema.plugin(autoIncrement, { id: 'user_likelist_id', inc_field: '_id' });
-const userLikelist = mongoose.model('user_likelist', userLikelistSchema);
+likelistSchema.plugin(autoIncrement, { id: 'likelist_id', inc_field: '_id' });
+const likelist = mongoose.model('likelist', likelistSchema);
 
-module.exports = userLikelist;
+module.exports = likelist;

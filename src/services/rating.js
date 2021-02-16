@@ -1,4 +1,4 @@
-const userLikeListModel = require('../models/user-likelist');
+const userLikeListModel = require('../models/likelist');
 
 exports.rate = async (userId, mediaId, rating) => {
   var ratingRecord = await userLikeListModel.findRecordByUserAndMedia(userId, mediaId);

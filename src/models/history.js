@@ -3,7 +3,7 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const Schema = mongoose.Schema;
 
-const userHistorySchema = new Schema({
+const historySchema = new Schema({
   _id: Number,
   user: {
     type: Number,
@@ -21,12 +21,12 @@ const userHistorySchema = new Schema({
     default: 0
   }
 }, { _id: false, timestamps: true });
-userHistorySchema.statics = {
+historySchema.statics = {
   findByUserId: async function (user) {
     return await this.findOne({ user }).exec();
   },
 }
-userHistorySchema.plugin(autoIncrement, { id: 'user_history_id', inc_field: '_id' });
-const userHistory = mongoose.model('user_history', userHistorySchema);
+historySchema.plugin(autoIncrement, { id: 'history_id', inc_field: '_id' });
+const history = mongoose.model('history', historySchema);
 
-module.exports = userHistory;
+module.exports = history;
