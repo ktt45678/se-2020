@@ -19,7 +19,7 @@ const commentSchema = new Schema({
     type: String,
     required: true
   },
-  disabled: {
+  isDeleted: {
     type: Boolean,
     required: true,
     default: false

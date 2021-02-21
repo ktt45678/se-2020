@@ -21,6 +21,22 @@ exports.fetch = async (req, res, next) => {
   }
 }
 
+exports.check = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  const { _id } = req.currentUser;
+  const { mediaId } = req.params;
+  try {
+    const result = await watchlistService.findByUserAndMedia(_id, mediaId);
+    const isAdded = result ? true : false;
+    res.status(200).send({ isAdded });
+  } catch (e) {
+    next(e);
+  }
+}
+
 exports.add = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

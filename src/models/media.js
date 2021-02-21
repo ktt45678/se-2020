@@ -174,27 +174,27 @@ mediaSchema.statics = {
     if (typeof isPublic === 'boolean') {
       filters.isPublic = isPublic;
     }
-    const aggregateStage2 = [
-      { $skip: skip },
-      { $limit: limit },
-      { $project: { credits: 0, addedBy: 0, videos: 0, 'tvShow.seasons': 0, 'movie.stream': 0, isDeleted: 0, isManuallyAdded: 0, __v: 0 } },
-      { $addFields: { releaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } } }
-    ];
-    if (sort) {
-      aggregateStage2.push({ $sort: sort });
-    }
-    return await this.aggregate([
+    const aggregate = [
       { $match: filters },
       {
         $facet:
         {
           'stage1': [{ $group: { _id: null, count: { $sum: 1 } } }],
-          'stage2': aggregateStage2
+          'stage2': [
+            { $skip: skip },
+            { $limit: limit },
+            { $project: { credits: 0, addedBy: 0, videos: 0, 'tvShow.seasons': 0, 'movie.stream': 0, isDeleted: 0, isManuallyAdded: 0, __v: 0 } },
+            { $addFields: { releaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } } }
+          ]
         }
       },
       { $unwind: '$stage1' },
       { $project: { totalResults: '$stage1.count', results: '$stage2' } }
-    ]).exec();
+    ];
+    if (sort) {
+      aggregate.splice(1, 0, { $sort: sort });
+    }
+    return await this.aggregate(aggregate).exec();
   }
 }
 

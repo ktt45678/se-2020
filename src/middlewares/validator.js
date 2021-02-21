@@ -740,6 +740,14 @@ exports.fetchWatchlistRules = () => {
   ]
 }
 
+exports.checkWatchlistRules = () => {
+  return [
+    param('mediaId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
+  ]
+}
+
 exports.addToWatchlistRules = () => {
   return [
     body('mediaId')
