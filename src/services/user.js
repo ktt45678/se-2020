@@ -57,6 +57,9 @@ exports.findAvatar = (user) => {
 }
 
 exports.getAvatar = (avatar, size) => {
+  if (!avatar) {
+    return null;
+  }
   const imageSize = size ? imageModule.findClosestImageSize(size, config.avatar_sizes) : 0;
   const avatarName = imageSize ? `${imageSize}/${avatar.blobName}` : avatar.blobName;
   const token = cloudModule.token(avatar.container, avatar.nanoId, avatarName, config.avatar_expiry);
@@ -87,6 +90,9 @@ exports.findMusic = (user) => {
 }
 
 exports.getMusic = (music) => {
+  if (!music) {
+    return null;
+  }
   const token = cloudModule.token(music.container, music.nanoId, music.blobName, config.music_expiry);
   return `${process.env.AZURE_STORAGE_URL}/${music.container}/${music.nanoId}/${music.blobName}?${token}`;
 }
@@ -117,6 +123,9 @@ exports.findBackground = (user) => {
 }
 
 exports.getBackground = (background, size) => {
+  if (!background) {
+    return null;
+  }
   const imageSize = size ? imageModule.findClosestImageSize(size, config.background_sizes) : 0;
   const backgroundName = imageSize ? `${imageSize}/${background.blobName}` : background.blobName;
   const token = cloudModule.token(background.container, background.nanoId, backgroundName, config.background_expiry);

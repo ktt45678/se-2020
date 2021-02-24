@@ -16,17 +16,11 @@ exports.view = async (req, res, next) => {
       return res.status(404).send({ error: 'User not found' });
     } else if (search) {
       const searchBackground = userService.findBackground(search);
-      if (!searchBackground) {
-        return res.status(404).send({ error: 'This user does not have a background' });
-      }
       const backgroundUri = userService.getBackground(searchBackground, size);
       return res.status(200).send({ uri: backgroundUri });
     }
     const user = req.currentUser;
     const background = userService.findBackground(user);
-    if (!background) {
-      return res.status(404).send({ error: 'Background not found' });
-    }
     const backgroundUri = userService.getBackground(background, size);
     res.status(200).send({ uri: backgroundUri });
   } catch (e) {

@@ -672,7 +672,7 @@ exports.fetchMediaRules = () => {
     query('page')
       .optional()
       .toInt()
-      .isInt({ min: 1, max: 1000 }).withMessage('Page must be an integer between 1 and 1000'),
+      .isInt({ min: 1, max: 10000 }).withMessage('Page must be an integer between 1 and 10000'),
     query('limit')
       .optional()
       .toInt()
@@ -732,7 +732,7 @@ exports.fetchWatchlistRules = () => {
     query('page')
       .optional()
       .toInt()
-      .isInt({ min: 1, max: 1000 }).withMessage('Page must be an integer between 1 and 1000'),
+      .isInt({ min: 1, max: 10000 }).withMessage('Page must be an integer between 1 and 10000'),
     query('limit')
       .optional()
       .toInt()
@@ -773,5 +773,88 @@ exports.deleteFromWatchlistRules = () => {
     param('id')
       .toInt()
       .isInt({ min: 1 }).withMessage('Id must be a positive integer')
+  ]
+}
+
+exports.fetchHistoryRules = () => {
+  return [
+    query('sort')
+      .optional()
+      .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
+      .bail()
+      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+    query('page')
+      .optional()
+      .toInt()
+      .isInt({ min: 1, max: 10000 }).withMessage('Page must be an integer between 1 and 10000'),
+    query('limit')
+      .optional()
+      .toInt()
+      .isInt({ min: 1, max: 50 }).withMessage('Limit must be an integer between 1 and 50')
+  ]
+}
+
+exports.getHistoryRules = () => {
+  return [
+    param('mediaId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
+  ]
+}
+
+exports.addHistoryRules = () => {
+  return [
+    body('mediaId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
+  ]
+}
+
+exports.fetchCommentRules = () => {
+  return [
+    param('mediaId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
+    query('sort')
+      .optional()
+      .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
+      .bail()
+      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+    query('page')
+      .optional()
+      .toInt()
+      .isInt({ min: 1, max: 10000 }).withMessage('Page must be an integer between 1 and 10000'),
+    query('limit')
+      .optional()
+      .toInt()
+      .isInt({ min: 1, max: 50 }).withMessage('Limit must be an integer between 1 and 50')
+  ]
+}
+
+exports.addCommentRules = () => {
+  return [
+    body('mediaId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
+    body('content')
+      .isLength({ min: 1, max: 2000 }).withMessage('Content must be between 1 and 2000 characters long')
+  ]
+}
+
+exports.updateCommentRules = () => {
+  return [
+    body('commentId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Comment id must be a positive integer'),
+    body('content')
+      .isLength({ min: 1, max: 2000 }).withMessage('Content must be between 1 and 2000 characters long')
+  ]
+}
+
+exports.deleteCommentRules = () => {
+  return [
+    body('commentId')
+      .toInt()
+      .isInt({ min: 1 }).withMessage('Comment id must be a positive integer')
   ]
 }

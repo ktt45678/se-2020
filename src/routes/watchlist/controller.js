@@ -46,9 +46,9 @@ exports.add = async (req, res, next) => {
   const { mediaId } = req.body;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const check = await mediaService.findMediaDetailsById(mediaId, isPublic, null);
+    const check = await mediaService.findMediaDetailsById(mediaId, isPublic, 'movie,tvShow,credits,videos');
     if (!check) {
-      return res.status(404).send({ message: 'Media not found' });
+      return res.status(404).send({ error: 'Media not found' });
     }
     const media = watchlistService.addToWatchlist(_id, mediaId);
     await media.save();
@@ -67,7 +67,7 @@ exports.delete = async (req, res, next) => {
   try {
     const media = await watchlistService.findByIdAndDelete(id);
     if (!media) {
-      return res.status(404).send({ message: 'Media not found' });
+      return res.status(404).send({ error: 'Media not found' });
     }
     res.status(200).send({ message: 'Media has been deleted from watchlist' });
   } catch (e) {

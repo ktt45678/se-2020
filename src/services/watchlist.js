@@ -3,7 +3,7 @@ const watchlistModel = require('../models/watchlist');
 const mediaModule = require('../modules/media');
 const miscModule = require('../modules/misc');
 
-exports.fetchList = async (userId, sortString, page = 1, limit = 30) => {
+exports.fetchList = async (userId, sortString = 'createdAt:-1', page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
   const results = await watchlistModel.fetchList(userId, sort, skip, limit);

@@ -154,6 +154,7 @@ exports.refreshToken = async (req, res, next) => {
     const accessToken = authService.signAccessToken(user);
     const refreshToken = authService.signRefreshToken(user);
     await redisService.setRefreshToken(refreshToken, user);
+    await redisService.del(req.refreshToken);
     res.status(200).send({ accessToken, refreshToken });
   } catch (e) {
     next(e);

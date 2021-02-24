@@ -16,17 +16,11 @@ exports.view = async (req, res, next) => {
       return res.status(404).send({ error: 'User not found' });
     } else if (search) {
       const searchAvatar = userService.findAvatar(search);
-      if (!searchAvatar) {
-        return res.status(404).send({ error: 'This user does not have an avatar' });
-      }
       const avatarUri = userService.getAvatar(searchAvatar, size);
       return res.status(200).send({ uri: avatarUri });
     }
     const user = req.currentUser;
     const avatar = userService.findAvatar(user);
-    if (!avatar) {
-      return res.status(404).send({ error: 'Avatar not found' });
-    }
     const avatarUri = userService.getAvatar(avatar, size);
     res.status(200).send({ uri: avatarUri });
   } catch (e) {

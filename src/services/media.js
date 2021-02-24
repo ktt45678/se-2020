@@ -219,7 +219,7 @@ exports.findSeasonEpisode = (season, episode, options = { isAdded: null }) => {
   return season.episodes.find(e => e.episodeNumber === episode);
 }
 
-exports.fetchMedia = async (query, type, genre, sortString, isPublic, page = 1, limit = 30) => {
+exports.fetchMedia = async (query, type, genre, sortString = 'createdAt:-1', isPublic, page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
   const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit);

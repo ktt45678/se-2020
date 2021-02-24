@@ -21,9 +21,12 @@ watchlistSchema.statics = {
   findByUserAndMedia: async function (user, media) {
     return await this.findOne({ user, media }).exec();
   },
-  fetchList: async function (user, sort, skip = 0, limit = 30) {
+  fetchList: async function (user, sort = { createdAt: -1 }, skip = 0, limit = 30) {
     const aggregate = [
       { $match: { user } },
+      { $lookup: { from: 'media', localField: 'media', foreignField: '_id', as: 'media' } },
+      { $unwind: '$media' },
+      { $addFields: { 'media.releaseDate': { $ifNull: ['$media.movie.releaseDate', '$media.tvShow.firstAirDate'] } } },
       {
         $facet:
         {
@@ -31,10 +34,7 @@ watchlistSchema.statics = {
           'stage2': [
             { $skip: skip },
             { $limit: limit },
-            { $lookup: { from: 'media', localField: 'media', foreignField: '_id', as: 'media' } },
-            { $unwind: '$media' },
-            { $project: { user: 1, 'media._id': 1, 'media.tmdbId': 1, 'media.imdbId': 1, 'media.title': 1, 'media.originalTitle': 1, 'media.overview': 1, 'media.movie': 1, 'media.tvShow': 1, 'media.posterPath': 1, 'media.backdropPath': 1, createdAt: 1, updatedAt: 1 } },
-            { $addFields: { 'media.releaseDate': { $ifNull: ['$media.movie.releaseDate', '$media.tvShow.firstAirDate'] } } },
+            { $project: { _id: 1, 'media._id': 1, 'media.tmdbId': 1, 'media.imdbId': 1, 'media.title': 1, 'media.originalTitle': 1, 'media.overview': 1, 'media.movie': 1, 'media.tvShow': 1, 'media.posterPath': 1, 'media.backdropPath': 1, createdAt: 1, updatedAt: 1 } },
             { $unset: ['media.movie.stream', 'media.tvShow.seasons'] }
           ]
         }
@@ -43,7 +43,7 @@ watchlistSchema.statics = {
       { $project: { totalResults: '$stage1.count', results: '$stage2' } }
     ];
     if (sort) {
-      aggregate.splice(1, 0, { $sort: sort });
+      aggregate.splice(2, 0, { $sort: sort });
     }
     return await this.aggregate(aggregate).exec();
   }

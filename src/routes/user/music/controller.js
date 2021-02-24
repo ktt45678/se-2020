@@ -15,17 +15,11 @@ exports.view = async (req, res, next) => {
       return res.status(404).send({ error: 'User not found' });
     } else if (search) {
       const searchMusic = userService.findMusic(search);
-      if (!searchMusic) {
-        return res.status(404).send({ error: 'This user does not want music' });
-      }
       const musicUri = userService.getMusic(searchMusic);
       return res.status(200).send({ uri: musicUri, mimeType: searchMusic.mimeType });
     }
     const user = req.currentUser;
     const music = userService.findMusic(user);
-    if (!music) {
-      return res.status(404).send({ error: 'Music not found' });
-    }
     const musicUri = userService.getMusic(music);
     res.status(200).send({ uri: musicUri, mimeType: music.mimeType });
   } catch (e) {
