@@ -3,10 +3,10 @@ const mediaModule = require('../modules/media');
 const miscModule = require('../modules/misc');
 const config = require('../../config.json').media;
 
-exports.fetchList = async (userId, sortString = 'createdAt:-1', page = 1, limit = 30) => {
+exports.fetchList = async (userId, sortString = 'createdAt:-1', isPublic, page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await historyModel.fetchList(userId, sort, skip, limit);
+  const results = await historyModel.fetchList(userId, sort, isPublic, skip, limit);
   const result = results.shift();
   if (result) {
     let i = result.results.length;

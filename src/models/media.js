@@ -149,7 +149,7 @@ mediaSchema.statics = {
     fields = fields ?? {};
     fields.isDeleted = 0;
     const result = await this.findOne(filters, fields).populate('credits').exec();
-    if (result.tvShow && isValidPublicType) {
+    if (result?.tvShow && isValidPublicType) {
       result.tvShow.seasons = result.tvShow.seasons.filter(s => s.isPublic === isPublic);
       let i = result.tvShow.seasons.length;
       while (i--) {

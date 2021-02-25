@@ -177,11 +177,14 @@ exports.findMediaById = async (id) => {
   return await mediaModel.findById(id);
 }
 
-exports.findMediaDetailsById = async (id, isPublic, exclusions) => {
+exports.findMediaDetailsById = async (id, isPublic, exclusions, options = { skipParsing: false }) => {
   const fields = miscModule.toExclusionQuery(exclusions);
   const result_ = await mediaModel.findMediaDetailsById(id, isPublic, fields);
+  if (options.skipParsing) {
+    return result_;
+  }
   if (!result_) {
-    throw { status: 404, message: 'The resource could not be found' }
+    throw { status: 404, message: 'Media not found' }
   }
   // Process images
   const result = mediaModule.parseMediaResult(config.poster_url, config.backdrop_url, result_);

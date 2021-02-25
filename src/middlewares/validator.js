@@ -682,7 +682,7 @@ exports.fetchMediaRules = () => {
 
 exports.checkRatingRules = () => {
   return [
-    param('id')
+    param('mediaId')
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
   ]
@@ -690,7 +690,7 @@ exports.checkRatingRules = () => {
 
 exports.countRatingRules = () => {
   return [
-    param('id')
+    param('mediaId')
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer')
   ]
@@ -698,7 +698,7 @@ exports.countRatingRules = () => {
 
 exports.ratingRules = () => {
   return [
-    param('id')
+    body('mediaId')
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
     body('rating')

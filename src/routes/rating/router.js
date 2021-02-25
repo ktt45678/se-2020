@@ -5,11 +5,12 @@ const roleGuard = require('../../middlewares/role-guard');
 const validator = require('../../middlewares/validator');
 
 router.get('/', controller.index);
+router.get('/:mediaId/count', authGuard({ bypass: true }), validator.countRatingRules(), controller.count);
 
 router.use(authGuard());
+router.get('/:mediaId/check', validator.checkRatingRules(), controller.check);
+
 router.use(roleGuard.regular);
-router.get('/:id/check', validator.checkRatingRules(), controller.check);
-router.get('/:id/count', validator.countRatingRules(), controller.count);
-router.post('/:id/rate', validator.ratingRules(), controller.rate);
+router.post('/', validator.ratingRules(), controller.rate);
 
 module.exports = router;

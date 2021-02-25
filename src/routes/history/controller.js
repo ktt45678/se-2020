@@ -13,8 +13,9 @@ exports.fetch = async (req, res, next) => {
   }
   const { _id } = req.currentUser;
   const { sort, page, limit } = req.query;
+  const isPublic = req.currentUser.role !== 'admin' ? true : null;
   try {
-    const result = await historyService.fetchList(_id, sort, page, limit);
+    const result = await historyService.fetchList(_id, sort, isPublic, page, limit);
     res.status(200).send(result);
   } catch (e) {
     next(e);
@@ -26,9 +27,14 @@ exports.get = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
-  const { _id } = req.currentUser;
+  const { _id, role } = req.currentUser;
   const { mediaId } = req.params;
+  const isPublic = role !== 'admin' ? true : null;
   try {
+    const check = await mediaService.findMediaDetailsById(mediaId, isPublic, 'movie,tvShow,credits,videos', { skipParsing: true });
+    if (!check) {
+      return res.status(404).send({ error: 'Media not found' });
+    }
     const result = await historyService.findByUserAndMedia(_id, mediaId);
     if (!result) {
       return res.status(200).send({ message: 'No record' });
@@ -48,7 +54,7 @@ exports.add = async (req, res, next) => {
   const { mediaId } = req.body;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const check = await mediaService.findMediaDetailsById(mediaId, isPublic, 'movie,tvShow,credits,videos');
+    const check = await mediaService.findMediaDetailsById(mediaId, isPublic, 'movie,tvShow,credits,videos', { skipParsing: true });
     if (!check) {
       return res.status(404).send({ error: 'Media not found' });
     }

@@ -24,9 +24,13 @@ const historySchema = new Schema({
 
 historySchema.statics = {
   findByUserAndMedia: async function (user, media) {
-    return await this.findOne({ user, media }).exec();
+    return await this.findOne({ user, media }, { user: 0, media: 0, __v: 0 }).exec();
   },
-  fetchList: async function (user, sort = { createdAt: -1 }, skip = 0, limit = 30) {
+  fetchList: async function (user, sort = { createdAt: -1 }, isPublic, skip = 0, limit = 30) {
+    const extraFilter = { 'media.isDeleted': false };
+    if (typeof isPublic === 'boolean') {
+      extraFilter['media.isPublic'] = isPublic;
+    }
     const aggregate = [
       { $match: { user } },
       { $lookup: { from: 'media', localField: 'media', foreignField: '_id', as: 'media' } },
@@ -36,11 +40,12 @@ historySchema.statics = {
       {
         $facet:
         {
-          'stage1': [{ $group: { _id: null, count: { $sum: 1 } } }],
+          'stage1': [{ $match: extraFilter }, { $group: { _id: null, count: { $sum: 1 } } }],
           'stage2': [
+            { $match: extraFilter },
             { $skip: skip },
             { $limit: limit },
-            { $project: { _id: 1, 'media._id': 1, 'media.tmdbId': 1, 'media.imdbId': 1, 'media.title': 1, 'media.originalTitle': 1, 'media.overview': 1, 'media.movie': 1, 'media.tvShow': 1, 'media.posterPath': 1, 'media.backdropPath': 1, watchCount: 1, createdAt: 1, updatedAt: 1 } },
+            { $project: { _id: 1, 'media._id': 1, 'media.genres': 1, 'media.tmdbId': 1, 'media.imdbId': 1, 'media.tagline': 1, 'media.title': 1, 'media.originalTitle': 1, 'media.overview': 1, 'media.movie': 1, 'media.tvShow': 1, 'media.posterPath': 1, 'media.backdropPath': 1, 'media.popularity': 1, 'media.releaseDate': 1, watchCount: 1, createdAt: 1, updatedAt: 1 } },
             { $unset: ['media.movie.stream', 'media.tvShow.seasons'] }
           ]
         }

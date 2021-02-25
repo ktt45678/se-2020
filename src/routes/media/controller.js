@@ -90,7 +90,7 @@ exports.stream = async (req, res, next) => {
   const { season, episode } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const media = await mediaService.findMediaDetailsById(id, isPublic, 'credits,videos');
+    const media = await mediaService.findMediaDetailsById(id, isPublic, 'credits,videos', { skipParsing: true });
     const streamId = await mediaService.findStreamByMedia(media, season, episode);
     const streamUrls = await mediaService.createStreamUrls(streamId);
     res.status(200).send(streamUrls);

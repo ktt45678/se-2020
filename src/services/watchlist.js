@@ -3,10 +3,10 @@ const watchlistModel = require('../models/watchlist');
 const mediaModule = require('../modules/media');
 const miscModule = require('../modules/misc');
 
-exports.fetchList = async (userId, sortString = 'createdAt:-1', page = 1, limit = 30) => {
+exports.fetchList = async (userId, sortString = 'createdAt:-1', isPublic, page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await watchlistModel.fetchList(userId, sort, skip, limit);
+  const results = await watchlistModel.fetchList(userId, sort, isPublic, skip, limit);
   const result = results.shift();
   if (result) {
     let i = result.results.length;
@@ -30,6 +30,10 @@ exports.addToWatchlist = (userId, mediaId) => {
     media: mediaId
   });
   return media;
+}
+
+exports.findById = async (id) => {
+  return await watchlistModel.findById(id);
 }
 
 exports.findByIdAndDelete = async (id) => {

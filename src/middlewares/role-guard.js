@@ -5,7 +5,7 @@ exports.regular = (req, res, next) => {
   }
   // New users can not access
   if (req.currentUser.new) {
-    return res.status(403).send({ error: 'Forbidden' });
+    return res.status(403).send({ error: 'This feature requires email confirmation' });
   }
   next();
 }
