@@ -6,6 +6,7 @@ const validator = require('../../middlewares/validator');
 
 router.get('/', controller.index);
 router.get('/fetch', authGuard({ bypass: true }), validator.fetchMediaRules(), controller.fetch);
+router.get('/latest', authGuard({ bypass: true }), validator.viewLatestMediaRules(), controller.latest);
 router.get('/details/:id', authGuard({ bypass: true }), validator.viewMediaRules(), controller.details);
 router.get('/details/:id/season/:season', authGuard({ bypass: true }), validator.viewTvSeasonRules(), controller.tvSeasonDetails);
 router.get('/details/:id/season/:season/episode/:episode', authGuard({ bypass: true }), validator.viewTvEpisodeRules(), controller.tvEpisodeDetails);

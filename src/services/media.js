@@ -180,11 +180,31 @@ exports.findMediaById = async (id) => {
 exports.findMediaDetailsById = async (id, isPublic, exclusions, options = { skipParsing: false }) => {
   const fields = miscModule.toExclusionQuery(exclusions);
   const result_ = await mediaModel.findMediaDetailsById(id, isPublic, fields);
+  if (!result_) {
+    throw { status: 404, message: 'Media not found' }
+  }
   if (options.skipParsing) {
     return result_;
   }
+  // Process images
+  const result = mediaModule.parseMediaResult(config.poster_url, config.backdrop_url, result_);
+  if (result.credits) {
+    result.credits = mediaModule.parseCreditResult(config.profile_url, result.credits);
+  }
+  if (result.tvShow) {
+    result.tvShow.seasons = mediaModule.parseTvSeasonResult(config.poster_url, config.still_url, result.tvShow.seasons);
+  }
+  return result;
+}
+
+exports.findLatestMedia = async (type, isPublic, exclusions, options = { skipParsing: false }) => {
+  const fields = miscModule.toExclusionQuery(exclusions);
+  const result_ = await mediaModel.findLatestMedia(type, isPublic, fields);
   if (!result_) {
     throw { status: 404, message: 'Media not found' }
+  }
+  if (options.skipParsing) {
+    return result_;
   }
   // Process images
   const result = mediaModule.parseMediaResult(config.poster_url, config.backdrop_url, result_);

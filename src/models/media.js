@@ -158,6 +158,30 @@ mediaSchema.statics = {
     }
     return result;
   },
+  findLatestMedia: async function (type, isPublic, fields) {
+    const filters = { isDeleted: false };
+    if (type === 'movie') {
+      filters.movie = { $ne: null }
+    } else if (type === 'tv') {
+      filters.tvShow = { $ne: null }
+    }
+    const isValidPublicType = typeof isPublic === 'boolean';
+    if (isValidPublicType) {
+      filters.isPublic = isPublic;
+    }
+    fields = fields ?? {};
+    fields.isDeleted = 0;
+    const results = await this.find(filters, fields).sort({ createdAt: -1 }).limit(1).populate('credits').exec();
+    const result = results.shift();
+    if (result?.tvShow && isValidPublicType) {
+      result.tvShow.seasons = result.tvShow.seasons.filter(s => s.isPublic === isPublic);
+      let i = result.tvShow.seasons.length;
+      while (i--) {
+        result.tvShow.seasons[i].episodes = result.tvShow.seasons[i].episodes.filter(e => e.isPublic === isPublic);
+      }
+    }
+    return result;
+  },
   fetchMedia: async function (query, type, genre, sort = { createdAt: -1 }, isPublic, skip = 0, limit = 30) {
     const filters = { isDeleted: false };
     if (query) {

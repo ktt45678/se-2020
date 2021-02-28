@@ -624,6 +624,19 @@ exports.viewMediaRules = () => {
   ]
 }
 
+exports.viewLatestMediaRules = () => {
+  return [
+    query('type')
+      .optional()
+      .isIn(['movie', 'tv']).withMessage('Type must be movie or tv'),
+    query('exclusions')
+      .optional()
+      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .bail()
+      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+  ]
+}
+
 exports.viewTvSeasonRules = () => {
   return [
     param('id')
@@ -664,6 +677,9 @@ exports.fetchMediaRules = () => {
     query('query')
       .optional()
       .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
+    query('type')
+      .optional()
+      .isIn(['movie', 'tv']).withMessage('Type must be movie or tv'),
     query('sort')
       .optional()
       .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')

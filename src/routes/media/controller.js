@@ -38,6 +38,22 @@ exports.details = async (req, res, next) => {
   }
 }
 
+exports.latest = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).send({ errors: errors.array() });
+  }
+  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
+  const { type, exclusions } = req.query;
+  const isPublic = req.currentUser?.role !== 'admin' ? true : null;
+  try {
+    const media = await mediaService.findLatestMedia(type, isPublic, exclusions);
+    res.status(200).send(media);
+  } catch (e) {
+    next(e);
+  }
+}
+
 exports.tvSeasonDetails = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
