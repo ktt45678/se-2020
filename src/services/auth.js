@@ -29,10 +29,20 @@ exports.hashPassword = async (password) => {
 }
 
 exports.signAccessToken = (user) => {
-  const { _id } = user;
+  const signData = {
+    _id: user._id,
+    username: user.username,
+    displayName: user.displayName,
+    email: user.email,
+    dateOfBirth: user.dateOfBirth,
+    role: user.role,
+    new: user.new,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
   const secret = process.env.ACCESS_TOKEN_SECRET || config.access_token_secret;
   const expiry = config.access_token_life;
-  return authModule.signToken({ _id }, secret, expiry);
+  return authModule.signToken(signData, secret, expiry);
 }
 
 exports.signRefreshToken = (user) => {

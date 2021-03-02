@@ -15,7 +15,11 @@ module.exports = (expiry = 120, limit = 1, errorMode = false) => {
       if (value >= limit) {
         const ttl = await redisService.ttl(key);
         if (ttl >= 0) {
-          return res.status(429).send({ ttl, message: `You can request again in ${ttl} seconds` });
+          return res.status(429).send({
+            ttl,
+            message: `You can request again in ${ttl} seconds`,
+            error: `You have exceeded the request limit, please try again in ${ttl} seconds`
+          });
         }
       }
     } catch (e) {

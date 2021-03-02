@@ -220,7 +220,7 @@ mediaSchema.statics = {
   }
 }
 
-mediaSchema.index({ title: 'text', originalTitle: 'text', genres: 'text' }, { default_language: 'none' });
+mediaSchema.index({ title: 'text', originalTitle: 'text', genres: 'text' }, { default_language: 'en' });
 mediaVideoSchema.plugin(autoIncrement, { id: 'media_video_id', inc_field: '_id' });
 tvEpisodeSchema.plugin(autoIncrement, { id: 'tv_episode_id', inc_field: '_id' });
 tvSeasonSchema.plugin(autoIncrement, { id: 'tv_season_id', inc_field: '_id' });
