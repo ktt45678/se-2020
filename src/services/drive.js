@@ -1,7 +1,5 @@
 const driveModule = require('../modules/drive');
 const request = require('../modules/request');
-const redisService = require('./redis');
-const config = require('../../config.json').drive;
 
 exports.getDirectories = async (path_) => {
   const path = path_ ? path_.endsWith('/') ? path_ : `${path_}/` : '';

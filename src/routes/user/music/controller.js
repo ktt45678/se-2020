@@ -10,18 +10,18 @@ exports.view = async (req, res, next) => {
   }
   const { id } = req.params;
   try {
+    const user = req.currentUser;
     const search = id ? await userService.findUserById(id) : id;
-    if (!search && id) {
+    if ((!search && id) || (!id && !user)) {
       return res.status(404).send({ error: 'User not found' });
     } else if (search) {
       const searchMusic = userService.findMusic(search);
       const musicUri = userService.getMusic(searchMusic);
-      return res.status(200).send({ uri: musicUri, mimeType: searchMusic.mimeType });
+      return res.status(200).send({ uri: musicUri, mimeType: searchMusic?.mimeType });
     }
-    const user = req.currentUser;
     const music = userService.findMusic(user);
     const musicUri = userService.getMusic(music);
-    res.status(200).send({ uri: musicUri, mimeType: music.mimeType });
+    res.status(200).send({ uri: musicUri, mimeType: music?.mimeType });
   } catch (e) {
     next(e);
   }

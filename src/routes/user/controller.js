@@ -11,17 +11,19 @@ exports.view = async (req, res, next) => {
   }
   const user = req.currentUser;
   const { id } = req.params;
-  if (!id || id === user._id) {
-    const { username, displayName, email, dateOfBirth, role, createdAt } = user;
-    return res.status(200).send({ username, displayName, email, dateOfBirth, role, createdAt });
+  if (!id && !user) {
+    return res.status(404).send({ error: 'User not found' });
+  } else if ((!id && user) || (id === user?._id)) {
+    const { _id, username, displayName, email, dateOfBirth, role, createdAt } = user;
+    return res.status(200).send({ _id, username, displayName, email, dateOfBirth, role, createdAt });
   }
   try {
     const search = await userService.findUserById(id);
     if (!search) {
       return res.status(404).send({ error: 'User not found' });
     }
-    const { username, displayName, role, createdAt } = search;
-    res.status(200).send({ username, displayName, role, createdAt });
+    const { _id, username, displayName, role, createdAt } = search;
+    res.status(200).send({ _id, username, displayName, role, createdAt });
   } catch (e) {
     next(e);
   }

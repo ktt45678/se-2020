@@ -11,15 +11,15 @@ exports.view = async (req, res, next) => {
   const { id } = req.params;
   const { size } = req.query;
   try {
+    const user = req.currentUser;
     const search = id ? await userService.findUserById(id) : id;
-    if (!search && id) {
+    if ((!search && id) || (!id && !user)) {
       return res.status(404).send({ error: 'User not found' });
     } else if (search) {
       const searchBackground = userService.findBackground(search);
       const backgroundUri = userService.getBackground(searchBackground, size);
       return res.status(200).send({ uri: backgroundUri });
     }
-    const user = req.currentUser;
     const background = userService.findBackground(user);
     const backgroundUri = userService.getBackground(background, size);
     res.status(200).send({ uri: backgroundUri });
