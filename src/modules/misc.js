@@ -3,7 +3,7 @@ exports.toExclusionQuery = (exclusionString) => {
     return null;
   }
   const exclusions = {};
-  const exclusionList = exclusionString.split(',');
+  const exclusionList = uniqExclusion(exclusionString.split(','));
   let i = exclusionList.length;
   while (i--) {
     exclusions[exclusionList[i]] = 0;
@@ -49,4 +49,22 @@ exports.overrideData = (source, target, exclusions = []) => {
     }
   }
   return source;
+}
+
+// Unique values for exclusion array
+function uniqExclusion(array) {
+  array = array.sort();
+  let i = 0;
+  while (i < array.length) {
+    let j = i + 1;
+    while (j < array.length) {
+      if (array[j].startsWith(array[i])) {
+        array.splice(j, 1);
+      } else {
+        j++;
+      }
+    }
+    i++;
+  }
+  return array;
 }

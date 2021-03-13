@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-sequence')(mongoose);
-const config = require('../../config.json');
 
 const Schema = mongoose.Schema;
 
@@ -148,7 +147,8 @@ mediaSchema.statics = {
     }
     fields = fields ?? {};
     fields.isDeleted = 0;
-    const result = await this.findOne(filters, fields).populate('credits').exec();
+    const result = await this.findOne(filters, fields).populate('credits').populate('movie.stream tvShow.seasons.episodes.stream', 'path').exec();
+    // Filter for public data
     if (result?.tvShow && isValidPublicType) {
       result.tvShow.seasons = result.tvShow.seasons.filter(s => s.isPublic === isPublic);
       let i = result.tvShow.seasons.length;
@@ -220,7 +220,7 @@ mediaSchema.statics = {
   }
 }
 
-mediaSchema.index({ title: 'text', originalTitle: 'text', genres: 'text' }, { default_language: 'en' });
+mediaSchema.index({ title: 'text', originalTitle: 'text', genres: 'text' });
 mediaVideoSchema.plugin(autoIncrement, { id: 'media_video_id', inc_field: '_id' });
 tvEpisodeSchema.plugin(autoIncrement, { id: 'tv_episode_id', inc_field: '_id' });
 tvSeasonSchema.plugin(autoIncrement, { id: 'tv_season_id', inc_field: '_id' });

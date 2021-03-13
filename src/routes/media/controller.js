@@ -26,7 +26,6 @@ exports.details = async (req, res, next) => {
     return res.status(422).send({ errors: errors.array() });
   }
   // Force to remove stream from query
-  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
   const { id } = req.params;
   const { exclusions } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
@@ -43,7 +42,6 @@ exports.latest = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
-  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
   const { type, exclusions } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
@@ -59,7 +57,6 @@ exports.tvSeasonDetails = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
-  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
   const { id, season } = req.params;
   const { exclusions } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
@@ -80,7 +77,6 @@ exports.tvEpisodeDetails = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
-  req.query.exclusions = req.query.exclusions ? req.query.exclusions + ',movie.stream,tvShow.seasons.episodes.stream' : 'movie.stream,tvShow.seasons.episodes.stream';
   const { id, season, episode } = req.params;
   const { exclusions } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
@@ -182,7 +178,7 @@ exports.addTvSeason = async (req, res, next) => {
       miniSeason.set(seasonDocument);
     } else {
       media.tvShow.seasons.push(seasonDocument);
-      media.tvShow.seasonCount++;
+      media.tvShow.seasonCount = media.tvShow.seasons.filter(s => s.seasonNumber !== 0).length;
     }
     await media.save();
     res.status(200).send({ message: 'Season has been added successfully' });
@@ -217,7 +213,7 @@ exports.addTvEpisode = async (req, res, next) => {
       miniEpisode.set(episodeDocument);
     } else {
       media.tvShow.seasons[season].episodes.push(episodeDocument);
-      media.tvShow.seasons[season].episodeCount++;
+      media.tvShow.seasons[season].episodeCount = media.tvShow.seasons[season].episodes.length;
     }
     await media.save();
     res.status(200).send({ message: 'Episode has been added successfully' });

@@ -15,7 +15,8 @@ exports.view = async (req, res, next) => {
     return res.status(404).send({ error: 'User not found' });
   } else if ((!id && user) || (id === user?._id)) {
     const { _id, username, displayName, email, dateOfBirth, role, createdAt } = user;
-    return res.status(200).send({ _id, username, displayName, email, dateOfBirth, role, createdAt });
+    const new_ = user.new;
+    return res.status(200).send({ _id, username, displayName, email, dateOfBirth, role, new: new_, createdAt });
   }
   try {
     const search = await userService.findUserById(id);
@@ -23,7 +24,8 @@ exports.view = async (req, res, next) => {
       return res.status(404).send({ error: 'User not found' });
     }
     const { _id, username, displayName, role, createdAt } = search;
-    res.status(200).send({ _id, username, displayName, role, createdAt });
+    const new_ = search.new;
+    res.status(200).send({ _id, username, displayName, role, new: new_, createdAt });
   } catch (e) {
     next(e);
   }

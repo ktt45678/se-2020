@@ -191,7 +191,7 @@ exports.findMediaDetailsById = async (id, isPublic, exclusions, options = { skip
   if (result.credits) {
     result.credits = mediaModule.parseCreditResult(config.profile_url, result.credits);
   }
-  if (result.tvShow) {
+  if (result.tvShow?.seasons) {
     result.tvShow.seasons = mediaModule.parseTvSeasonResult(config.poster_url, config.still_url, result.tvShow.seasons);
   }
   return result;

@@ -157,12 +157,14 @@ exports.parseTvSeasonResult = (posterUrl, stillUrl, seasons) => {
       continue;
     }
     seasons[i].posterPath = setImageUrl(seasons[i].posterPath, posterUrl);
-    let j = seasons[i].episodes.length;
-    while (j--) {
-      if (!seasons[i].episodes[j].isAdded) {
-        continue;
+    if (seasons[i].episodes) {
+      let j = seasons[i].episodes.length;
+      while (j--) {
+        if (!seasons[i].episodes[j].isAdded) {
+          continue;
+        }
+        seasons[i].episodes[j].stillPath = setImageUrl(seasons[i].episodes[j].stillPath, stillUrl);
       }
-      seasons[i].episodes[j].stillPath = setImageUrl(seasons[i].episodes[j].stillPath, stillUrl);
     }
   }
   return seasons;
