@@ -245,7 +245,8 @@ exports.findSeasonEpisode = (season, episode, options = { isAdded: null }) => {
 exports.fetchMedia = async (query, type, genre, sortString = 'createdAt:-1', isPublic, page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
-  const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit);
+  const atlasSearch = process.env.DATABASE_ATLAS_SEARCH === 'true';
+  const results = await mediaModel.fetchMedia(query, type, genre, sort, isPublic, skip, limit, atlasSearch);
   // Aggregation always returns an array, result is the first one
   const result = results.shift();
   if (result) {

@@ -676,7 +676,11 @@ exports.fetchMediaRules = () => {
   return [
     query('query')
       .optional()
-      .isLength({ min: 1 }).withMessage('Query must be at least 1 character long'),
+      .isLength({ min: 1 }).withMessage('Query must be at least 1 character long')
+      .bail()
+      .customSanitizer(query => {
+        return decodeURIComponent(query);
+      }),
     query('type')
       .optional()
       .isIn(['movie', 'tv']).withMessage('Type must be movie or tv'),

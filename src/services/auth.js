@@ -7,7 +7,15 @@ exports.authenticate = async (username, password) => {
   if (user && await userModel.comparePassword(password, user.password)) {
     return user;
   }
-  throw { status: 400, message: 'Authentication failed' };
+  throw { status: 400, message: 'Username or password is incorrect' };
+}
+
+exports.validatePassword = async (userId, password) => {
+  const user = await userModel.findById(userId);
+  if (user && await userModel.comparePassword(password, user.password)) {
+    return true;
+  }
+  throw { status: 400, message: 'Your password is incorrect' };
 }
 
 exports.createUser = async (username, displayName, dateOfBirth, email, password) => {

@@ -47,7 +47,7 @@ exports.update = async (req, res, next) => {
       if (!currentPassword) {
         return res.status(422).send({ error: 'Current password is required' });
       }
-      await authService.authenticate(user.username, currentPassword);
+      await authService.validatePassword(user._id, currentPassword);
     }
     user.username = username;
     user.displayName = displayName;

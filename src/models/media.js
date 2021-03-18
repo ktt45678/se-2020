@@ -182,22 +182,18 @@ mediaSchema.statics = {
     }
     return result;
   },
-  fetchMedia: async function (query, type, genre, sort = { createdAt: -1 }, isPublic, skip = 0, limit = 30) {
+  fetchMedia: async function (query, type, genre, sort = { createdAt: -1 }, isPublic, skip = 0, limit = 30, atlasSearch = false) {
     const filters = { isDeleted: false };
-    if (query) {
-      filters.$text = { $search: query }
-    }
-    if (type === 'movie') {
-      filters.movie = { $ne: null }
-    } else if (type === 'tv') {
-      filters.tvShow = { $ne: null }
-    }
-    if (genre) {
+    if (query && !atlasSearch)
+      filters.$text = { $search: query };
+    if (type === 'movie')
+      filters.movie = { $ne: null };
+    else if (type === 'tv')
+      filters.tvShow = { $ne: null };
+    if (genre)
       filters.genres = genre;
-    }
-    if (typeof isPublic === 'boolean') {
+    if (typeof isPublic === 'boolean')
       filters.isPublic = isPublic;
-    }
     const aggregate = [
       { $match: filters },
       { $addFields: { releaseDate: { $ifNull: ['$movie.releaseDate', '$tvShow.firstAirDate'] } } },
@@ -216,6 +212,8 @@ mediaSchema.statics = {
       { $unwind: '$stage1' },
       { $project: { totalResults: '$stage1.count', results: '$stage2' } }
     ];
+    if (query && atlasSearch)
+      aggregate.unshift({ $search: { text: { query, path: ['title', 'originalTitle', 'genres'], fuzzy: {} } } });
     return await this.aggregate(aggregate).exec();
   }
 }
