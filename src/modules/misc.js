@@ -1,58 +1,65 @@
 exports.toExclusionQuery = (exclusionString) => {
-  if (!exclusionString) {
-    return null;
-  }
+  if (!exclusionString)
+    return undefined;
   const exclusions = {};
-  const exclusionList = uniqExclusion(exclusionString.split(','));
+  const exclusionList = uniqString(exclusionString.split(','));
   let i = exclusionList.length;
-  while (i--) {
+  while (i--)
     exclusions[exclusionList[i]] = 0;
-  }
   return exclusions;
 }
 
+exports.toFieldQuery = (fieldString) => {
+  if (!fieldString)
+    return undefined;
+  const fields = {};
+  const fieldType = fieldString.startsWith('<') ? 1 : 0;
+  fieldString = fieldString.substring(1);
+  const fieldList = uniqString(fieldString.split(','));
+  let i = fieldList.length;
+  while (i--)
+    fields[fieldList[i]] = fieldType;
+  return fields;
+}
+
 exports.calculatePageSkip = (page, limit) => {
-  if (!page || !limit) {
+  if (!page || !limit)
     return 0;
-  }
   return limit * (page - 1);
 }
 
 exports.toSortQuery = (sortString) => {
-  if (!sortString) {
-    return null;
-  }
+  if (!sortString)
+    return undefined;
   const sort = {};
   const sortList = sortString.split(',');
   let i = sortList.length;
   while (i--) {
-    const sortItem = sortList[i].split(':');
-    sort[sortItem[0]] = Number(sortItem[1]);
+    const sortValue = sortList[i].startsWith('<') ? -1 : 1;
+    sortList[i] = sortList[i].substring(1);
+    sort[sortList[i]] = sortValue;
   }
   return sort;
 }
 
 exports.overrideData = (source, target, exclusions = []) => {
-  if (!target) {
-    return null;
-  }
+  if (!target)
+    return undefined;
   const isMongooseModel = typeof source.toObject === 'function';
   const keys = isMongooseModel ? Object.keys(source.toObject()) : Object.keys(source);
   let i = keys.length;
   while (i--) {
     const key = keys[i];
-    if (exclusions.includes(key)) {
+    if (exclusions.includes(key))
       continue;
-    }
-    if (key in target) {
+    if (key in target)
       source[key] = target[key];
-    }
   }
   return source;
 }
 
-// Unique values for exclusion array
-function uniqExclusion(array) {
+// Unique values for array of fields
+function uniqString(array) {
   array = array.sort();
   let i = 0;
   while (i < array.length) {

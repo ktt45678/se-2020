@@ -616,11 +616,11 @@ exports.viewMediaRules = () => {
     param('id')
       .toInt()
       .isInt({ min: 1 }).withMessage('Media id must be a positive integer'),
-    query('exclusions')
+    query('fields')
       .optional()
-      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .isLength({ max: 320 }).withMessage('Field string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+      .matches(/^[\<\>][\w-.]+(?:,[\w-.]+)*$/).withMessage('Field string must be valid')
   ]
 }
 
@@ -629,11 +629,11 @@ exports.viewLatestMediaRules = () => {
     query('type')
       .optional()
       .isIn(['movie', 'tv']).withMessage('Type must be movie or tv'),
-    query('exclusions')
+    query('fields')
       .optional()
-      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .isLength({ max: 320 }).withMessage('Field string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+      .matches(/^[\<\>][\w-.]+(?:,[\w-.]+)*$/).withMessage('Field string must be valid')
   ]
 }
 
@@ -645,11 +645,11 @@ exports.viewTvSeasonRules = () => {
     param('season')
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
-    query('exclusions')
+    query('fields')
       .optional()
-      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .isLength({ max: 320 }).withMessage('Field string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+      .matches(/^[\<\>][\w-.]+(?:,[\w-.]+)*$/).withMessage('Field string must be valid')
   ]
 }
 
@@ -664,11 +664,11 @@ exports.viewTvEpisodeRules = () => {
     param('episode')
       .toInt()
       .isInt().withMessage('Season number must be an integer'),
-    query('exclusions')
+    query('fields')
       .optional()
-      .isLength({ max: 320 }).withMessage('Exclusion string must not be longer than 320 characters long')
+      .isLength({ max: 320 }).withMessage('Field string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?:,[\w-.]+)*$/).withMessage('Exclusion string must be valid')
+      .matches(/^[\<\>][\w-.]+(?:,[\w-.]+)*$/).withMessage('Field string must be valid')
   ]
 }
 
@@ -688,7 +688,7 @@ exports.fetchMediaRules = () => {
       .optional()
       .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+      .matches(/^[\<\>][\w\.]+(?:\,[\<\>][\w\.]+)*$/).withMessage('Sort string must be valid'),
     query('page')
       .optional()
       .toInt()
@@ -748,7 +748,7 @@ exports.fetchWatchlistRules = () => {
       .optional()
       .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+      .matches(/^[\<\>][\w\.]+(?:\,[\<\>][\w\.]+)*$/).withMessage('Sort string must be valid'),
     query('page')
       .optional()
       .toInt()
@@ -802,7 +802,7 @@ exports.fetchHistoryRules = () => {
       .optional()
       .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+      .matches(/^[\<\>][\w\.]+(?:\,[\<\>][\w\.]+)*$/).withMessage('Sort string must be valid'),
     query('page')
       .optional()
       .toInt()
@@ -839,7 +839,7 @@ exports.fetchCommentRules = () => {
       .optional()
       .isLength({ max: 320 }).withMessage('Sort string must not be longer than 320 characters long')
       .bail()
-      .matches(/^[\w-.]+(?::-?[1]+)+(?:,[\w-.]+(?::-?[1]+))*$/).withMessage('Sort string must be valid'),
+      .matches(/^[\<\>][\w\.]+(?:\,[\<\>][\w\.]+)*$/).withMessage('Sort string must be valid'),
     query('page')
       .optional()
       .toInt()

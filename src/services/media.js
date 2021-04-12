@@ -177,8 +177,8 @@ exports.findMediaById = async (id) => {
   return await mediaModel.findById(id);
 }
 
-exports.findMediaDetailsById = async (id, isPublic, exclusions, options = { skipParsing: false }) => {
-  const fields = miscModule.toExclusionQuery(exclusions);
+exports.findMediaDetailsById = async (id, isPublic, fieldString, options = { skipParsing: false }) => {
+  const fields = miscModule.toFieldQuery(fieldString);
   const result_ = await mediaModel.findMediaDetailsById(id, isPublic, fields);
   if (!result_) {
     throw { status: 404, message: 'Media not found' }
@@ -197,8 +197,8 @@ exports.findMediaDetailsById = async (id, isPublic, exclusions, options = { skip
   return result;
 }
 
-exports.findLatestMedia = async (type, isPublic, exclusions, options = { skipParsing: false }) => {
-  const fields = miscModule.toExclusionQuery(exclusions);
+exports.findLatestMedia = async (type, isPublic, fieldString, options = { skipParsing: false }) => {
+  const fields = miscModule.toFieldQuery(fieldString);
   const result_ = await mediaModel.findLatestMedia(type, isPublic, fields);
   if (!result_) {
     throw { status: 404, message: 'Media not found' }
@@ -242,7 +242,7 @@ exports.findSeasonEpisode = (season, episode, options = { isAdded: null }) => {
   return season.episodes.find(e => e.episodeNumber === episode);
 }
 
-exports.fetchMedia = async (query, type, genre, sortString = 'createdAt:-1', isPublic, page = 1, limit = 30) => {
+exports.fetchMedia = async (query, type, genre, sortString = '<createdAt', isPublic, page = 1, limit = 30) => {
   const sort = miscModule.toSortQuery(sortString);
   const skip = miscModule.calculatePageSkip(page, limit);
   const atlasSearch = process.env.DATABASE_ATLAS_SEARCH === 'true';

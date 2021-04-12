@@ -27,10 +27,10 @@ exports.details = async (req, res, next) => {
   }
   // Force to remove stream from query
   const { id } = req.params;
-  const { exclusions } = req.query;
+  const { fields } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const media = await mediaService.findMediaDetailsById(id, isPublic, exclusions);
+    const media = await mediaService.findMediaDetailsById(id, isPublic, fields);
     res.status(200).send(media);
   } catch (e) {
     next(e);
@@ -42,10 +42,10 @@ exports.latest = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).send({ errors: errors.array() });
   }
-  const { type, exclusions } = req.query;
+  const { type, fields } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const media = await mediaService.findLatestMedia(type, isPublic, exclusions);
+    const media = await mediaService.findLatestMedia(type, isPublic, fields);
     res.status(200).send(media);
   } catch (e) {
     next(e);
@@ -58,10 +58,10 @@ exports.tvSeasonDetails = async (req, res, next) => {
     return res.status(422).send({ errors: errors.array() });
   }
   const { id, season } = req.params;
-  const { exclusions } = req.query;
+  const { fields } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const media = await mediaService.findMediaDetailsById(id, isPublic, exclusions);
+    const media = await mediaService.findMediaDetailsById(id, isPublic, fields);
     const seasonDocument = mediaService.findTvSeason(media, season, { isAdded: true });
     if (!seasonDocument) {
       return res.status(404).send({ error: 'Season not found' });
@@ -78,10 +78,10 @@ exports.tvEpisodeDetails = async (req, res, next) => {
     return res.status(422).send({ errors: errors.array() });
   }
   const { id, season, episode } = req.params;
-  const { exclusions } = req.query;
+  const { fields } = req.query;
   const isPublic = req.currentUser?.role !== 'admin' ? true : null;
   try {
-    const media = await mediaService.findMediaDetailsById(id, isPublic, exclusions);
+    const media = await mediaService.findMediaDetailsById(id, isPublic, fields);
     const seasonDocument = mediaService.findTvSeason(media, season, { isAdded: true });
     const episodeDocument = mediaService.findSeasonEpisode(seasonDocument, episode, { isAdded: true });
     if (!episodeDocument) {
